@@ -1,4 +1,4 @@
 # frontend
 frontend/.vscode
-frontend/package.lock.json
+frontend/package-lock.json
 frontend/node_modules
