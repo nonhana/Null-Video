@@ -4,10 +4,47 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + Vue + TS</title>
+    <title>Null Video</title>
+    <style>
+      body {
+        margin: 0 auto;
+        padding: 0;
+        width: 1200px;
+        background: #d9d9d9;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 0;
+      }
+
+      ::-webkit-scrollbar {
+        -webkit-appearance: none;
+        width: 8px;
+        height: 8px;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        cursor: pointer;
+        border-radius: 5px;
+        background: rgba(0, 0, 0, 0.3);
+        transition: color 0.2s ease;
+      }
+    </style>
   </head>
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
+
+<style>
+  body {
+    margin: 0;
+  }
+  #app {
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+</style>
