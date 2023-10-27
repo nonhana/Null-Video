@@ -1,80 +1,106 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { AxiosRequestConfig } from 'axios';
+import router from '../router/index';
+// import Vue from 'vue';
+import {
+  ElMessage
+} from 'element-plus';
+import { startLoading, endLoading } from "../components/publicComponents/loading.vue"
+import i18n from '../i18n';
+const { locale } = i18n.global
 
-const myAxios = (axiosConfig: AxiosRequestConfig): Promise<AxiosResponse> => {
+function myAxios<T = any>(axiosConfig: AxiosRequestConfig<any>) {
+
+  const accessToken = window.localStorage.token
+
   const service = axios.create({
-    // baseURL: "http://127.0.0.1:4000", // 本地服务器环境(api-server)
-    baseURL: "https://www.nonhana.site:4000", // AWS服务端环境
-    timeout: 30000, // 10秒内无响应则报错
+    baseURL: 'https://example.com/graphql',  // 替换为 GraphQL API 的端点 URL
+    timeout: 5000, //最多等待响应5秒
+    headers: {
+      'Authorization': 'Bearer' + accessToken,
+      'Accept-Language': locale.value // 这行代码设置了全局字段，表示当前用户选择的语言
+    }
   });
 
-  // 请求拦截器
+  // 请求拦截器：可以在发请求之前可以处理一些业务
   service.interceptors.request.use(
-    (config) => {
-      // 配置请求头token
-      config.headers.Authorization = localStorage.getItem("token") ?? "";
+    config => {
+      startLoading()
+      // console.log(locale.value)
       return config;
-    },
-    (error) => {
-      return Promise.reject(error);
     }
   );
 
-  // 响应拦截器
+  // 响应拦截器：当服务器数据返回以后，可以处理一些事情
   service.interceptors.response.use(
-    (response) => {
-      if (response.data.result_code === 1) {
-        // ElNotification({
-        //   title: "错误",
-        //   message: response.data.result_msg,
-        //   type: "error",
-        // });
-        return response;
-      } else {
-        return response;
+    res => {
+      endLoading()
+      //GraphQL API处理相关数据
+      // const responseData = res.data; // 获取响应数据对象
+
+      // if (responseData.errors) {
+      //   // 处理错误信息
+      //   const errorMessages = responseData.errors.map(error => error.message).join(', ');
+      //   ElMessage(errorMessages);
+      //   return Promise.reject(responseData.errors);
+      // }
+
+      // const { data } = responseData; // 获取 GraphQL 查询的结果数据
+      // return data;
+      return res;
+    }, err => {
+      endLoading()
+      switch (err.response.result_status) {
+        case 302:
+          ElMessage('接口重定向了！');
+          break;
+        case 400:
+          ElMessage('参数不正确！');
+          break;
+        case 401:
+          // store.dispatch("outlogin")
+          ElMessage('登录过期,请重新登录');
+          router.push('/login');
+          // window.localStorage.removeItem("token");
+          break;
+
+        case 403:
+          ElMessage('您没有权限操作！');
+          break;
+        case 404:
+          ElMessage(`请求地址出错: ${err.response.config.url}`);
+          break; // 在正确域名下
+        case 408:
+          ElMessage('请求超时！');
+          break;
+        case 409:
+          ElMessage('系统已存在相同数据！');
+          break;
+        case 500:
+          ElMessage('服务器内部错误！');
+          break;
+        case 501:
+          ElMessage('服务未实现！');
+          break;
+        case 502:
+          ElMessage('网关错误！');
+          break;
+        case 503:
+          ElMessage('服务不可用！');
+          break;
+        case 504:
+          ElMessage('服务暂时无法访问，请稍后再试！');
+          break;
+        case 505:
+          ElMessage('HTTP版本不受支持！');
+          break;
+        default:
+          ElMessage('异常问题，请联系管理员！');
+          console.log()
+          break;
       }
-    },
-    (error) => {
-      // 如果响应超时，报错
-      if (
-        error.code === "ECONNABORTED" &&
-        error.message.indexOf("timeout") !== -1
-      ) {
-        // ElNotification({
-        //   title: "请求超时",
-        //   message: "请求超时，请检查网络",
-        //   type: "error",
-        // });
-        return error;
-      } else {
-        const { status, data } = error.response;
-        if (status === 500) {
-          // ElNotification({
-          //   title: "服务器错误",
-          //   message: data.result_msg || "未知错误",
-          //   type: "error",
-          // });
-        } else if (status === 401) {
-          // ElNotification({
-          //   title: "登录过期",
-          //   message: data.result_msg || "未知错误",
-          //   type: "error",
-          // });
-          setTimeout(() => {
-            location.href = "/login";
-          }, 2000);
-        } else if (status === 400) {
-          // ElNotification({
-          //   title: "参数错误",
-          //   message: data.result_msg || "未知错误",
-          //   type: "error",
-          // });
-        }
-        return error;
-      }
+      return Promise.reject(err);
     }
   );
-
   return service(axiosConfig);
-};
-
+}
 export default myAxios;
