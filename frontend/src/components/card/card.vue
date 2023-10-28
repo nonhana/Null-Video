@@ -24,6 +24,7 @@ defineProps({
     border-radius: @border-radius;
     box-shadow: @shadow-outer;
     background: @bg-color;
+    padding: 1rem
 }
 </style>
   
