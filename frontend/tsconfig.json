@@ -6,7 +6,8 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@nullVideo/*":["src/components/*"]
     },
     "skipLibCheck": true,
     /* Bundler mode */
