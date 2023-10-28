@@ -35,28 +35,88 @@
     </div>
     <el-divider />
     <div class="menu">
-      <div class="menu-item">
-        <img :src="arrowRight" alt="arrowRight" />
+      <div
+        class="menu-item"
+        :class="hovering[0] ? 'menu-hover' : ''"
+        @click="chooseItem(0)"
+        @mouseenter="hoverItem(0, 0)"
+        @mouseleave="hoverItem(1)"
+      >
+        <img
+          :style="{
+            left: hovering[0] ? '0.5rem' : '0',
+          }"
+          :src="arrowRight"
+          alt="arrowRight"
+        />
         <img :src="myVideos" alt="myVideos" />
         <span>发布视频</span>
       </div>
-      <div class="menu-item">
-        <img :src="arrowRight" alt="arrowRight" />
+      <div
+        class="menu-item"
+        :class="hovering[1] ? 'menu-hover' : ''"
+        @click="chooseItem(1)"
+        @mouseenter="hoverItem(0, 1)"
+        @mouseleave="hoverItem(1)"
+      >
+        <img
+          :style="{
+            left: hovering[1] ? '0.5rem' : '0',
+          }"
+          :src="arrowRight"
+          alt="arrowRight"
+        />
         <img :src="myCollections" alt="myCollections" />
         <span>收藏列表</span>
       </div>
-      <div class="menu-item">
-        <img :src="arrowRight" alt="arrowRight" />
+      <div
+        class="menu-item"
+        :class="hovering[2] ? 'menu-hover' : ''"
+        @click="chooseItem(2)"
+        @mouseenter="hoverItem(0, 2)"
+        @mouseleave="hoverItem(1)"
+      >
+        <img
+          :style="{
+            left: hovering[2] ? '0.5rem' : '0',
+          }"
+          :src="arrowRight"
+          alt="arrowRight"
+        />
         <img :src="myFollowsAndFans" alt="myFollowsAndFans" />
         <span>关注/粉丝</span>
       </div>
-      <div class="menu-item">
-        <img :src="arrowRight" alt="arrowRight" />
+      <div
+        class="menu-item"
+        :class="hovering[3] ? 'menu-hover' : ''"
+        @click="chooseItem(3)"
+        @mouseenter="hoverItem(0, 3)"
+        @mouseleave="hoverItem(1)"
+      >
+        <img
+          :style="{
+            left: hovering[3] ? '0.5rem' : '0',
+          }"
+          :src="arrowRight"
+          alt="arrowRight"
+        />
         <img :src="myInfo" alt="myInfo" />
         <span>个人信息</span>
       </div>
-      <div class="menu-item">
-        <img :src="arrowRight" alt="arrowRight" />
+      <div
+        class="menu-item"
+        :class="hovering[4] ? 'menu-hover' : ''"
+        @click="chooseItem(4)"
+        @mouseenter="hoverItem(0, 4)"
+        @mouseleave="hoverItem(1)"
+      >
+        <img
+          :style="{
+            left: hovering[4] ? '0.5rem' : '0',
+          }"
+          :src="arrowRight"
+          alt="arrowRight"
+        />
         <img :src="exit" alt="exit" />
         <span>退出登录</span>
       </div>
@@ -66,7 +126,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import type { UserInfo } from "@/utils/types";
 import arrowRight from "@/assets/svgs/arrow-right.svg";
@@ -77,10 +137,62 @@ import myInfo from "@/assets/svgs/my-info.svg";
 import exit from "@/assets/svgs/exit.svg";
 
 const route = useRoute();
+const router = useRouter();
 
 const userStore = useUserStore();
 
 const userInfo = ref<UserInfo>();
+const hovering = ref<boolean[]>([false, false, false, false, false]);
+
+const routeNameList = [
+  "myVideos",
+  "myCollections",
+  "myFollowsAndFans",
+  "myInfo",
+  "exit",
+];
+
+// 鼠标移动到菜单项时，箭头向右移动，其他菜单项箭头复位
+const hoverItem = (type: number, index?: number) => {
+  if (type === 0) {
+    hovering.value = hovering.value.map((_, i) => {
+      if (i === index) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+  } else {
+    // 根据当前路由，判断是否需要将箭头复位
+    hovering.value = hovering.value.map((_, i) => {
+      if (routeNameList.findIndex((item) => item === route.name) === i) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+  }
+};
+// 点击菜单项时，跳转到对应页面
+const chooseItem = (index: number) => {
+  switch (index) {
+    case 0:
+      router.push(`/personalCenter/${route.params.user_id}/myVideos`);
+      break;
+    case 1:
+      router.push(`/personalCenter/${route.params.user_id}/myCollections`);
+      break;
+    case 2:
+      router.push(`/personalCenter/${route.params.user_id}/myFollowsAndFans`);
+      break;
+    case 3:
+      router.push(`/personalCenter/${route.params.user_id}/myInfo`);
+      break;
+    case 4:
+      router.push(`/personalCenter/${route.params.user_id}/exit`);
+      break;
+  }
+};
 
 watch(
   () => route.params.user_id,
@@ -101,6 +213,14 @@ watch(
     }
   },
   { immediate: true, deep: true }
+);
+
+watch(
+  () => route.name,
+  (name) => {
+    hovering.value[routeNameList.findIndex((item) => item === name)] = true;
+  },
+  { immediate: true }
 );
 </script>
 
@@ -186,27 +306,41 @@ watch(
     align-items: flex-start;
     justify-content: flex-start;
     &-item {
-      width: 349px;
-      height: 66.18px;
-      border-radius: 16px;
+      margin: 1rem 0;
+      width: 20rem;
+      height: 4rem;
+      padding: 0 1rem;
+      border-radius: 1rem;
       background: #f2f2f2;
       display: flex;
       align-items: center;
       justify-content: flex-start;
-      font-family: Source Han Sans;
-      font-size: 18px;
+      font-size: 1.2rem;
       color: #3d3d3d;
+      transition: all 0.3s;
+      cursor: pointer;
       img {
         &:nth-child(1) {
-          width: 16px;
-          height: 16px;
+          position: relative;
+          width: 1rem;
+          height: 1rem;
+          transition: all 0.3s;
         }
         &:nth-child(2) {
-          width: 32px;
-          height: 32px;
+          margin: 0 2rem 0 2rem;
+          width: 2rem;
+          height: 2rem;
         }
       }
+      &:hover {
+        background: #e5e5e5;
+        box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
+      }
     }
+  }
+  .menu-hover {
+    background: #e5e5e5;
+    box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
   }
 }
 </style>

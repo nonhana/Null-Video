@@ -1,5 +1,5 @@
 <template>
-    <div class="card" :style="{ height }">
+    <div class="card" :style="{ width, height }">
         <slot></slot>
     </div>
 </template>
@@ -14,7 +14,7 @@ defineProps({
     },
     height: {
         type: String,
-        default: 'auto',
+        default: '100%',
     },
 });
 </script>

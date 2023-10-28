@@ -3,6 +3,7 @@ import App from "./App.vue";
 import "amfe-flexible";
 import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
+import router from "./router";
 
 const baseSize = 16;
 
@@ -25,5 +26,6 @@ const store = createPinia();
 store.use(piniaPluginPersistedstate); // 引入pinia持久化插件
 
 const app = createApp(App);
-
+app.use(router);
+app.use(store);
 app.mount("#app");
