@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import CommonHeader from './components/common-header.vue'
+import CommonHeader from '@nullVideo/basic/common-header.vue'
 </script>
 
 <style scoped lang="less"></style>

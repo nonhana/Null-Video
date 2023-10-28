@@ -4,7 +4,7 @@ import path from "path";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
-import postCssPxToRem from "postcss-pxtorem"; // px转rem
+import postCssPxToRem from "postcss-pxtorem"; // px转rem;
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -32,6 +32,7 @@ export default defineConfig({
     // 配置路径别名@
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@nullVideo": path.resolve(__dirname, "./src/components")
     },
   },
   server: {
@@ -48,6 +49,13 @@ export default defineConfig({
           propList: ["*"], // 需要转换的属性，这里选择全部都进行转换
         }),
       ],
+    },
+    // 注册全局 less 样式
+    preprocessorOptions: {
+      less: {
+        charset:false,
+        additionalData: `@import '@/variables.less';`,
+      },
     },
   },
 });
