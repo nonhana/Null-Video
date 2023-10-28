@@ -10,18 +10,18 @@
       </div>
     </div>
     <n-button :type="followStatus ? 'default' : 'info'">{{
-      followStatus ? "取关" : "关注"
+      followStatus ? '取关' : '关注'
     }}</n-button>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { UserInfo } from "@/utils/types";
+import type { UserInfo } from '@/utils/types'
 
 defineProps<{
-  userInfo: UserInfo;
-  followStatus: boolean;
-}>();
+  userInfo: UserInfo
+  followStatus: boolean
+}>()
 </script>
 
 <style scoped lang="less">

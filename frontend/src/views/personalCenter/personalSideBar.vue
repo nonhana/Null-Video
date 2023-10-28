@@ -44,7 +44,7 @@
       >
         <img
           :style="{
-            left: hovering[0] ? '0.5rem' : '0',
+            left: hovering[0] ? '0.5rem' : '0'
           }"
           :src="arrowRight"
           alt="arrowRight"
@@ -61,7 +61,7 @@
       >
         <img
           :style="{
-            left: hovering[1] ? '0.5rem' : '0',
+            left: hovering[1] ? '0.5rem' : '0'
           }"
           :src="arrowRight"
           alt="arrowRight"
@@ -78,7 +78,7 @@
       >
         <img
           :style="{
-            left: hovering[2] ? '0.5rem' : '0',
+            left: hovering[2] ? '0.5rem' : '0'
           }"
           :src="arrowRight"
           alt="arrowRight"
@@ -95,7 +95,7 @@
       >
         <img
           :style="{
-            left: hovering[3] ? '0.5rem' : '0',
+            left: hovering[3] ? '0.5rem' : '0'
           }"
           :src="arrowRight"
           alt="arrowRight"
@@ -112,7 +112,7 @@
       >
         <img
           :style="{
-            left: hovering[4] ? '0.5rem' : '0',
+            left: hovering[4] ? '0.5rem' : '0'
           }"
           :src="arrowRight"
           alt="arrowRight"
@@ -125,103 +125,103 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { useUserStore } from "@/stores/user";
-import type { UserInfo } from "@/utils/types";
-import arrowRight from "@/assets/svgs/arrow-right.svg";
-import myVideos from "@/assets/svgs/my-videos.svg";
-import myCollections from "@/assets/svgs/my-collections.svg";
-import myFollowsAndFans from "@/assets/svgs/my-follows-and-fans.svg";
-import myInfo from "@/assets/svgs/my-info.svg";
-import exit from "@/assets/svgs/exit.svg";
+import { ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
+import type { UserInfo } from '@/utils/types'
+import arrowRight from '@/assets/svgs/arrow-right.svg'
+import myVideos from '@/assets/svgs/my-videos.svg'
+import myCollections from '@/assets/svgs/my-collections.svg'
+import myFollowsAndFans from '@/assets/svgs/my-follows-and-fans.svg'
+import myInfo from '@/assets/svgs/my-info.svg'
+import exit from '@/assets/svgs/exit.svg'
 
-const route = useRoute();
-const router = useRouter();
+const route = useRoute()
+const router = useRouter()
 
-const userStore = useUserStore();
+const userStore = useUserStore()
 
-const userInfo = ref<UserInfo>();
-const hovering = ref<boolean[]>([false, false, false, false, false]);
+const userInfo = ref<UserInfo>()
+const hovering = ref<boolean[]>([false, false, false, false, false])
 
 const routeNameList = [
-  "myVideos",
-  "myCollections",
-  "myFollowsAndFans",
-  "myInfo",
-  "exit",
-];
+  'myVideos',
+  'myCollections',
+  'myFollowsAndFans',
+  'myInfo',
+  'exit'
+]
 
 // 鼠标移动到菜单项时，箭头向右移动，其他菜单项箭头复位
 const hoverItem = (type: number, index?: number) => {
   if (type === 0) {
     hovering.value = hovering.value.map((_, i) => {
       if (i === index) {
-        return true;
+        return true
       } else {
-        return false;
+        return false
       }
-    });
+    })
   } else {
     // 根据当前路由，判断是否需要将箭头复位
     hovering.value = hovering.value.map((_, i) => {
       if (routeNameList.findIndex((item) => item === route.name) === i) {
-        return true;
+        return true
       } else {
-        return false;
+        return false
       }
-    });
+    })
   }
-};
+}
 // 点击菜单项时，跳转到对应页面
 const chooseItem = (index: number) => {
   switch (index) {
     case 0:
-      router.push(`/personalCenter/${route.params.user_id}/myVideos`);
-      break;
+      router.push(`/personalCenter/${route.params.user_id}/myVideos`)
+      break
     case 1:
-      router.push(`/personalCenter/${route.params.user_id}/myCollections`);
-      break;
+      router.push(`/personalCenter/${route.params.user_id}/myCollections`)
+      break
     case 2:
-      router.push(`/personalCenter/${route.params.user_id}/myFollowsAndFans`);
-      break;
+      router.push(`/personalCenter/${route.params.user_id}/myFollowsAndFans`)
+      break
     case 3:
-      router.push(`/personalCenter/${route.params.user_id}/myInfo`);
-      break;
+      router.push(`/personalCenter/${route.params.user_id}/myInfo`)
+      break
     case 4:
-      router.push(`/personalCenter/${route.params.user_id}/exit`);
-      break;
+      router.push(`/personalCenter/${route.params.user_id}/exit`)
+      break
   }
-};
+}
 
 watch(
   () => route.params.user_id,
   (user_id) => {
     if (Number(user_id) === userStore.userInfo.user_id) {
-      userInfo.value = userStore.userInfo;
+      userInfo.value = userStore.userInfo
     } else {
       userInfo.value = {
         user_id: 2,
-        user_name: "JaneDoe",
-        user_signature: "Another signature.",
-        user_avatar: "https://dummyimage.com/400X400",
+        user_name: 'JaneDoe',
+        user_signature: 'Another signature.',
+        user_avatar: 'https://dummyimage.com/400X400',
         user_likenum: 111,
         user_collectnum: 222,
         user_follownum: 333,
-        user_fansnum: 444,
-      };
+        user_fansnum: 444
+      }
     }
   },
   { immediate: true, deep: true }
-);
+)
 
 watch(
   () => route.name,
   (name) => {
-    hovering.value[routeNameList.findIndex((item) => item === name)] = true;
+    hovering.value[routeNameList.findIndex((item) => item === name)] = true
   },
   { immediate: true }
-);
+)
 </script>
 
 <style scoped lang="less">

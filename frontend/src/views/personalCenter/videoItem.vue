@@ -11,12 +11,12 @@
 </template>
 
 <script setup lang="ts">
-import type { VideoItemInfo } from "@/utils/types";
-import views from "@/assets/svgs/views.svg";
+import type { VideoItemInfo } from '@/utils/types'
+import views from '@/assets/svgs/views.svg'
 
 defineProps<{
-  videoItem: VideoItemInfo;
-}>();
+  videoItem: VideoItemInfo
+}>()
 </script>
 
 <style scoped lang="less">

@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { NGrid } from 'naive-ui';
+import { NGrid } from 'naive-ui'
 import Button from '@nullVideo/button/button.vue'
 import Search from '@nullVideo/form/search/search.vue'
 </script>
