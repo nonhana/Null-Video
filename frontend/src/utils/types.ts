@@ -12,3 +12,10 @@ export interface UserInfo {
   user_follownum: number;
   user_fansnum: number;
 }
+
+// 视频Item信息
+export interface VideoItemInfo {
+  video_id: number;
+  video_cover: string;
+  video_viewnum: number;
+}
