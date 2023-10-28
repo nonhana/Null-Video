@@ -7,6 +7,15 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    CommonHeader: typeof import('./src/components/common-header.vue')['default']
+    CollectionList: typeof import('./src/components/ModelPersonalCenter/MyCollections/CollectionList.vue')['default']
+    CommonHeader: typeof import('./src/components/Little/Common/common-header.vue')['default']
+    NButton: typeof import('naive-ui')['NButton']
+    PersonalCenterUserItem: typeof import('./src/components/Little/Items/PersonalCenterUserItem.vue')['default']
+    PersonalCenterVideoItem: typeof import('./src/components/Little/Items/PersonalCenterVideoItem.vue')['default']
+    PersonalSideBar: typeof import('./src/components/ModelPersonalCenter/personal-side-bar.vue')['default']
+    RouterLink: typeof import('vue-router')['RouterLink']
+    RouterView: typeof import('vue-router')['RouterView']
+    UserList: typeof import('./src/components/ModelPersonalCenter/MyFollowsAndFans/UserList.vue')['default']
+    VideoList: typeof import('./src/components/ModelPersonalCenter/MyVideos/VideoList.vue')['default']
   }
 }

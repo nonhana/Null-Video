@@ -9,7 +9,7 @@
       body {
         margin: 0 auto;
         padding: 0;
-        width: 1200px;
+        width: 90rem;
         background: #d9d9d9;
       }
 
@@ -27,24 +27,25 @@
       ::-webkit-scrollbar-thumb {
         cursor: pointer;
         border-radius: 5px;
-        background: rgba(0, 0, 0, 0.3);
+        background: var(--scrollbar-color, rgba(0, 0, 0, 0.3));
         transition: color 0.2s ease;
       }
     </style>
   </head>
-  <body>
+  <body onmouseover="showScrollbar()" onmouseleave="hideScrollbar()">
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
-</html>
+  <script>
+    function showScrollbar() {
+      document.body.style.setProperty(
+        "--scrollbar-color",
+        "rgba(0, 0, 0, 0.3)"
+      );
+    }
 
-<style>
-  body {
-    margin: 0;
-  }
-  #app {
-    padding: 0;
-    width: 100%;
-    max-width: 100%;
-  }
-</style>
+    function hideScrollbar() {
+      document.body.style.setProperty("--scrollbar-color", "rgba(0, 0, 0, 0)");
+    }
+  </script>
+</html>

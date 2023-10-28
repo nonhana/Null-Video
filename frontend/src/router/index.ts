@@ -23,27 +23,35 @@ const routes: RouteRecordRaw[] = [
   {
     path: "/personalCenter/:user_id",
     name: "personalCenter",
+    redirect(to) {
+      return {
+        name: "myVideo",
+        params: {
+          user_id: to.params.user_id,
+        },
+      };
+    },
     component: () => import("@/views/personalCenter/index.vue"),
     children: [
       {
-        path: "/personalCenter/myVideos/:user_id",
-        name: "myVideo",
+        path: "/personalCenter/:user_id/myVideos",
+        name: "myVideos",
         component: () => import("@/views/personalCenter/myVideos/index.vue"),
       },
       {
-        path: "/personalCenter/myCollections/:user_id",
-        name: "myCollection",
+        path: "/personalCenter/:user_id/myCollections",
+        name: "myCollections",
         component: () =>
           import("@/views/personalCenter/myCollections/index.vue"),
       },
       {
-        path: "/personalCenter/myFollowsAndFans/:user_id",
+        path: "/personalCenter/:user_id/myFollowsAndFans",
         name: "myFollowsAndFans",
         component: () =>
           import("@/views/personalCenter/myFollowsAndFans/index.vue"),
       },
       {
-        path: "/personalCenter/myInfo/:user_id",
+        path: "/personalCenter/:user_id/myInfo",
         name: "myInfo",
         component: () => import("@/views/personalCenter/myInfo/index.vue"),
       },
