@@ -25,7 +25,7 @@ const routes: RouteRecordRaw[] = [
     name: "personalCenter",
     redirect(to) {
       return {
-        name: "myVideo",
+        name: "myVideos",
         params: {
           user_id: to.params.user_id,
         },
