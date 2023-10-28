@@ -1,25 +1,40 @@
 <template>
   <div class="header">
-    <div class="logo">Null Video</div>
-    <div class="search">
-      <input type="text" />
-    </div>
-    <div class="input">
-      <Button width="8rem" height="2rem">input</Button>
-    </div>
-    <!-- <div class="message">header</div> -->
-    <div class="avatar"></div>
+    <n-grid :cols="48">
+      <n-gi :span="8" :offset="1">
+        <div class="logo">Null Video</div>
+      </n-gi>
+      <n-gi :span="16" :offset="5">
+        <div class="search">
+          <Search />
+        </div>
+      </n-gi>
+      <n-gi :span="5" :offset="8">
+        <div class="upload">
+          <Button width="7.5rem" height="2.5rem">我要创作</Button>
+        </div>
+      </n-gi>
+      <n-gi :span="1" :offset="3">
+        <!-- <div class="message">header</div> -->
+        <div class="avatar"></div>
+      </n-gi>
+    </n-grid>
+
+
+
   </div>
 </template>
 
 <script setup lang="ts">
+import { NGrid } from 'naive-ui';
 import Button from '@nullVideo/button/button.vue'
+import Search from '@nullVideo/form/search/search.vue'
 </script>
 
 <style scoped lang="less">
 .header {
   width: 100%;
-  height: 5.5rem;
+  height: 6rem;
   border-radius: 0 0 1rem 1rem;
   opacity: 1;
   background: #f2f2f2;
@@ -29,7 +44,7 @@ import Button from '@nullVideo/button/button.vue'
 }
 
 .logo {
-  font-family: YouSheBiaoTiHei;
+  font-family: @YouSheBiaoTiHei;
   font-size: 1.5rem;
   font-weight: normal;
   line-height: normal;
@@ -37,14 +52,18 @@ import Button from '@nullVideo/button/button.vue'
   color: #504f4f;
 }
 
-.search {}
+.search {
+  width: 100%;
+}
 
-.input {}
+.upload {
+  font-family: @YouSheBiaoTiHei;
+}
 
 .avatar {
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 100%;
-  background: #4a91ee;
+  background: @bg-color-primary;
 }
 </style>

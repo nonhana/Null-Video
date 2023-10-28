@@ -1,7 +1,7 @@
 <template>
-    <NButton class="my-button" :style="{ width, height }" type="info">
+    <n-button class="my-button" :style="{ width, height }" type="primary">
         <slot></slot>
-    </NButton>
+    </n-button>
 </template>
   
 <script setup lang="ts">
@@ -25,5 +25,6 @@ defineProps({
     position: relative;
     /* Add more styles as needed */
     border-radius: @border-radius;
+    box-shadow: @shadow-outer;
 }
 </style>
