@@ -1,11 +1,12 @@
 <template>
-  <n-configProvider :theme-overrides="themeOverrides">
+  <n-configProvider :theme-overrides="themeOverrides" style="height: 100%;">
     <div class="app">
       <CommonHeader />
+      <div class="router">
+        <router-view />
+      </div>
     </div>
-    <div>
-      <router-view />
-    </div>
+
   </n-configProvider>
 </template>
 
@@ -30,11 +31,11 @@ const themeOverrides: GlobalThemeOverrides = {
   display: flex;
   flex-direction: column;
   align-items: center;
-  > div {
-    margin-bottom: 2rem;
+
+  .router {
     width: 100%;
-    display: flex;
-    justify-content: center;
+    height: 100%;
+    padding: 1rem;
   }
 }
 </style>

@@ -6,7 +6,7 @@
       </n-gi>
       <n-gi :span="16" :offset="5">
         <div class="search">
-          <Search />
+          <Search height="2.5rem" />
         </div>
       </n-gi>
       <n-gi :span="5" :offset="8">
@@ -19,9 +19,6 @@
         <div class="avatar"></div>
       </n-gi>
     </n-grid>
-
-
-
   </div>
 </template>
 
@@ -37,7 +34,7 @@ import Search from '@nullVideo/form/search/search.vue'
   height: 6rem;
   border-radius: 0 0 1rem 1rem;
   opacity: 1;
-  background: #f2f2f2;
+  background: @bg-color;
   box-shadow: 0px 0.25rem 0.625rem 0px rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
@@ -47,9 +44,9 @@ import Search from '@nullVideo/form/search/search.vue'
   font-family: @YouSheBiaoTiHei;
   font-size: 1.5rem;
   font-weight: normal;
-  line-height: normal;
+  line-height: 2.5rem;
   letter-spacing: 0em;
-  color: #504f4f;
+  color: @text;
 }
 
 .search {
