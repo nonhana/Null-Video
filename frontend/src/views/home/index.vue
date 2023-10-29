@@ -12,7 +12,7 @@
       </n-gi>
       <n-gi :span="21">
         <Card :background-color="'#000'">
-          <video ref="videoPlayer" class="video-js "></video>
+          <video ref="videoPlayer" class="video-js"></video>
         </Card>
       </n-gi>
       <n-gi :span="16">
@@ -131,6 +131,22 @@ onBeforeUnmount(() => {
     width: 100%;
     border-radius: @border-radius;
     font-size: 1rem;
+    color: @text;
+  }
+
+  ::v-deep .video-js {
+    .vjs-control-bar {
+      width: 98%;
+      margin: 0.4rem auto;
+      background-color: @bg-color-third;
+      border-radius: @border-radius;
+
+      .vjs-menu-content,
+      .vjs-volume-vertical {
+        background-color: @bg-color-third;
+        border-radius: @border-radius @border-radius 0 0;
+      }
+    }
   }
 
   ::v-deep .video-js .vjs-big-play-button {
