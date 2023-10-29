@@ -6,12 +6,12 @@
     </div>
   </div>
 </template>
-  
+
 <script setup lang="ts">
 import { ref } from 'vue'
 // import { submitReviewAPI } from '@/api/reviews'
-import { useNavigation } from "@/hooks/useNavigation"
-import { NInput, NButton } from 'naive-ui';
+import { useNavigation } from '@/hooks/useNavigation'
+import { NInput, NButton } from 'naive-ui'
 const { getCurrentParams } = useNavigation()
 const content = ref('')
 
@@ -25,12 +25,11 @@ const submitComment = async () => {
     }
     // const res = await submitReviewAPI(params)
     // console.log(res.data)
-    console.log("提交成功")
+    console.log('提交成功')
   } catch (err) {
-    console.log("error", err)
+    console.log('error', err)
   }
 }
 </script>
-  
-<style  scoped lang="less"></style>
-  
+
+<style scoped lang="less"></style>
