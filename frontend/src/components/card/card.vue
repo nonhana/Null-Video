@@ -3,9 +3,9 @@
         <slot></slot>
     </div>
 </template>
-  
+
 <script setup lang="ts">
-import { defineProps } from 'vue';
+import { defineProps } from 'vue'
 
 defineProps({
     width: {
@@ -21,13 +21,12 @@ defineProps({
     }
 });
 </script>
-  
+
 <style scoped lang="less">
 .card {
-    border-radius: @border-radius;
-    box-shadow: @shadow-outer;
-    background: @bg-color;
-    padding: 1rem
+  border-radius: @border-radius;
+  box-shadow: @shadow-outer;
+  background: @bg-color;
+  padding: 1rem;
 }
 </style>
-  

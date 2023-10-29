@@ -9,7 +9,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     Button: typeof import('./src/components/button/button.vue')['default']
     Card: typeof import('./src/components/card/card.vue')['default']
-    CollectionList: typeof import('./src/components/ModelPersonalCenter/MyCollections/CollectionList.vue')['default']
     Comment: typeof import('./src/components/comment/comment.vue')['default']
     CommentBox: typeof import('./src/components/comment/commentBox.vue')['default']
     CommentList: typeof import('./src/components/comment/commentList.vue')['default']
@@ -17,14 +16,8 @@ declare module 'vue' {
     Input: typeof import('./src/components/form/input/input.vue')['default']
     NButton: typeof import('naive-ui')['NButton']
     NGi: typeof import('naive-ui')['NGi']
-    NInput: typeof import('naive-ui')['NInput']
-    PersonalCenterUserItem: typeof import('./src/components/Little/Items/PersonalCenterUserItem.vue')['default']
-    PersonalCenterVideoItem: typeof import('./src/components/Little/Items/PersonalCenterVideoItem.vue')['default']
-    PersonalSideBar: typeof import('./src/components/ModelPersonalCenter/personal-side-bar.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Search: typeof import('./src/components/form/search/search.vue')['default']
-    UserList: typeof import('./src/components/ModelPersonalCenter/MyFollowsAndFans/UserList.vue')['default']
-    VideoList: typeof import('./src/components/ModelPersonalCenter/MyVideos/VideoList.vue')['default']
   }
 }

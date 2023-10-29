@@ -1,7 +1,7 @@
 <template>
   <div class="index">
     <div>
-      <PersonalSideBar />
+      <personal-side-bar />
     </div>
     <div>
       <router-view />
@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import PersonalSideBar from "@/components/ModelPersonalCenter/personal-side-bar.vue";
+import personalSideBar from '@/views/personalCenter/personalSideBar.vue'
 </script>
 
 <style scoped lang="less">

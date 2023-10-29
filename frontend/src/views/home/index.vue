@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <n-grid :cols="48" x-gap="16px" style="height: 100%;">
+    <n-grid :cols="48" x-gap="16px" style="height: 100%">
       <n-gi :span="14">
         <Card>视频信息</Card>
       </n-gi>
