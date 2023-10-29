@@ -19,10 +19,14 @@
         <div class="avatar" @click="jumpToPersonalCenter" />
       </n-gi>
     </n-grid>
-    <div class="window" v-if="windowVisable">
-      <loginWindow @close="windowVisable = false" />
-    </div>
-    <div v-if="windowVisable" class="template" />
+    <transition name="dialog">
+      <div class="window" v-if="windowVisable">
+        <loginWindow @close="windowVisable = false" />
+      </div>
+    </transition>
+    <transition name="template">
+      <div v-if="windowVisable" class="template" />
+    </transition>
   </div>
 </template>
 
@@ -56,7 +60,6 @@ const jumpToPersonalCenter = () => {
     })
   } else {
     windowVisable.value = true
-    console.log(windowVisable.value)
   }
 }
 </script>
@@ -115,5 +118,26 @@ const jumpToPersonalCenter = () => {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
+}
+
+/* 蒙版渐入渐出 */
+.template-enter-active,
+.template-leave-active {
+  transition: opacity 0.3s;
+}
+.template-enter-from,
+.template-leave-to {
+  opacity: 0;
+}
+
+/* dialog从上到下，渐入渐出 */
+.dialog-enter-active,
+.dialog-leave-active {
+  transition: all 0.3s;
+}
+.dialog-enter-from,
+.dialog-leave-to {
+  transform: translateY(-100%);
+  opacity: 0;
 }
 </style>
