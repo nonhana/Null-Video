@@ -1,14 +1,46 @@
 <template>
-  <div class="app">
-    <n-input-group>
-      <n-input :style="{ width: '50%' }" />
-      <n-button type="primary" ghost> 搜索 </n-button>
-    </n-input-group>
-  </div>
+  <n-input
+    :style="{
+      width: width ?? '100%',
+      height: height ?? 'auto'
+    }"
+    style="border-radius: 1rem"
+    v-model:value="text"
+    :type="type ?? 'text'"
+    :placeholder="placeholder"
+    :autosize="{
+      minRows: minRows ?? 1,
+      maxRows: maxRows ?? 1
+    }"
+    @input="input"
+    @blur="blur"
+  />
 </template>
 
 <script setup lang="ts">
-import { NInputGroup, NInput, NButton } from 'naive-ui'
-</script>
+import { ref } from 'vue'
 
-<style scoped lang="less"></style>
+const props = defineProps<{
+  width?: string
+  height?: string
+  type?: 'text' | 'textarea'
+  placeholder: string
+  value: string
+  minRows?: number
+  maxRows?: number
+}>()
+
+const emits = defineEmits<{
+  (e: 'input', value: string): void
+  (e: 'blur'): void
+}>()
+
+const text = ref<string>(props.value)
+
+const input = (value: string) => {
+  emits('input', value)
+}
+const blur = () => {
+  emits('blur')
+}
+</script>

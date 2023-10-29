@@ -12,7 +12,9 @@ export const useUserStore = defineStore('user', {
       user_collectnum: 45,
       user_follownum: 67,
       user_fansnum: 89
-    }
+    },
+    token: '',
+    isLogin: false
   }),
   actions: {
     setUserInfo(userInfo: UserInfo) {
