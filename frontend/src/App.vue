@@ -1,7 +1,7 @@
 <template>
   <n-configProvider :theme-overrides="themeOverrides" style="height: 100%">
     <div class="app">
-      <CommonHeader />
+      <common-header />
       <div class="router">
         <router-view />
       </div>
@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import { NConfigProvider, GlobalThemeOverrides } from 'naive-ui'
-import CommonHeader from '@nullVideo/basic/common-header.vue'
+import commonHeader from '@nullVideo/basic/commonHeader.vue'
 
 // native-ui 全局主题变量
 const themeOverrides: GlobalThemeOverrides = {

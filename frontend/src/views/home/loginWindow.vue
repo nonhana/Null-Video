@@ -7,7 +7,7 @@
           :class="presentStatus[0] ? 'hover' : ''"
           @mouseenter="changeStatus(0)"
           @mouseleave="refreshStatus"
-          @click="isLogin = true"
+          @click="isLogining = true"
         >
           <span>登录</span>
         </div>
@@ -16,7 +16,7 @@
           :class="presentStatus[1] ? 'hover' : ''"
           @mouseenter="changeStatus(1)"
           @mouseleave="refreshStatus"
-          @click="isLogin = false"
+          @click="isLogining = false"
         >
           <span>注册</span>
         </div>
@@ -25,7 +25,7 @@
         <img :src="close" alt="close" />
       </div>
     </div>
-    <div v-if="isLogin" class="form">
+    <div v-if="isLogining" class="form">
       <div class="form-item">
         <span>账号:</span>
         <my-input
@@ -101,10 +101,10 @@
       </n-radio>
     </div>
     <div class="button">
-      <n-button v-if="isLogin" round type="primary" @click="login"
-        >登录</n-button
+      <my-button v-if="isLogining" round type="primary" @click="login"
+        >登录</my-button
       >
-      <n-button v-else type="primary" round @click="register">注册</n-button>
+      <my-button v-else type="primary" round @click="register">注册</my-button>
     </div>
   </div>
 </template>
@@ -113,6 +113,7 @@
 import { ref } from 'vue'
 import close from '@/assets/svgs/close.svg'
 import myInput from '@nullVideo/form/input/input.vue'
+import myButton from '@nullVideo/button/button.vue'
 
 const emits = defineEmits<{
   (e: 'close'): void
@@ -124,7 +125,7 @@ const changeStatus = (index: number) => {
   presentStatus.value[index] = true
 }
 const refreshStatus = () => {
-  if (isLogin.value) {
+  if (isLogining.value) {
     presentStatus.value = [true, false]
   } else {
     presentStatus.value = [false, true]
@@ -132,7 +133,7 @@ const refreshStatus = () => {
 }
 
 // 是否为登录状态
-const isLogin = ref<boolean>(true)
+const isLogining = ref<boolean>(true)
 // 是否记住账号
 const rememberUsername = ref<boolean>(false)
 // 是否记住密码

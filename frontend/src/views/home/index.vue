@@ -3,11 +3,15 @@
     <n-grid :cols="48" x-gap="16px" style="height: 100%">
       <n-gi :span="11">
         <Card>
-          <Button height="3rem" width="10rem" @click="videoChange(-1)">上个视频</Button>
+          <Button height="3rem" width="10rem" @click="videoChange(-1)"
+            >上个视频</Button
+          >
           <br />
           <br />
           <br />
-          <Button height="3rem" width="10rem" @click="videoChange(1)">下个视频</Button>
+          <Button height="3rem" width="10rem" @click="videoChange(1)"
+            >下个视频</Button
+          >
         </Card>
       </n-gi>
       <n-gi :span="21">
@@ -79,7 +83,6 @@ onMounted(() => {
       videoChange(1)
     }
   )
-
 })
 
 // controlBar: {
