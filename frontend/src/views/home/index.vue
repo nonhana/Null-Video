@@ -3,8 +3,8 @@
     <n-grid :cols="48" x-gap="16px" style="height: 100%">
       <n-gi :span="11">
         <Card>
+          <VideoInfo />
           <Button height="3rem" width="10rem" @click="videoChange(-1)">上个视频</Button>
-          <br />
           <br />
           <br />
           <Button height="3rem" width="10rem" @click="videoChange(1)">下个视频</Button>
@@ -26,6 +26,7 @@
 
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount, ref, reactive } from 'vue'
+import VideoInfo from './videoInfo.vue'
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css' // 引入视频样式文件
 import Player from 'video.js/dist/types/player'
