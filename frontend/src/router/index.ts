@@ -49,11 +49,6 @@ const routes: RouteRecordRaw[] = [
         name: 'myFollowsAndFans',
         component: () =>
           import('@/views/personalCenter/myFollowsAndFans/index.vue')
-      },
-      {
-        path: '/personalCenter/:user_id/myInfo',
-        name: 'myInfo',
-        component: () => import('@/views/personalCenter/myInfo/index.vue')
       }
     ]
   }

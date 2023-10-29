@@ -37,7 +37,7 @@ export default defineConfig({
   },
   server: {
     host: '0.0.0.0', // ip地址
-    port: 1919, // 端口号
+    port: 2000, // 端口号
     open: false // 是否自动打开浏览器
   },
   css: {
