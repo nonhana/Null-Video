@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  animate.css:
+    specifier: ^4.1.1
+    version: 4.1.1
   axios:
     specifier: ^1.5.1
     version: 1.6.0
@@ -40,6 +43,12 @@ devDependencies:
   '@typescript-eslint/parser':
     specifier: ^6.9.0
     version: 6.9.0(eslint@8.52.0)(typescript@5.2.2)
+  '@vicons/fluent':
+    specifier: ^0.12.0
+    version: 0.12.0
+  '@vicons/ionicons5':
+    specifier: ^0.12.0
+    version: 0.12.0
   '@vitejs/plugin-vue':
     specifier: ^4.2.3
     version: 4.4.0(vite@4.5.0)(vue@3.3.7)
@@ -675,6 +684,14 @@ packages:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
     dev: true
 
+  /@vicons/fluent@0.12.0:
+    resolution: {integrity: sha512-ATCiqPuiJ6RI5GBlD3BIpZ9Xw4MsCA4RpI5oR6MCti4quS4mX1Gp6N74FCzw7lgOj+80rV4HMKhZTVInwimpVQ==}
+    dev: true
+
+  /@vicons/ionicons5@0.12.0:
+    resolution: {integrity: sha512-Iy1EUVRpX0WWxeu1VIReR1zsZLMc4fqpt223czR+Rpnrwu7pt46nbnC2ycO7ItI/uqDLJxnbcMC7FujKs9IfFA==}
+    dev: true
+
   /@videojs/http-streaming@3.7.0(video.js@8.6.1):
     resolution: {integrity: sha512-5uLFKBL8CvD56dxxJyuxqB5CY0tdoa4SE9KbXakeiAy6iFBUEPvTr2YGLKEWvQ8Lojs1wl+FQndLdv+GO7t9Fw==}
     engines: {node: '>=8', npm: '>=5'}
@@ -1011,6 +1028,10 @@ packages:
   /amfe-flexible@2.2.1:
     resolution: {integrity: sha512-L2VfvDzoETBjhRptg5u/IUuzHSuxm22JpSRb404p/TBGeRfwWmmNEbB+TFPIP/sS/+pbM18bCFH9QnMojLuPNw==}
     dev: true
+
+  /animate.css@4.1.1:
+    resolution: {integrity: sha512-+mRmCTv6SbCmtYJCN4faJMNFVNN5EuCTTprDTAo7YzIGji2KADmakjVA3+8mVDkZ2Bf09vayB35lSQIex2+QaQ==}
+    dev: false
 
   /ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}

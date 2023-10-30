@@ -23,7 +23,7 @@ import { ref } from 'vue'
 const props = defineProps<{
   width?: string
   height?: string
-  type?: 'text' | 'textarea'
+  type?: 'text' | 'textarea' | 'password'
   placeholder: string
   value: string
   minRows?: number

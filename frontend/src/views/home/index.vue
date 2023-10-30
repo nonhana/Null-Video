@@ -30,7 +30,6 @@
 
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount, ref, reactive } from 'vue'
-import VideoInfo from './videoInfo.vue'
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css' // 引入视频样式文件
 import Player from 'video.js/dist/types/player'

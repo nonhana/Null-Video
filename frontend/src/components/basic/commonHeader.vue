@@ -2,7 +2,7 @@
   <div class="header">
     <n-grid :cols="48">
       <n-gi :span="8" :offset="1">
-        <div class="logo" @click="jumpToHome">Null Video</div>
+        <div class="logo" @click="jumpTo('home')">Null Video</div>
       </n-gi>
       <n-gi :span="16" :offset="5">
         <div class="search">
@@ -11,12 +11,13 @@
       </n-gi>
       <n-gi :span="5" :offset="8">
         <div class="upload">
-          <Button width="7.5rem" height="2.5rem">我要创作</Button>
+          <Button width="7.5rem" height="2.5rem" @click="jumpTo('post')"
+            >我要创作</Button
+          >
         </div>
       </n-gi>
       <n-gi :span="1" :offset="3">
-        <!-- <div class="message">header</div> -->
-        <div class="avatar" @click="jumpToPersonalCenter" />
+        <div class="avatar" @click="jumpTo('personalCenter')" />
       </n-gi>
     </n-grid>
     <transition name="dialog">
@@ -45,21 +46,24 @@ const userStore = useUserStore()
 
 // 登录框是否显示
 const windowVisable = ref<boolean>(false)
-// 点击logo跳转到首页
-const jumpToHome = () => {
-  router.push('/')
-}
-// 点击头像，如果已经登录，跳转到个人中心；如果未登录，弹出登录框
-const jumpToPersonalCenter = () => {
-  if (userStore.isLogin) {
-    router.push({
-      name: 'personalCenter',
-      params: {
-        user_id: userStore.userInfo.user_id
-      }
-    })
-  } else {
-    windowVisable.value = true
+
+// 根据传入的name跳转到对应的页面
+const jumpTo = (name: string) => {
+  switch (name) {
+    case 'home':
+      router.push('/')
+      break
+    case 'post':
+      router.push('/postVideo')
+      break
+    case 'personalCenter':
+      router.push({
+        name: 'personalCenter',
+        params: {
+          user_id: userStore.userInfo.user_id
+        }
+      })
+      break
   }
 }
 </script>

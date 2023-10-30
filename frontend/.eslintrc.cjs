@@ -29,7 +29,8 @@ module.exports = {
       {
         ignores: ['index', 'button', 'card', 'input', 'search', 'loading']
       }
-    ]
+    ],
+    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }]
   },
   overrides: [
     {
