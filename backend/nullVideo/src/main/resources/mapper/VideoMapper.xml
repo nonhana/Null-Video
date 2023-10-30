@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.typeofNull.nullvideo.mapper.VideoMapper">
+
+    <resultMap id="BaseResultMap" type="com.typeofNull.nullvideo.model.entity.Video">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="videoCoverUrl" column="video_cover_url" jdbcType="VARCHAR"/>
+            <result property="videoUrl" column="video_url" jdbcType="VARCHAR"/>
+            <result property="videoDescription" column="video_description" jdbcType="VARCHAR"/>
+            <result property="videoType" column="video_type" jdbcType="INTEGER"/>
+            <result property="videoTags" column="video_tags" jdbcType="OTHER"/>
+            <result property="videoFavourNum" column="video_favour_num" jdbcType="INTEGER"/>
+            <result property="videoShareNum" column="video_share_num" jdbcType="INTEGER"/>
+            <result property="videoThumbNum" column="video_thumb_num" jdbcType="INTEGER"/>
+            <result property="videoPlayNum" column="video_play_num" jdbcType="BIGINT"/>
+            <result property="videoStatus" column="video_status" jdbcType="TINYINT"/>
+            <result property="videoRole" column="video_role" jdbcType="TINYINT"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,video_cover_url,
+        video_url,video_description,video_type,
+        video_tags,video_favour_num,video_share_num,
+        video_thumb_num,video_play_num,video_status,
+        video_role,create_time,update_time
+    </sql>
+</mapper>
