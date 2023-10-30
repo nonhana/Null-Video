@@ -25,65 +25,90 @@
         <img :src="close" alt="close" />
       </div>
     </div>
-    <div v-if="isLogining" class="form">
-      <div class="form-item">
-        <span>账号:</span>
-        <my-input
-          width="20.875rem"
-          height="2.5rem"
-          type="text"
-          placeholder="请输入用户名或邮箱"
-          :value="loginForm.username"
-          @input="loginForm.username = $event"
-        />
+    <n-form
+      v-if="isLogining"
+      ref="loginRef"
+      :model="loginForm"
+      :rules="loginRules"
+    >
+      <div class="form">
+        <div class="form-item">
+          <span>账号:</span>
+          <n-form-item path="account">
+            <my-input
+              width="20.875rem"
+              height="2.5rem"
+              type="text"
+              placeholder="请输入用户名或邮箱"
+              :value="loginForm.username"
+              @input="loginForm.username = $event"
+            />
+          </n-form-item>
+        </div>
+        <div class="form-item">
+          <span>密码:</span>
+          <n-form-item path="password">
+            <my-input
+              width="20.875rem"
+              height="2.5rem"
+              type="password"
+              placeholder="请输入密码"
+              :value="loginForm.password"
+              @input="loginForm.password = $event"
+            />
+          </n-form-item>
+        </div>
       </div>
-      <div class="form-item">
-        <span>密码:</span>
-        <my-input
-          width="20.875rem"
-          height="2.5rem"
-          type="text"
-          placeholder="请输入密码"
-          :value="loginForm.password"
-          @input="loginForm.password = $event"
-        />
+    </n-form>
+
+    <n-form
+      v-else
+      ref="registerRef"
+      :model="registerForm"
+      :rules="registerRules"
+    >
+      <div class="form">
+        <div class="form-item">
+          <span>账号:</span>
+          <n-form-item path="account">
+            <my-input
+              width="20.875rem"
+              height="2.5rem"
+              type="text"
+              placeholder="请输入用户名或邮箱"
+              :value="registerForm.username"
+              @input="registerForm.username = $event"
+            />
+          </n-form-item>
+        </div>
+        <div class="form-item">
+          <span>密码:</span>
+          <n-form-item path="password">
+            <my-input
+              width="20.875rem"
+              height="2.5rem"
+              type="password"
+              placeholder="请输入密码"
+              :value="registerForm.password"
+              @input="loginForm.password = $event"
+            />
+          </n-form-item>
+        </div>
+        <div class="form-item">
+          <span>确认密码:</span>
+          <n-form-item path="confirmPassword">
+            <my-input
+              width="20.875rem"
+              height="2.5rem"
+              type="password"
+              placeholder="请再次输入密码"
+              :value="registerForm.confirmPassword"
+              @input="registerForm.confirmPassword = $event"
+            />
+          </n-form-item>
+        </div>
       </div>
-    </div>
-    <div v-else class="form">
-      <div class="form-item">
-        <span>账号:</span>
-        <my-input
-          width="20.875rem"
-          height="2.5rem"
-          type="text"
-          placeholder="请输入用户名或邮箱"
-          :value="registerForm.username"
-          @input="registerForm.username = $event"
-        />
-      </div>
-      <div class="form-item">
-        <span>密码:</span>
-        <my-input
-          width="20.875rem"
-          height="2.5rem"
-          type="text"
-          placeholder="请输入密码"
-          :value="registerForm.password"
-          @input="loginForm.password = $event"
-        />
-      </div>
-      <div class="form-item">
-        <span>确认密码:</span>
-        <my-input
-          width="20.875rem"
-          height="2.5rem"
-          type="text"
-          placeholder="请再输入一遍密码"
-          :value="registerForm.confirmPassword"
-          @input="registerForm.confirmPassword = $event"
-        />
-      </div>
-    </div>
+    </n-form>
     <div class="radios">
       <n-radio
         :checked="rememberUsername"
@@ -110,10 +135,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import close from '@/assets/svgs/close.svg'
 import myInput from '@nullVideo/form/input/input.vue'
 import myButton from '@nullVideo/button/button.vue'
+import { FormItemRule, FormRules } from 'naive-ui'
 
 const emits = defineEmits<{
   (e: 'close'): void
@@ -130,6 +156,66 @@ const refreshStatus = () => {
   } else {
     presentStatus.value = [false, true]
   }
+}
+// 表单验证规则
+// 1. 登录
+const loginRules: FormRules = {
+  account: [
+    {
+      required: true,
+      validator(_, value: string) {
+        if (!value) {
+          return new Error('请输入账号')
+        }
+        return true
+      },
+      trigger: ['input', 'blur']
+    }
+  ],
+  password: [
+    {
+      required: true,
+      message: '请输入密码'
+    }
+  ]
+}
+// 2. 注册
+const registerRules: FormRules = {
+  account: [
+    {
+      required: true,
+      validator(_, value: string) {
+        if (!value) {
+          return new Error('请输入账号')
+        }
+        return true
+      },
+      trigger: ['input', 'blur']
+    }
+  ],
+  password: [
+    {
+      required: true,
+      message: '请输入密码'
+    }
+  ],
+  confirmPassword: [
+    {
+      required: true,
+      message: '请再次输入密码',
+      trigger: ['input', 'blur']
+    },
+    {
+      validator: validatePasswordStartWith,
+      message: '两次密码输入不一致',
+      trigger: 'input'
+    },
+    {
+      validator: validatePasswordSame,
+      message: '两次密码输入不一致',
+      trigger: ['blur', 'password-input']
+    }
+  ]
 }
 
 // 是否为登录状态
@@ -150,6 +236,16 @@ const registerForm = ref({
   confirmPassword: ''
 })
 
+function validatePasswordStartWith(_: FormItemRule, value: string): boolean {
+  return (
+    !!registerForm.value.password &&
+    registerForm.value.password.startsWith(value) &&
+    registerForm.value.password.length >= value.length
+  )
+}
+function validatePasswordSame(_: FormItemRule, value: string): boolean {
+  return value === registerForm.value.password
+}
 // 选择单选框
 const radioChoose = (e: Event) => {
   const target = e.target as HTMLInputElement
@@ -169,13 +265,28 @@ const login = () => {
 const register = () => {
   console.log('registerForm', registerForm.value)
 }
+
+watch(isLogining, (newVal, _) => {
+  if (newVal) {
+    loginForm.value = {
+      username: '',
+      password: ''
+    }
+  } else {
+    registerForm.value = {
+      username: '',
+      password: '',
+      confirmPassword: ''
+    }
+  }
+})
 </script>
 
 <style scoped lang="less">
 .loginWindow-wrapper {
   position: relative;
   width: 35.5rem;
-  padding: 1rem;
+  padding: 1rem 1rem 2rem;
   border-radius: @border-radius;
   background: @bg-color;
   transition: all 0.3s;
@@ -249,7 +360,8 @@ const register = () => {
   .button {
     margin: 2rem auto 0;
     position: relative;
-    width: 100%;
+    width: 15.875rem;
+    height: 2.8125rem;
     display: flex;
     justify-content: center;
   }

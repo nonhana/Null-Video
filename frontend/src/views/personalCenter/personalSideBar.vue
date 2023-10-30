@@ -49,14 +49,18 @@
           <span>粉丝</span>
         </div>
       </div>
-      <my-input
-        type="textarea"
-        placeholder="请输入签名"
-        :value="userInfo!.user_signature"
-        :min-rows="1"
-        :max-rows="5"
-        @input="updateSignature"
-      />
+      <div style="width: 100%" @dblclick="showSignatureInput">
+        <my-input
+          type="textarea"
+          placeholder="请输入签名"
+          :value="userInfo!.user_signature"
+          :min-rows="1"
+          :max-rows="5"
+          :disabled="signatureInputVisable"
+          @input="updateSignature"
+          @blur="showSignatureInput"
+        />
+      </div>
     </div>
     <n-divider />
     <div class="menu">
@@ -143,22 +147,43 @@ import myVideos from '@/assets/svgs/my-videos.svg'
 import myCollections from '@/assets/svgs/my-collections.svg'
 import myFollowsAndFans from '@/assets/svgs/my-follows-and-fans.svg'
 import exit from '@/assets/svgs/exit.svg'
+import { useMessage, useDialog } from 'naive-ui'
 
-// 根据ref拿到DOM元素
+/* Hooks */
+const message = useMessage()
+const dialog = useDialog()
+const confirmExit = () => {
+  dialog.warning({
+    title: '警告',
+    content: '确定要退出登录嘛？',
+    positiveText: '确定',
+    negativeText: '取消',
+    onPositiveClick: () => {
+      userStore.isLogin = false
+      message.success('退出登录成功，2s后跳转首页')
+      setTimeout(() => {
+        router.push('/')
+      }, 2000)
+    }
+  })
+}
+
+/* DOMs */
 const avatarSelector = ref<HTMLInputElement>()
-// 路由
+/* Routes */
 const route = useRoute()
 const router = useRouter()
-// store
+/* Stores */
 const userStore = useUserStore()
-// 响应式变量
+/* Refs */
 const userInfo = ref<UserInfo>()
 const hovering = ref<boolean[]>([false, false, false, false])
 const isMyCenter = ref<boolean>(false)
 const nameInputVisable = ref<boolean>(false)
-// 常量
+const signatureInputVisable = ref<boolean>(true)
+/* Consts */
 const routeNameList = ['myVideos', 'myCollections', 'myFollowsAndFans', 'exit']
-
+/* Functions */
 // 鼠标移动到菜单项时，箭头向右移动，其他菜单项箭头复位
 const hoverItem = (type: number, index?: number) => {
   if (type === 0) {
@@ -180,7 +205,7 @@ const hoverItem = (type: number, index?: number) => {
     })
   }
 }
-// 点击菜单项时，跳转到对应页面
+// 点击菜单项时，跳转到对应页面/退出登录
 const chooseItem = (index: number) => {
   switch (index) {
     case 0:
@@ -193,7 +218,7 @@ const chooseItem = (index: number) => {
       router.push(`/personalCenter/${route.params.user_id}/myFollowsAndFans`)
       break
     case 3:
-      router.push(`/personalCenter/${route.params.user_id}/exit`)
+      confirmExit()
       break
   }
 }
@@ -208,7 +233,37 @@ const fileSelected = () => {
 }
 // 双击用户名/失去焦点时，显示/隐藏用户名输入框
 const showNameInput = () => {
-  nameInputVisable.value = !nameInputVisable.value
+  if (nameInputVisable.value) {
+    dialog.warning({
+      title: '警告',
+      content: '确定更改？',
+      positiveText: '确定',
+      negativeText: '取消',
+      onPositiveClick: () => {
+        nameInputVisable.value = !nameInputVisable.value
+        message.success('更改成功')
+      }
+    })
+  } else {
+    nameInputVisable.value = !nameInputVisable.value
+  }
+}
+// 双击签名/失去焦点时，显示/隐藏签名输入框
+const showSignatureInput = () => {
+  if (!signatureInputVisable.value) {
+    dialog.warning({
+      title: '警告',
+      content: '确定更改？',
+      positiveText: '确定',
+      negativeText: '取消',
+      onPositiveClick: () => {
+        signatureInputVisable.value = !signatureInputVisable.value
+        message.success('更改成功')
+      }
+    })
+  } else {
+    signatureInputVisable.value = !signatureInputVisable.value
+  }
 }
 // 更新用户名
 const updateName = (value: string) => {
@@ -218,7 +273,7 @@ const updateName = (value: string) => {
 const updateSignature = (value: string) => {
   userInfo.value!.user_signature = value
 }
-
+/* Watches */
 watch(
   () => route.params.user_id,
   (user_id) => {
@@ -246,7 +301,6 @@ watch(
   },
   { immediate: true, deep: true }
 )
-
 watch(
   () => route.name,
   (name) => {
