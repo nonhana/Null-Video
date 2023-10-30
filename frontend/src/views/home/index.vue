@@ -137,7 +137,7 @@ onBeforeUnmount(() => {
     color: @text;
   }
 
-  ::v-deep .video-js {
+  :deep(.video-js) {
     .vjs-control-bar {
       width: 98%;
       margin: 0.4rem auto;
@@ -152,7 +152,7 @@ onBeforeUnmount(() => {
     }
   }
 
-  ::v-deep .video-js .vjs-big-play-button {
+  :deep(.video-js .vjs-big-play-button) {
     display: none;
   }
 }

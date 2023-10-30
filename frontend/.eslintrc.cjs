@@ -27,7 +27,15 @@ module.exports = {
     'vue/multi-word-component-names': [
       'error',
       {
-        ignores: ['index', 'button', 'card', 'input', 'search', 'loading']
+        ignores: [
+          'index',
+          'button',
+          'card',
+          'input',
+          'search',
+          'loading',
+          'comment'
+        ]
       }
     ],
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }]
