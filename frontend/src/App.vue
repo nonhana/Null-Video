@@ -1,26 +1,26 @@
 <template>
-  <n-configProvider :theme-overrides="themeOverrides">
+  <n-configProvider :theme-overrides="themeOverrides" style="height: 100%">
     <div class="app">
-      <CommonHeader />
-    </div>
-    <div>
-      <router-view />
+      <common-header />
+      <div class="router">
+        <router-view />
+      </div>
     </div>
   </n-configProvider>
 </template>
 
 <script setup lang="ts">
-import { NConfigProvider, GlobalThemeOverrides } from "naive-ui";
-import CommonHeader from "@nullVideo/basic/common-header.vue";
+import { NConfigProvider, GlobalThemeOverrides } from 'naive-ui'
+import commonHeader from '@nullVideo/basic/commonHeader.vue'
 
 // native-ui 全局主题变量
 const themeOverrides: GlobalThemeOverrides = {
   common: {
-    primaryColor: "#4a91ee",
-    primaryColorHover: "#4a91ee",
-    primaryColorPressed: "#4a91ee",
-  },
-};
+    primaryColor: '#4a91ee',
+    primaryColorHover: '#4a91ee',
+    primaryColorPressed: '#4a91ee'
+  }
+}
 </script>
 
 <style scoped lang="less">
@@ -30,11 +30,11 @@ const themeOverrides: GlobalThemeOverrides = {
   display: flex;
   flex-direction: column;
   align-items: center;
-  > div {
-    margin-bottom: 2rem;
+
+  .router {
     width: 100%;
-    display: flex;
-    justify-content: center;
+    height: 100%;
+    padding: 1rem;
   }
 }
 </style>

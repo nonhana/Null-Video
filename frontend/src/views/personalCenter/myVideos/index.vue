@@ -4,13 +4,13 @@
       <span>视频列表</span>
     </div>
     <div class="content">
-      <VideoList />
+      <video-list />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import VideoList from "@/components/ModelPersonalCenter/MyVideos/VideoList.vue";
+import videoList from '@/views/personalCenter/myVideos/videoList.vue'
 </script>
 
 <style scoped lang="less">

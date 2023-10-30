@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import CollectionList from "@/components/ModelPersonalCenter/MyCollections/CollectionList.vue";
+import CollectionList from '@/views/personalCenter/myCollections/collectionList.vue'
 </script>
 
 <style scoped lang="less">

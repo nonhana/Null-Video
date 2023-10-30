@@ -1,7 +1,7 @@
 <template>
   <div class="VideoList-wrapper">
     <div v-for="video in videoList" :key="video.video_id">
-      <PersonalCenterVideoItem :video-item="video" />
+      <video-item :video-item="video" />
     </div>
     <!-- 占位div -->
     <div
@@ -15,53 +15,53 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import type { VideoItemInfo } from "@/utils/types";
-import PersonalCenterVideoItem from "@/components/Little/Items/PersonalCenterVideoItem.vue";
+import { ref } from 'vue'
+import type { VideoItemInfo } from '@/utils/types'
+import videoItem from '@/views/personalCenter/videoItem.vue'
 
 // 视频列表
 const videoList = ref<VideoItemInfo[]>([
   {
     video_id: 1,
-    video_cover: "https://dummyimage.com/230X330",
-    video_viewnum: 100,
+    video_cover: 'https://dummyimage.com/230X330',
+    video_viewnum: 100
   },
   {
     video_id: 2,
-    video_cover: "https://dummyimage.com/230X330",
-    video_viewnum: 100,
+    video_cover: 'https://dummyimage.com/230X330',
+    video_viewnum: 100
   },
   {
     video_id: 3,
-    video_cover: "https://dummyimage.com/230X330",
-    video_viewnum: 100,
+    video_cover: 'https://dummyimage.com/230X330',
+    video_viewnum: 100
   },
   {
     video_id: 4,
-    video_cover: "https://dummyimage.com/230X330",
-    video_viewnum: 100,
+    video_cover: 'https://dummyimage.com/230X330',
+    video_viewnum: 100
   },
   {
     video_id: 5,
-    video_cover: "https://dummyimage.com/230X330",
-    video_viewnum: 100,
+    video_cover: 'https://dummyimage.com/230X330',
+    video_viewnum: 100
   },
   {
     video_id: 6,
-    video_cover: "https://dummyimage.com/230X330",
-    video_viewnum: 100,
+    video_cover: 'https://dummyimage.com/230X330',
+    video_viewnum: 100
   },
   {
     video_id: 7,
-    video_cover: "https://dummyimage.com/230X330",
-    video_viewnum: 100,
+    video_cover: 'https://dummyimage.com/230X330',
+    video_viewnum: 100
   },
   {
     video_id: 8,
-    video_cover: "https://dummyimage.com/230X330",
-    video_viewnum: 100,
-  },
-]);
+    video_cover: 'https://dummyimage.com/230X330',
+    video_viewnum: 100
+  }
+])
 </script>
 
 <style scoped lang="less">

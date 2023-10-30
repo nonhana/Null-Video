@@ -1,12 +1,11 @@
 <template>
-  <n-button class="my-button" :style="{ width, height }" type="primary">
+  <div class="card" :style="{ width, height, backgroundColor }">
     <slot></slot>
-  </n-button>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { defineProps } from 'vue'
-import { NButton } from 'naive-ui'
 
 defineProps({
   width: {
@@ -15,16 +14,19 @@ defineProps({
   },
   height: {
     type: String,
-    default: 'auto'
+    default: '100%'
+  },
+  backgroundColor: {
+    type: String
   }
 })
 </script>
 
 <style scoped lang="less">
-.my-button {
-  position: relative;
-  /* Add more styles as needed */
+.card {
   border-radius: @border-radius;
   box-shadow: @shadow-outer;
+  background: @bg-color;
+  padding: 1rem;
 }
 </style>

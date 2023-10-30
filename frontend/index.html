@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,11 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Null Video</title>
     <style>
-      body {
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body,
+      #app {
         margin: 0 auto;
         padding: 0;
         width: 90rem;
-        background: #d9d9d9;
+        /* background: #d9d9d9; */
+        height: 100%;
       }
 
       ::-webkit-scrollbar-track {
@@ -38,14 +44,11 @@
   </body>
   <script>
     function showScrollbar() {
-      document.body.style.setProperty(
-        "--scrollbar-color",
-        "rgba(0, 0, 0, 0.3)"
-      );
+      document.body.style.setProperty('--scrollbar-color', 'rgba(0, 0, 0, 0.3)')
     }
 
     function hideScrollbar() {
-      document.body.style.setProperty("--scrollbar-color", "rgba(0, 0, 0, 0)");
+      document.body.style.setProperty('--scrollbar-color', 'rgba(0, 0, 0, 0)')
     }
   </script>
 </html>

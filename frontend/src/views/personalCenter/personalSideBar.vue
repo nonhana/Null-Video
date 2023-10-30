@@ -5,11 +5,31 @@
         <div class="avatar">
           <img :src="userInfo!.user_avatar" alt="user_avatar" />
         </div>
-        <div class="name">
-          <span>{{ userInfo!.user_name }}</span>
-          <span>{{ userInfo!.user_id }}</span>
+        <div class="template" @click="openAvatarSelector">
+          <span> 更换头像 </span>
         </div>
-        <n-button round type="info">关注</n-button>
+        <input
+          style="display: none"
+          ref="avatarSelector"
+          type="file"
+          @change="fileSelected"
+        />
+        <div class="name">
+          <span v-if="!nameInputVisable" @dblclick="showNameInput">{{
+            userInfo!.user_name
+          }}</span>
+          <div v-else>
+            <my-input
+              type="text"
+              placeholder="你的名称"
+              :value="userInfo!.user_name"
+              @input="updateName"
+              @blur="showNameInput"
+            />
+          </div>
+          <span>id:&emsp;{{ userInfo!.user_id }}</span>
+        </div>
+        <n-button v-if="!isMyCenter" round type="info">关注</n-button>
       </div>
       <div class="data">
         <div class="data-item">
@@ -29,11 +49,16 @@
           <span>粉丝</span>
         </div>
       </div>
-      <div class="signature">
-        <span>{{ userInfo!.user_signature }}</span>
-      </div>
+      <my-input
+        type="textarea"
+        placeholder="请输入签名"
+        :value="userInfo!.user_signature"
+        :min-rows="1"
+        :max-rows="5"
+        @input="updateSignature"
+      />
     </div>
-    <el-divider />
+    <n-divider />
     <div class="menu">
       <div
         class="menu-item"
@@ -44,7 +69,7 @@
       >
         <img
           :style="{
-            left: hovering[0] ? '0.5rem' : '0',
+            left: hovering[0] ? '0.5rem' : '0'
           }"
           :src="arrowRight"
           alt="arrowRight"
@@ -61,7 +86,7 @@
       >
         <img
           :style="{
-            left: hovering[1] ? '0.5rem' : '0',
+            left: hovering[1] ? '0.5rem' : '0'
           }"
           :src="arrowRight"
           alt="arrowRight"
@@ -78,7 +103,7 @@
       >
         <img
           :style="{
-            left: hovering[2] ? '0.5rem' : '0',
+            left: hovering[2] ? '0.5rem' : '0'
           }"
           :src="arrowRight"
           alt="arrowRight"
@@ -95,24 +120,7 @@
       >
         <img
           :style="{
-            left: hovering[3] ? '0.5rem' : '0',
-          }"
-          :src="arrowRight"
-          alt="arrowRight"
-        />
-        <img :src="myInfo" alt="myInfo" />
-        <span>个人信息</span>
-      </div>
-      <div
-        class="menu-item"
-        :class="hovering[4] ? 'menu-hover' : ''"
-        @click="chooseItem(4)"
-        @mouseenter="hoverItem(0, 4)"
-        @mouseleave="hoverItem(1)"
-      >
-        <img
-          :style="{
-            left: hovering[4] ? '0.5rem' : '0',
+            left: hovering[3] ? '0.5rem' : '0'
           }"
           :src="arrowRight"
           alt="arrowRight"
@@ -125,103 +133,127 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { useUserStore } from "@/stores/user";
-import type { UserInfo } from "@/utils/types";
-import arrowRight from "@/assets/svgs/arrow-right.svg";
-import myVideos from "@/assets/svgs/my-videos.svg";
-import myCollections from "@/assets/svgs/my-collections.svg";
-import myFollowsAndFans from "@/assets/svgs/my-follows-and-fans.svg";
-import myInfo from "@/assets/svgs/my-info.svg";
-import exit from "@/assets/svgs/exit.svg";
+import { ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
+import type { UserInfo } from '@/utils/types'
+import myInput from '@/components/form/input/input.vue'
+import arrowRight from '@/assets/svgs/arrow-right.svg'
+import myVideos from '@/assets/svgs/my-videos.svg'
+import myCollections from '@/assets/svgs/my-collections.svg'
+import myFollowsAndFans from '@/assets/svgs/my-follows-and-fans.svg'
+import exit from '@/assets/svgs/exit.svg'
 
-const route = useRoute();
-const router = useRouter();
-
-const userStore = useUserStore();
-
-const userInfo = ref<UserInfo>();
-const hovering = ref<boolean[]>([false, false, false, false, false]);
-
-const routeNameList = [
-  "myVideos",
-  "myCollections",
-  "myFollowsAndFans",
-  "myInfo",
-  "exit",
-];
+// 根据ref拿到DOM元素
+const avatarSelector = ref<HTMLInputElement>()
+// 路由
+const route = useRoute()
+const router = useRouter()
+// store
+const userStore = useUserStore()
+// 响应式变量
+const userInfo = ref<UserInfo>()
+const hovering = ref<boolean[]>([false, false, false, false])
+const isMyCenter = ref<boolean>(false)
+const nameInputVisable = ref<boolean>(false)
+// 常量
+const routeNameList = ['myVideos', 'myCollections', 'myFollowsAndFans', 'exit']
 
 // 鼠标移动到菜单项时，箭头向右移动，其他菜单项箭头复位
 const hoverItem = (type: number, index?: number) => {
   if (type === 0) {
     hovering.value = hovering.value.map((_, i) => {
       if (i === index) {
-        return true;
+        return true
       } else {
-        return false;
+        return false
       }
-    });
+    })
   } else {
     // 根据当前路由，判断是否需要将箭头复位
     hovering.value = hovering.value.map((_, i) => {
       if (routeNameList.findIndex((item) => item === route.name) === i) {
-        return true;
+        return true
       } else {
-        return false;
+        return false
       }
-    });
+    })
   }
-};
+}
 // 点击菜单项时，跳转到对应页面
 const chooseItem = (index: number) => {
   switch (index) {
     case 0:
-      router.push(`/personalCenter/${route.params.user_id}/myVideos`);
-      break;
+      router.push(`/personalCenter/${route.params.user_id}/myVideos`)
+      break
     case 1:
-      router.push(`/personalCenter/${route.params.user_id}/myCollections`);
-      break;
+      router.push(`/personalCenter/${route.params.user_id}/myCollections`)
+      break
     case 2:
-      router.push(`/personalCenter/${route.params.user_id}/myFollowsAndFans`);
-      break;
+      router.push(`/personalCenter/${route.params.user_id}/myFollowsAndFans`)
+      break
     case 3:
-      router.push(`/personalCenter/${route.params.user_id}/myInfo`);
-      break;
-    case 4:
-      router.push(`/personalCenter/${route.params.user_id}/exit`);
-      break;
+      router.push(`/personalCenter/${route.params.user_id}/exit`)
+      break
   }
-};
+}
+// 点击更换头像时，打开文件选择器
+const openAvatarSelector = () => {
+  avatarSelector.value!.click()
+}
+// 选择文件后输出文件信息
+const fileSelected = () => {
+  const file = avatarSelector.value!.files![0]
+  console.log(file)
+}
+// 双击用户名/失去焦点时，显示/隐藏用户名输入框
+const showNameInput = () => {
+  nameInputVisable.value = !nameInputVisable.value
+}
+// 更新用户名
+const updateName = (value: string) => {
+  userInfo.value!.user_name = value
+}
+// 更新签名
+const updateSignature = (value: string) => {
+  userInfo.value!.user_signature = value
+}
 
 watch(
   () => route.params.user_id,
   (user_id) => {
+    console.log(
+      Number(user_id),
+      userStore.userInfo.user_id,
+      Number(user_id) === userStore.userInfo.user_id
+    )
     if (Number(user_id) === userStore.userInfo.user_id) {
-      userInfo.value = userStore.userInfo;
+      isMyCenter.value = true
+      userInfo.value = userStore.userInfo
     } else {
+      isMyCenter.value = false
       userInfo.value = {
         user_id: 2,
-        user_name: "JaneDoe",
-        user_signature: "Another signature.",
-        user_avatar: "https://dummyimage.com/400X400",
+        user_name: 'JaneDoe',
+        user_signature: 'Another signature.',
+        user_avatar: 'https://dummyimage.com/400X400',
         user_likenum: 111,
         user_collectnum: 222,
         user_follownum: 333,
-        user_fansnum: 444,
-      };
+        user_fansnum: 444
+      }
     }
   },
   { immediate: true, deep: true }
-);
+)
 
 watch(
   () => route.name,
   (name) => {
-    hovering.value[routeNameList.findIndex((item) => item === name)] = true;
+    hovering.value[routeNameList.findIndex((item) => item === name)] = true
   },
   { immediate: true }
-);
+)
 </script>
 
 <style scoped lang="less">
@@ -231,14 +263,14 @@ watch(
   height: 53rem;
   padding: 1rem;
   border-radius: 1rem;
-  background: #f2f2f2;
+  background: @bg-color;
   transition: all 0.3s;
   &:hover {
     box-shadow: 0rem 0.25rem 0.625rem 0rem rgba(0, 0, 0, 0.3);
   }
   .info {
     width: 100%;
-    height: 15.625rem;
+    height: 14.625rem;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -246,29 +278,54 @@ watch(
     .header {
       width: 100%;
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-start;
       align-items: center;
       .avatar {
+        margin-right: 1rem;
         width: 4rem;
         height: 4rem;
         border-radius: 2rem;
+        overflow: hidden;
+        cursor: pointer;
         img {
           width: 4rem;
         }
       }
+      .template {
+        position: absolute;
+        width: 4rem;
+        height: 4rem;
+        border-radius: 2rem;
+        background: #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        opacity: 0;
+        transition: all 0.3s;
+        span {
+          font-family: Source Han Sans;
+          font-size: 1rem;
+          color: #fff;
+        }
+        &:hover {
+          opacity: 0.5;
+        }
+      }
       .name {
+        margin-right: 2rem;
         display: flex;
         flex-direction: column;
         span {
           &:nth-child(1) {
             font-family: Source Han Sans;
             font-size: 24px;
-            color: #3d3d3d;
+            color: @text;
           }
           &:nth-child(2) {
             font-family: Source Han Sans;
             font-size: 16px;
-            color: #6d757a;
+            color: @text-secondary;
           }
         }
       }
@@ -283,8 +340,9 @@ watch(
           font-family: Source Han Sans;
           font-size: 16px;
           font-weight: bold;
-          color: #3d3d3d;
+          color: @text;
           &:nth-child(2) {
+            margin-left: 0.25rem;
             font-weight: normal;
           }
         }
@@ -295,9 +353,10 @@ watch(
       padding: 0.75rem 1rem;
       border-radius: 1rem;
       border: 1px solid #d4d4d4;
+      background: #fff;
       font-family: Source Han Sans;
       font-size: 1rem;
-      color: #3d3d3d;
+      color: @text;
     }
   }
   .menu {
@@ -311,12 +370,12 @@ watch(
       height: 4rem;
       padding: 0 1rem;
       border-radius: 1rem;
-      background: #f2f2f2;
+      background: @bg-color;
       display: flex;
       align-items: center;
       justify-content: flex-start;
       font-size: 1.2rem;
-      color: #3d3d3d;
+      color: @text;
       transition: all 0.3s;
       cursor: pointer;
       img {
@@ -333,13 +392,13 @@ watch(
         }
       }
       &:hover {
-        background: #e5e5e5;
+        background: @bg-color-secondary;
         box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
       }
     }
   }
   .menu-hover {
-    background: #e5e5e5;
+    background: @bg-color-secondary;
     box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
   }
 }

@@ -9,19 +9,27 @@
         <span>{{ userInfo.user_signature }}</span>
       </div>
     </div>
-    <n-button :type="followStatus ? 'default' : 'info'">{{
-      followStatus ? "取关" : "关注"
+    <n-button :type="status ? 'default' : 'info'" @click="follow">{{
+      status ? '取关' : '关注'
     }}</n-button>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { UserInfo } from "@/utils/types";
+import { ref } from 'vue'
+import type { UserInfo } from '@/utils/types'
 
-defineProps<{
-  userInfo: UserInfo;
-  followStatus: boolean;
-}>();
+const props = defineProps<{
+  userInfo: UserInfo
+  followStatus: boolean
+}>()
+
+const status = ref<boolean>(props.followStatus)
+
+// 关注操作
+const follow = () => {
+  status.value = !status.value
+}
 </script>
 
 <style scoped lang="less">
