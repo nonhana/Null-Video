@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.typeofNull.nullvideo.mapper.VideoCommentMapper">
+
+    <resultMap id="BaseResultMap" type="com.typeofNull.nullvideo.model.entity.VideoComment">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="videoId" column="video_id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="parentId" column="parent_id" jdbcType="BIGINT"/>
+            <result property="answerId" column="answer_id" jdbcType="BIGINT"/>
+            <result property="videoCommentContent" column="video_comment_content" jdbcType="VARCHAR"/>
+            <result property="videoCommentStatus" column="video_comment_status" jdbcType="TINYINT"/>
+            <result property="videoCommentThumb" column="video_comment_thumb" jdbcType="INTEGER"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,video_id,user_id,
+        parent_id,answer_id,video_comment_content,
+        video_comment_status,video_comment_thumb,create_time,
+        update_time
+    </sql>
+</mapper>

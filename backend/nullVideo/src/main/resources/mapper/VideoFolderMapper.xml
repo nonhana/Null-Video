@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.typeofNull.nullvideo.mapper.VideoFolderMapper">
+
+    <resultMap id="BaseResultMap" type="com.typeofNull.nullvideo.model.entity.VideoFolder">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="videoFolderName" column="video_folder_name" jdbcType="VARCHAR"/>
+            <result property="videoFolderRole" column="video_folder_role" jdbcType="TINYINT"/>
+            <result property="isMain" column="is_main" jdbcType="TINYINT"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,video_folder_name,
+        video_folder_role,is_main,create_time,
+        update_time
+    </sql>
+</mapper>
