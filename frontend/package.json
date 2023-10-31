@@ -4,8 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc && vite build",
+    "dev": "vite --mode dev",
+    "pro": "vite --mode pro",
+    "build:dev": "vue-tsc --noEmit && vite build --mode dev",
+    "build:pro": "vue-tsc --noEmit && vite build --mode pro",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.ts,.jsx,.tsx --fix",
     "format": "prettier --write \"./**/*.{html,vue,ts,js,json,md}\""

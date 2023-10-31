@@ -9,6 +9,7 @@
       "@/*": ["src/*"],
       "@nullVideo/*": ["src/components/*"]
     },
+    "types": ["vite/client"],
     "skipLibCheck": true,
     /* Bundler mode */
     "moduleResolution": "bundler",

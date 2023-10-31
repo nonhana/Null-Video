@@ -18,7 +18,10 @@ import personalSideBar from '@/views/personalCenter/personalSideBar.vue'
   position: relative;
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: flex-start;
+  > div:nth-child(1) {
+    margin-right: 2rem;
+  }
 }
 </style>
