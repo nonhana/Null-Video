@@ -23,6 +23,9 @@ const themeOverrides: GlobalThemeOverrides = {
     primaryColor: '#4a91ee',
     primaryColorHover: '#4a91ee',
     primaryColorPressed: '#4a91ee'
+  },
+  Divider: {
+    color: '#D4D4D4'
   }
 }
 </script>
@@ -38,7 +41,7 @@ const themeOverrides: GlobalThemeOverrides = {
   .router {
     width: 100%;
     height: 100%;
-    padding: 1rem;
+    padding: 2rem;
   }
 }
 </style>

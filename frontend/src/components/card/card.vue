@@ -28,5 +28,6 @@ defineProps({
   box-shadow: @shadow-outer;
   background: @bg-color;
   padding: 1rem;
+  overflow-y: auto;
 }
 </style>
