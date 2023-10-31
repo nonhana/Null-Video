@@ -29,16 +29,15 @@ export default defineConfig({
     })
   ],
   resolve: {
-    // 配置路径别名@
+    // 配置路径别名
     alias: {
       '@': path.resolve(__dirname, './src'),
       '@nullVideo': path.resolve(__dirname, './src/components')
     }
   },
   server: {
-    host: '0.0.0.0', // ip地址
-    port: 2000, // 端口号
-    open: false // 是否自动打开浏览器
+    port: import.meta.env.VITE_PORT, // 端口号
+    open: import.meta.env.VITE_OPEN // 是否自动打开浏览器
   },
   css: {
     // 此代码为适配移动端px2rem

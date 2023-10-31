@@ -1,7 +1,7 @@
 <template>
   <div
     class="comment-list"
-    v-for="comment in props.commentList"
+    v-for="comment in commentData"
     :key="comment.comment_id"
     :style="{
       border: comment.isChild ? '' : '1px solid #D4D4D4',
@@ -47,7 +47,7 @@
         comment.children.length && showCommentChildren.get(comment.comment_id)
       "
     >
-      <comment-list :commentList="comment.children" />
+      <comment-list :commentData="comment.children" />
     </ul>
 
     <div
@@ -83,15 +83,12 @@
 import { ref, onMounted, defineProps, reactive } from 'vue'
 import commentList from './commentList.vue'
 import commentBox from './commentBox.vue'
-// import { listReviewsAPI, deleteReviewAPI } from '@/api/reviews'
-// import { Review } from '@/api/reviews'
-import { useNavigation } from '@/hooks/useNavigation'
-const { getCurrentParams } = useNavigation()
 
 const props = defineProps<{
-  commentList: any[]
+  commentData: any[]
 }>()
 
+const receivedCommentData = ref<any[]>(props.commentData)
 const showCommentChildren = reactive<Map<string, boolean>>(new Map())
 const replyTo = ref('')
 const showReplyBox = ref('')
@@ -108,16 +105,15 @@ const showReply = (comment: any) => {
 
 // 删除评论
 const deleteComment = (id: string) => {
-  // console.log(id, "delete",props.commentList)
-  for (let i = 0; i < props.commentList.length; i++) {
-    if (props.commentList[i].comment_id === id) {
-      props.commentList.splice(i, 1)
+  for (let i = 0; i < receivedCommentData.value.length; i++) {
+    if (receivedCommentData.value[i].comment_id === id) {
+      receivedCommentData.value.splice(i, 1)
       return
     }
-    if (props.commentList[i].children) {
-      for (let j = 0; j < props.commentList[i].children.length; j++) {
-        if (props.commentList[i].children[j].comment_id === id) {
-          props.commentList[i].children.splice(j, 1)
+    if (receivedCommentData.value[i].children) {
+      for (let j = 0; j < receivedCommentData.value[i].children.length; j++) {
+        if (receivedCommentData.value[i].children[j].comment_id === id) {
+          receivedCommentData.value[i].children.splice(j, 1)
           return
         }
       }
@@ -126,17 +122,12 @@ const deleteComment = (id: string) => {
 }
 
 onMounted(async () => {
-  props.commentList.forEach((comment: any) => {
+  receivedCommentData.value.forEach((comment: any) => {
     showCommentChildren.set(comment.comment_id, false)
   })
-
-  const params = {
-    type: getCurrentParams.type as string,
-    id: getCurrentParams.id as string
-  }
-  console.log(props.commentList, 1)
+  console.log(receivedCommentData.value, 1)
   // const res = await listReviewsAPI(params)
-  // commentList.value = res.data
+  // commentData.value = res.data
 })
 </script>
 <style scoped lang="less">
