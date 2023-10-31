@@ -13,12 +13,17 @@ export const useUserStore = defineStore('user', {
       user_follownum: 67,
       user_fansnum: 89
     },
-    token: '',
+    token: 'pFTeR5UtKtlZGR0AcEXhQp2tjkoSXCCu',
     isLogin: false
   }),
   actions: {
     setUserInfo(userInfo: UserInfo) {
       this.userInfo = userInfo
+    },
+    logout() {
+      this.isLogin = false
+      this.token = ''
+      this.userInfo = <UserInfo>{}
     }
   },
   persist: true

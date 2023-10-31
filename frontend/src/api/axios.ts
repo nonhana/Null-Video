@@ -1,6 +1,9 @@
 import axios, { AxiosRequestConfig } from 'axios'
-import router from '../router/index'
+import router from '@/router/index'
+import { useUserStore } from '@/stores/user'
 import { useNotification, NotificationType } from 'naive-ui'
+
+const userStore = useUserStore()
 const notification = useNotification()
 
 const notify = (content: string, type: NotificationType = 'warning') => {
@@ -15,38 +18,27 @@ const notify = (content: string, type: NotificationType = 'warning') => {
 notify('warning')
 
 function myAxios<T>(axiosConfig: AxiosRequestConfig): Promise<T> {
-  const accessToken = window.localStorage.token
-
   const service = axios.create({
-    baseURL: 'https://example.com/graphql', // 替换为 GraphQL API 的端点 URL
-    timeout: 5000, //最多等待响应5秒
-    headers: {
-      Authorization: 'Bearer' + accessToken
-    }
+    baseURL: import.meta.env.VITE_API_URL as string,
+    timeout: import.meta.env.VITE_API_TIMEOUT
   })
 
   // 请求拦截器：可以在发请求之前可以处理一些业务
   service.interceptors.request.use((config) => {
-    // console.log(locale.value)
+    const token = userStore.token
+    config.headers.Authorization = token ? `Bearer ${token}` : ''
     return config
   })
 
   // 响应拦截器：当服务器数据返回以后，可以处理一些事情
   service.interceptors.response.use(
     (res) => {
-      //GraphQL API处理相关数据
-      // const responseData = res.data; // 获取响应数据对象
-
-      // if (responseData.errors) {
-      //   // 处理错误信息
-      //   const errorMessages = responseData.errors.map(error => error.message).join(', ');
-      //   notify(errorMessages);
-      //   return Promise.reject(responseData.errors);
-      // }
-
-      // const { data } = responseData; // 获取 GraphQL 查询的结果数据
-      // return data;
-      return res
+      if (res.data.code === 0) {
+        return res.data
+      } else {
+        notify('发生错误' + res.data.code + '：' + res.data.message)
+        return Promise.reject(res.data.message)
+      }
     },
     (err) => {
       switch (err.response.result_status) {
@@ -57,18 +49,18 @@ function myAxios<T>(axiosConfig: AxiosRequestConfig): Promise<T> {
           notify('参数不正确！')
           break
         case 401:
-          // store.dispatch("outlogin")
           notify('登录过期,请重新登录')
-          router.push('/login')
-          // window.localStorage.removeItem("token");
+          userStore.logout()
+          setTimeout(() => {
+            router.push('/login')
+          }, 2000)
           break
-
         case 403:
           notify('您没有权限操作！')
           break
         case 404:
           notify(`请求地址出错: ${err.response.config.url}`)
-          break // 在正确域名下
+          break
         case 408:
           notify('请求超时！')
           break
@@ -95,7 +87,6 @@ function myAxios<T>(axiosConfig: AxiosRequestConfig): Promise<T> {
           break
         default:
           notify('异常问题，请联系管理员！')
-          console.log()
           break
       }
       return Promise.reject(err)
@@ -103,4 +94,5 @@ function myAxios<T>(axiosConfig: AxiosRequestConfig): Promise<T> {
   )
   return service(axiosConfig)
 }
+
 export default myAxios
