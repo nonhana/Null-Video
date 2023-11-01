@@ -14,6 +14,14 @@
           type="file"
           @change="fileSelected"
         />
+        <!-- 图片裁剪组件 -->
+        <imgCropper
+          :source-file="avatarSourceFile"
+          :cropped-file-type="avatarCroppedFileType"
+          :dialog-visible="avatarDialogVisible"
+          @upload-image="uploadImage"
+          @close-dialog="closeDialog"
+        />
         <div class="name">
           <span v-if="!nameInputVisable" @dblclick="showNameInput">{{
             userInfo!.user_name
@@ -142,6 +150,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import type { UserInfo } from '@/utils/types'
 import myInput from '@/components/form/input/input.vue'
+import imgCropper from '@/components/utils/imgCropper.vue'
 import arrowRight from '@/assets/svgs/arrow-right.svg'
 import myVideos from '@/assets/svgs/my-videos.svg'
 import myCollections from '@/assets/svgs/my-collections.svg'
@@ -149,6 +158,28 @@ import myFollowsAndFans from '@/assets/svgs/my-follows-and-fans.svg'
 import exit from '@/assets/svgs/exit.svg'
 import { useMessage, useDialog } from 'naive-ui'
 
+/* 头像图片相关 */
+const avatarDialogVisible = ref<boolean>(false)
+let avatarSourceFile: File | null | undefined = null
+let avatarCroppedFileType: string = '' // 裁剪后的文件类型
+// 点击更换头像时，打开文件选择器
+const openAvatarSelector = () => {
+  avatarSelector.value!.click()
+}
+// 选择文件后输出文件信息
+const fileSelected = () => {
+  const file = avatarSelector.value!.files![0]
+  console.log(file)
+  avatarSourceFile = file
+  avatarCroppedFileType = avatarSourceFile?.type ?? ''
+  avatarDialogVisible.value = true
+}
+const uploadImage = (value: { imgURL: string }) => {
+  userInfo.value!.user_avatar = value.imgURL
+}
+const closeDialog = () => {
+  avatarDialogVisible.value = false
+}
 /* Hooks */
 const message = useMessage()
 const dialog = useDialog()
@@ -167,7 +198,6 @@ const confirmExit = () => {
     }
   })
 }
-
 /* DOMs */
 const avatarSelector = ref<HTMLInputElement>()
 /* Routes */
@@ -221,15 +251,6 @@ const chooseItem = (index: number) => {
       confirmExit()
       break
   }
-}
-// 点击更换头像时，打开文件选择器
-const openAvatarSelector = () => {
-  avatarSelector.value!.click()
-}
-// 选择文件后输出文件信息
-const fileSelected = () => {
-  const file = avatarSelector.value!.files![0]
-  console.log(file)
 }
 // 双击用户名/失去焦点时，显示/隐藏用户名输入框
 const showNameInput = () => {
