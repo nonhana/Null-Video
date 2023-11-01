@@ -8,16 +8,18 @@
     <n-form ref="formRef" label-placement="left" label-width="auto" require-mark-placement="right-hanging"
       :model="videoForm" :rules="rules">
       <n-form-item path="cover" label="视频封面">
-        <n-upload action="https://www.mocky.io/v2/5e4bafc63100007100d8b70f" list-type="image-card"
-          @preview="fileDetected">
+        <n-upload list-type="image-card" @before-upload="fileSelected" @preview="fileDetected">
           点击上传
         </n-upload>
         <n-modal v-model:show="showModal" preset="card" style="width: 600px" title="图片预览">
           <img :src="previewImageUrl" style="width: 100%" />
         </n-modal>
+        <!-- 图片裁剪组件 -->
+        <imgCropper :source-file="coverSourceFile" :cropped-file-type="coverCroppedFileType"
+          :dialog-visible="coverDialogVisible" @upload-image="uploadImage" @close-dialog="closeDialog" />
       </n-form-item>
       <n-form-item path="description" label="视频简介">
-        <n-input v-model:value="videoForm.video_description" type="textarea" placeholder="请介绍一下你要上传的视频~" show-count
+        <n-input v-model:value="videoForm.video_description" type="textarea" placeholder="请随便介绍一下你要上传的视频~" show-count
           :maxlength="100" @keydown.enter.prevent />
       </n-form-item>
       <n-form-item path="type" label="视频分类">
@@ -48,7 +50,26 @@
 import { ref } from 'vue'
 import { VIDEO_CATEGORY, VIDEO_TAG } from '@/utils/constants'
 import Button from '@nullVideo/button/button.vue'
+import imgCropper from '@nullVideo/utils/imgCropper.vue'
 import { UploadFileInfo, FormRules } from 'naive-ui'
+
+/* 头像图片相关 */
+const coverDialogVisible = ref<boolean>(false)
+let coverSourceFile: File | null | undefined = null
+let coverCroppedFileType: string = '' // 裁剪后的文件类型
+// 选择文件后输出文件信息
+const fileSelected = (file: File) => {
+  coverSourceFile = file
+  coverCroppedFileType = coverSourceFile?.type ?? ''
+  coverDialogVisible.value = true
+}
+const uploadImage = (value: { imgURL: string }) => {
+  // userInfo.value!.user_cover = value.imgURL
+  videoForm.value.video_cover = value.imgURL
+}
+const closeDialog = () => {
+  coverDialogVisible.value = false
+}
 
 /* Props/Emits */
 const emits = defineEmits<{

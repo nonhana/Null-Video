@@ -9,8 +9,7 @@
           <Card style="margin-top: 2rem">
             <div class="video-choice">视频类型选择</div>
             <div class="video-types">
-              <div class="video-types-item" v-for="videoType in videoTypes" :key="videoType.id"
-                :style="{ background: videoType.color }">
+              <div v-for="videoType in videoTypes" :key="videoType.id" :style="{ background: videoType.color }">
                 {{ videoType.name }}
               </div>
             </div>
