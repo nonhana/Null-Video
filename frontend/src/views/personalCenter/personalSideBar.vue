@@ -1,5 +1,5 @@
 <template>
-  <div class="PersonalSideBar-wrapper">
+  <Card height="100%">
     <div class="info">
       <div class="header">
         <div class="avatar">
@@ -8,24 +8,14 @@
         <div class="template" @click="openAvatarSelector">
           <span> 更换头像 </span>
         </div>
-        <input
-          style="display: none"
-          ref="avatarSelector"
-          type="file"
-          @change="fileSelected"
-        />
+        <input style="display: none" ref="avatarSelector" type="file" @change="fileSelected" />
         <div class="name">
           <span v-if="!nameInputVisable" @dblclick="showNameInput">{{
             userInfo!.user_name
           }}</span>
           <div v-else>
-            <my-input
-              type="text"
-              placeholder="你的名称"
-              :value="userInfo!.user_name"
-              @input="updateName"
-              @blur="showNameInput"
-            />
+            <my-input type="text" placeholder="你的名称" :value="userInfo!.user_name" @input="updateName"
+              @blur="showNameInput" />
           </div>
           <span>id:&emsp;{{ userInfo!.user_id }}</span>
         </div>
@@ -50,90 +40,46 @@
         </div>
       </div>
       <div style="width: 100%" @dblclick="showSignatureInput">
-        <my-input
-          type="textarea"
-          placeholder="请输入签名"
-          :value="userInfo!.user_signature"
-          :min-rows="1"
-          :max-rows="5"
-          :disabled="signatureInputVisable"
-          @input="updateSignature"
-          @blur="showSignatureInput"
-        />
+        <my-input type="textarea" placeholder="请输入签名" :value="userInfo!.user_signature" :min-rows="1" :max-rows="5"
+          :disabled="signatureInputVisable" @input="updateSignature" @blur="showSignatureInput" />
       </div>
     </div>
     <n-divider />
     <div class="menu">
-      <div
-        class="menu-item"
-        :class="hovering[0] ? 'menu-hover' : ''"
-        @click="chooseItem(0)"
-        @mouseenter="hoverItem(0, 0)"
-        @mouseleave="hoverItem(1)"
-      >
-        <img
-          :style="{
-            left: hovering[0] ? '0.5rem' : '0'
-          }"
-          :src="arrowRight"
-          alt="arrowRight"
-        />
+      <div class="menu-item" :class="hovering[0] ? 'menu-hover' : ''" @click="chooseItem(0)" @mouseenter="hoverItem(0, 0)"
+        @mouseleave="hoverItem(1)">
+        <img :style="{
+          left: hovering[0] ? '0.5rem' : '0'
+        }" :src="arrowRight" alt="arrowRight" />
         <img :src="myVideos" alt="myVideos" />
         <span>发布视频</span>
       </div>
-      <div
-        class="menu-item"
-        :class="hovering[1] ? 'menu-hover' : ''"
-        @click="chooseItem(1)"
-        @mouseenter="hoverItem(0, 1)"
-        @mouseleave="hoverItem(1)"
-      >
-        <img
-          :style="{
-            left: hovering[1] ? '0.5rem' : '0'
-          }"
-          :src="arrowRight"
-          alt="arrowRight"
-        />
+      <div class="menu-item" :class="hovering[1] ? 'menu-hover' : ''" @click="chooseItem(1)" @mouseenter="hoverItem(0, 1)"
+        @mouseleave="hoverItem(1)">
+        <img :style="{
+          left: hovering[1] ? '0.5rem' : '0'
+        }" :src="arrowRight" alt="arrowRight" />
         <img :src="myCollections" alt="myCollections" />
         <span>收藏列表</span>
       </div>
-      <div
-        class="menu-item"
-        :class="hovering[2] ? 'menu-hover' : ''"
-        @click="chooseItem(2)"
-        @mouseenter="hoverItem(0, 2)"
-        @mouseleave="hoverItem(1)"
-      >
-        <img
-          :style="{
-            left: hovering[2] ? '0.5rem' : '0'
-          }"
-          :src="arrowRight"
-          alt="arrowRight"
-        />
+      <div class="menu-item" :class="hovering[2] ? 'menu-hover' : ''" @click="chooseItem(2)" @mouseenter="hoverItem(0, 2)"
+        @mouseleave="hoverItem(1)">
+        <img :style="{
+          left: hovering[2] ? '0.5rem' : '0'
+        }" :src="arrowRight" alt="arrowRight" />
         <img :src="myFollowsAndFans" alt="myFollowsAndFans" />
         <span>关注/粉丝</span>
       </div>
-      <div
-        class="menu-item"
-        :class="hovering[3] ? 'menu-hover' : ''"
-        @click="chooseItem(3)"
-        @mouseenter="hoverItem(0, 3)"
-        @mouseleave="hoverItem(1)"
-      >
-        <img
-          :style="{
-            left: hovering[3] ? '0.5rem' : '0'
-          }"
-          :src="arrowRight"
-          alt="arrowRight"
-        />
+      <div class="menu-item" :class="hovering[3] ? 'menu-hover' : ''" @click="chooseItem(3)" @mouseenter="hoverItem(0, 3)"
+        @mouseleave="hoverItem(1)">
+        <img :style="{
+          left: hovering[3] ? '0.5rem' : '0'
+        }" :src="arrowRight" alt="arrowRight" />
         <img :src="exit" alt="exit" />
         <span>退出登录</span>
       </div>
     </div>
-  </div>
+  </Card>
 </template>
 
 <script setup lang="ts">
@@ -148,6 +94,7 @@ import myCollections from '@/assets/svgs/my-collections.svg'
 import myFollowsAndFans from '@/assets/svgs/my-follows-and-fans.svg'
 import exit from '@/assets/svgs/exit.svg'
 import { useMessage, useDialog } from 'naive-ui'
+import Card from '@nullVideo/card/card.vue'
 
 /* Hooks */
 const message = useMessage()
@@ -311,149 +258,156 @@ watch(
 </script>
 
 <style scoped lang="less">
-.PersonalSideBar-wrapper {
-  position: relative;
-  width: 22rem;
-  height: 53rem;
-  padding: 1rem;
-  border-radius: 1rem;
-  background: @bg-color;
-  transition: all 0.3s;
-  &:hover {
-    box-shadow: 0rem 0.25rem 0.625rem 0rem rgba(0, 0, 0, 0.3);
-  }
-  .info {
+.info {
+  width: 100%;
+  height: 14.625rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  .header {
     width: 100%;
-    height: 14.625rem;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: space-between;
-    .header {
-      width: 100%;
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      .avatar {
-        margin-right: 1rem;
+    justify-content: flex-start;
+    align-items: center;
+
+    .avatar {
+      margin-right: 1rem;
+      width: 4rem;
+      height: 4rem;
+      border-radius: 2rem;
+      overflow: hidden;
+      cursor: pointer;
+
+      img {
         width: 4rem;
-        height: 4rem;
-        border-radius: 2rem;
-        overflow: hidden;
-        cursor: pointer;
-        img {
-          width: 4rem;
-        }
-      }
-      .template {
-        position: absolute;
-        width: 4rem;
-        height: 4rem;
-        border-radius: 2rem;
-        background: #000;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
-        opacity: 0;
-        transition: all 0.3s;
-        span {
-          font-family: Source Han Sans;
-          font-size: 1rem;
-          color: #fff;
-        }
-        &:hover {
-          opacity: 0.5;
-        }
-      }
-      .name {
-        margin-right: 2rem;
-        display: flex;
-        flex-direction: column;
-        span {
-          &:nth-child(1) {
-            font-family: Source Han Sans;
-            font-size: 24px;
-            color: @text;
-          }
-          &:nth-child(2) {
-            font-family: Source Han Sans;
-            font-size: 16px;
-            color: @text-secondary;
-          }
-        }
       }
     }
-    .data {
-      width: 100%;
+
+    .template {
+      position: absolute;
+      width: 4rem;
+      height: 4rem;
+      border-radius: 2rem;
+      background: #000;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      &-item {
-        span {
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.3s;
+
+      span {
+        font-family: Source Han Sans;
+        font-size: 1rem;
+        color: #fff;
+      }
+
+      &:hover {
+        opacity: 0.5;
+      }
+    }
+
+    .name {
+      margin-right: 2rem;
+      display: flex;
+      flex-direction: column;
+
+      span {
+        &:nth-child(1) {
+          font-family: Source Han Sans;
+          font-size: 24px;
+          color: @text;
+        }
+
+        &:nth-child(2) {
           font-family: Source Han Sans;
           font-size: 16px;
-          font-weight: bold;
-          color: @text;
-          &:nth-child(2) {
-            margin-left: 0.25rem;
-            font-weight: normal;
-          }
+          color: @text-secondary;
         }
       }
     }
-    .signature {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      border-radius: 1rem;
-      border: 1px solid #d4d4d4;
-      background: #fff;
-      font-family: Source Han Sans;
-      font-size: 1rem;
-      color: @text;
-    }
   }
-  .menu {
+
+  .data {
+    width: 100%;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
+    justify-content: space-between;
+    align-items: center;
+
     &-item {
-      margin: 1rem 0;
-      width: 20rem;
-      height: 4rem;
-      padding: 0 1rem;
-      border-radius: 1rem;
-      background: @bg-color;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      font-size: 1.2rem;
-      color: @text;
-      transition: all 0.3s;
-      cursor: pointer;
-      img {
-        &:nth-child(1) {
-          position: relative;
-          width: 1rem;
-          height: 1rem;
-          transition: all 0.3s;
-        }
+      span {
+        font-family: Source Han Sans;
+        font-size: 16px;
+        font-weight: bold;
+        color: @text;
+
         &:nth-child(2) {
-          margin: 0 2rem 0 2rem;
-          width: 2rem;
-          height: 2rem;
+          margin-left: 0.25rem;
+          font-weight: normal;
         }
-      }
-      &:hover {
-        background: @bg-color-secondary;
-        box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
       }
     }
   }
-  .menu-hover {
-    background: @bg-color-secondary;
-    box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
+
+  .signature {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    border: 1px solid #d4d4d4;
+    background: #fff;
+    font-family: Source Han Sans;
+    font-size: 1rem;
+    color: @text;
   }
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+
+  &-item {
+    margin: 1rem 0;
+    width: 20rem;
+    height: 4rem;
+    padding: 0 1rem;
+    border-radius: 1rem;
+    background: @bg-color;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 1.2rem;
+    color: @text;
+    transition: all 0.3s;
+    cursor: pointer;
+
+    img {
+      &:nth-child(1) {
+        position: relative;
+        width: 1rem;
+        height: 1rem;
+        transition: all 0.3s;
+      }
+
+      &:nth-child(2) {
+        margin: 0 2rem 0 2rem;
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+
+    &:hover {
+      background: @bg-color-secondary;
+      box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+.menu-hover {
+  background: @bg-color-secondary;
+  box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
 }
 </style>

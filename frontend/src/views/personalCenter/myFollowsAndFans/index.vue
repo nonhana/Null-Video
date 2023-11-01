@@ -1,22 +1,12 @@
 <template>
   <div class="index">
     <div class="title">
-      <div
-        class="title-item"
-        :class="presentStatus[0] ? 'hover' : ''"
-        @mouseenter="changeStatus(0)"
-        @mouseleave="refreshStatus"
-        @click="type = 'follow'"
-      >
+      <div class="title-item" :class="presentStatus[0] ? 'hover' : ''" @mouseenter="changeStatus(0)"
+        @mouseleave="refreshStatus" @click="type = 'follow'">
         <span>关注列表</span>
       </div>
-      <div
-        class="title-item"
-        :class="presentStatus[1] ? 'hover' : ''"
-        @mouseenter="changeStatus(1)"
-        @mouseleave="refreshStatus"
-        @click="type = 'fan'"
-      >
+      <div class="title-item" :class="presentStatus[1] ? 'hover' : ''" @mouseenter="changeStatus(1)"
+        @mouseleave="refreshStatus" @click="type = 'fan'">
         <span>粉丝列表</span>
       </div>
     </div>
@@ -48,14 +38,6 @@ const refreshStatus = () => {
 
 <style scoped lang="less">
 .index {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 64rem;
-  height: 54rem;
-  border-radius: 1rem;
-  background: @bg-color;
-  transition: all 0.3s;
   .title {
     width: 17rem;
     margin: 1rem;
@@ -68,6 +50,7 @@ const refreshStatus = () => {
     border-radius: @border-radius;
     background: #e5e5e5;
     box-shadow: @shadow-inner;
+
     .title-item {
       width: 7.5rem;
       height: 3rem;
@@ -78,18 +61,17 @@ const refreshStatus = () => {
       border-radius: @border-radius;
       transition: all 0.3s;
     }
+
     .hover {
       background: #ffffff;
       box-shadow: @shadow-outer;
     }
   }
+
   .content {
     width: 100%;
     display: flex;
     justify-content: center;
-  }
-  &:hover {
-    box-shadow: @shadow-outer;
   }
 }
 </style>

@@ -1,27 +1,30 @@
 <template>
   <div class="home">
-    <n-grid :cols="48" x-gap="16px" style="height: 100%">
-      <n-gi :span="13">
+    <n-grid :cols="48" x-gap="32" style="height: 100%">
+      <n-gi :span="13" style="position: relative">
         <div>
           <Card>
             <videoInfo />
           </Card>
           <Card style="margin-top: 2rem">
+            <div class="video-choice">视频类型选择</div>
             <div class="video-types">
-              <div v-for="videoType in videoTypes" :key="videoType.id" :style="{ background: videoType.color }">
+              <div class="video-types-item" v-for="videoType in videoTypes" :key="videoType.id"
+                :style="{ background: videoType.color }">
                 {{ videoType.name }}
-              </div>
-            </div>
-            <div>
-              <div>
-                <Button @click="videoChange(-1)">上个视频</Button>
-              </div>
-              <div style="margin-top: 1rem">
-                <Button @click="videoChange(1)">下个视频</Button>
               </div>
             </div>
           </Card>
         </div>
+        <div class="video-change">
+          <div class="video-up" @click="videoChange(-1)">
+            <img src="@/assets/svgs/video-change.svg" alt="">
+          </div>
+          <div class="video-down" @click="videoChange(1)">
+            <img src="@/assets/svgs/video-change.svg" alt="">
+          </div>
+        </div>
+
       </n-gi>
       <n-gi :span="22">
         <Card :background-color="'#000'">
@@ -54,9 +57,34 @@ const videoTypes: { name: string, color: string, id: string }[] = reactive([{
   color: '#ff8200'
 }, {
   name: '政治',
-  id: '123123123',
+  id: '12313423123',
+  color: '#4a91ee'
+},
+{
+  name: '政治',
+  id: '35',
+  color: '#4a91ee'
+}, {
+  name: '政治',
+  id: '74568',
+  color: '#4a91ee'
+},
+{
+  name: '政治',
+  id: '435',
+  color: '#4a91ee'
+},
+{
+  name: '政治',
+  id: '123213213213',
+  color: '#4a91ee'
+},
+{
+  name: '政治',
+  id: '4545745',
   color: '#4a91ee'
 }])
+
 
 const videoQueue: { current: number; queue: string[] } = reactive({
   current: -1,
@@ -122,25 +150,66 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: start;
 
+
+  .video-choice {
+    color: @text;
+    font-size: 1rem;
+    font-weight: bold;
+  }
+
   .video-types {
     display: flex;
     justify-content: start;
-    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+    gap: 1rem;
 
-    div {
-
-
+    &-item {
       display: flex;
       align-items: center;
       justify-content: center;
       height: 2rem;
       padding: 1rem;
       border-radius: @border-radius;
-      box-shadow: @shadow-outer;
+      // box-shadow: @shadow-outer;
       color: #fff;
       font-size: 0.875rem;
       font-weight: bold;
-      margin-right: 1rem;
+    }
+  }
+
+  .video-change {
+    position: absolute;
+    bottom: 0;
+
+    .video-up,
+    .video-down {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 3rem;
+      height: 3rem;
+      background-color: @bg-color;
+      box-shadow: @shadow-outer;
+      border-radius: 100%;
+      border: 1px solid #d4d4d4;
+      font-size: 1rem;
+      color: @text;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .video-down {
+      margin-top: 1rem;
+
+      img {
+        transform: rotate(180deg);
+      }
+    }
+
+    .video-up:hover,
+    .video-down:hover {
+      background-color: @bg-color-secondary;
     }
   }
 

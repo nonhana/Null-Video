@@ -1,6 +1,6 @@
 <template>
   <div class="index">
-    <div class="content">
+    <Card width="71rem" height="100%">
       <transition name="fade" mode="out-in">
         <div v-if="currentStep === 1" key="step1">
           <videoUpload @next-step="currentStep = 2" />
@@ -9,7 +9,8 @@
           <videoForm @previous-step="currentStep = 1" />
         </div>
       </transition>
-    </div>
+    </Card>
+
   </div>
 </template>
 
@@ -17,6 +18,7 @@
 import { ref } from 'vue'
 import videoUpload from './videoUpload.vue'
 import videoForm from './videoForm.vue'
+import Card from '@nullVideo/card/card.vue';
 
 // 当前步骤
 const currentStep = ref<number>(1)
@@ -26,16 +28,18 @@ const currentStep = ref<number>(1)
 .index {
   position: relative;
   width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
-  .content {
-    margin-top: 1rem;
+
+  * {
+    height: 100%;
   }
 }
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.5s;
+  transition: opacity 0.3s;
 }
 
 .fade-enter-from,
