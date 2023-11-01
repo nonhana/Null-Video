@@ -8,7 +8,11 @@
           </Card>
           <Card style="margin-top: 2rem">
             <div class="video-types">
-              <div v-for="videoType in videoTypes" :key="videoType.id" :style="{ background: videoType.color }">
+              <div
+                v-for="videoType in videoTypes"
+                :key="videoType.id"
+                :style="{ background: videoType.color }"
+              >
                 {{ videoType.name }}
               </div>
             </div>
@@ -48,15 +52,18 @@ import Card from '@nullVideo/card/card.vue'
 import Comment from '@nullVideo/comment/comment.vue'
 import Button from '@nullVideo/button/button.vue'
 
-const videoTypes: { name: string, color: string, id: string }[] = reactive([{
-  name: '娱乐',
-  id: '123123',
-  color: '#ff8200'
-}, {
-  name: '政治',
-  id: '123123123',
-  color: '#4a91ee'
-}])
+const videoTypes: { name: string; color: string; id: string }[] = reactive([
+  {
+    name: '娱乐',
+    id: '123123',
+    color: '#ff8200'
+  },
+  {
+    name: '政治',
+    id: '123123123',
+    color: '#4a91ee'
+  }
+])
 
 const videoQueue: { current: number; queue: string[] } = reactive({
   current: -1,
@@ -128,8 +135,6 @@ onBeforeUnmount(() => {
     margin-bottom: 1rem;
 
     div {
-
-
       display: flex;
       align-items: center;
       justify-content: center;
