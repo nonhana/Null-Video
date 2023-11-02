@@ -1,4 +1,4 @@
-package com.typeofNull.nullvideo.model.vo.vide;
+package com.typeofNull.nullvideo.model.vo.video;
 
 import lombok.Data;
 
@@ -13,6 +13,7 @@ import java.io.Serializable;
 public class VideoVO extends VideoShowVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
 
     /**
      * 视频点赞数
@@ -30,7 +31,7 @@ public class VideoVO extends VideoShowVO implements Serializable {
     private String videoRole;
 
     /**
-     * 视频状态 -审核中/已发布/已下架
+     * 视频状态 -审核中/已发布/审核不通过/已下架
      */
     private String videoStatus;
 

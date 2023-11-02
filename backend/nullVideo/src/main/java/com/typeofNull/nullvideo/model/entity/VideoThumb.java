@@ -44,6 +44,14 @@ public class VideoThumb implements Serializable {
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
+    public VideoThumb(){
+
+    }
+    public VideoThumb(Long videoId,Long userId){
+        this.videoId=videoId;
+        this.userId=userId;
+    }
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {

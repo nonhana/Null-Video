@@ -1,8 +1,9 @@
-package com.typeofNull.nullvideo.model.vo.vide;
+package com.typeofNull.nullvideo.model.vo.video;
 
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author Andy
@@ -12,9 +13,13 @@ import java.io.Serializable;
 @Data
 public class VideoDetailVO implements Serializable {
 
-    private String userId;
+    private static final long serialVersionUID = 1L;
 
-    private String videoId;
+    private String authorId;
+
+    private String authorAvatar;
+
+    private String authorName;
 
     /**
      *
@@ -32,19 +37,18 @@ public class VideoDetailVO implements Serializable {
     private String videoDescription;
 
     /**
-     * 视频类型
-     */
-    private String videoType;
-
-    /**
      *
      */
-    private Object videoTags;
+    private List<String> videoTags;
 
     /**
      * 收藏数
      */
     private Integer videoFavourNum;
+    /**
+     * 是否收藏了 0-收藏 1-没收藏
+     */
+    private Integer isFavour;
 
     /**
      * 视频分享数
@@ -57,24 +61,19 @@ public class VideoDetailVO implements Serializable {
     private Integer videoThumbNum;
 
     /**
+     * 是否点赞 0-点赞 1-没点赞
+     */
+    private Integer isThumb;
+
+    /**
      * 播放量
      */
-    private Long videoPlayNum;
+    private String videoPlayNum;
 
     /**
      * 视频评论数
      */
     private Integer videoCommentNum;
-
-    /**
-     * o-审核中 1-审核通过 2-审核不通过 3-下架
-     */
-    private Integer videoStatus;
-
-    /**
-     * 视频权限
-     */
-    private Integer videoRole;
 
 
     /**

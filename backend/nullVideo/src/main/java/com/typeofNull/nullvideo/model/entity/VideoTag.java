@@ -7,15 +7,14 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
- * 视频收藏对应表
- * @TableName video_favour_folder
+ * 视频标签表
+ * @TableName video_tag
  */
-@TableName(value ="video_favour_folder")
+@TableName(value ="video_tag")
 @Data
-public class VideoFavourFolder implements Serializable {
+public class VideoTag implements Serializable {
     /**
      * 
      */
@@ -25,17 +24,7 @@ public class VideoFavourFolder implements Serializable {
     /**
      * 
      */
-    private Long videoFolderId;
-
-    /**
-     * 
-     */
-    private Long videoId;
-
-    /**
-     * 
-     */
-    private Long userId;
+    private String videoTagName;
 
     /**
      * 
@@ -49,15 +38,6 @@ public class VideoFavourFolder implements Serializable {
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
-    public VideoFavourFolder(){
-
-    }
-
-    public VideoFavourFolder(Long videoFolderId,Long videoId,Long userId){
-        this.videoFolderId=videoFolderId;
-        this.videoId=videoId;
-        this.userId=userId;
-    }
 
     @Override
     public boolean equals(Object that) {
@@ -70,11 +50,9 @@ public class VideoFavourFolder implements Serializable {
         if (getClass() != that.getClass()) {
             return false;
         }
-        VideoFavourFolder other = (VideoFavourFolder) that;
+        VideoTag other = (VideoTag) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
-            && (this.getVideoFolderId() == null ? other.getVideoFolderId() == null : this.getVideoFolderId().equals(other.getVideoFolderId()))
-            && (this.getVideoId() == null ? other.getVideoId() == null : this.getVideoId().equals(other.getVideoId()))
-            && (this.getUserId() == null ? other.getUserId() == null : this.getUserId().equals(other.getUserId()))
+            && (this.getVideoTagName() == null ? other.getVideoTagName() == null : this.getVideoTagName().equals(other.getVideoTagName()))
             && (this.getCreateTime() == null ? other.getCreateTime() == null : this.getCreateTime().equals(other.getCreateTime()))
             && (this.getUpdateTime() == null ? other.getUpdateTime() == null : this.getUpdateTime().equals(other.getUpdateTime()));
     }
@@ -84,9 +62,7 @@ public class VideoFavourFolder implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
-        result = prime * result + ((getVideoFolderId() == null) ? 0 : getVideoFolderId().hashCode());
-        result = prime * result + ((getVideoId() == null) ? 0 : getVideoId().hashCode());
-        result = prime * result + ((getUserId() == null) ? 0 : getUserId().hashCode());
+        result = prime * result + ((getVideoTagName() == null) ? 0 : getVideoTagName().hashCode());
         result = prime * result + ((getCreateTime() == null) ? 0 : getCreateTime().hashCode());
         result = prime * result + ((getUpdateTime() == null) ? 0 : getUpdateTime().hashCode());
         return result;
@@ -99,9 +75,7 @@ public class VideoFavourFolder implements Serializable {
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
-        sb.append(", videoFolderId=").append(videoFolderId);
-        sb.append(", videoId=").append(videoId);
-        sb.append(", userId=").append(userId);
+        sb.append(", videoTagName=").append(videoTagName);
         sb.append(", createTime=").append(createTime);
         sb.append(", updateTime=").append(updateTime);
         sb.append(", serialVersionUID=").append(serialVersionUID);

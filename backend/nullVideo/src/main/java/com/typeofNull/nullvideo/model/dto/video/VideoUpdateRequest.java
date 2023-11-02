@@ -11,23 +11,18 @@ import java.util.List;
  * @Description
  */
 @Data
-public class VideoUploadRequest implements Serializable {
+public class VideoUpdateRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private String userId;
+    private String videDescription;
+
+    private String videoId;
+
+    private List<VideoTagDealRequest> videoTagDeal;
 
     private String videoCoverUrl;
-
-    private String videoUrl;
-
-    private String videoDescription;
-
-    private String videoTypeId;
-
     /**
      *  视频权限 公开/好友可见/仅自己可见
      */
     private String videoRole;
-
-    private List<String> videoTagsId;
 }

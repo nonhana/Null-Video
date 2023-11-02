@@ -1,4 +1,4 @@
-package com.typeofNull.nullvideo.model.vo.vide;
+package com.typeofNull.nullvideo.model.vo.video;
 
 import lombok.Data;
 
@@ -15,6 +15,7 @@ public class VideoShowVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String videoId;
+
     /**
      * 封面url
      */
@@ -28,11 +29,12 @@ public class VideoShowVO implements Serializable {
     /**
      * 视频播放数
      */
-    private Integer videoPlayNum;
+    private String videoPlayNum;
 
     /**
      * 视频描述
      */
     private String videoDescription;
+
 
 }

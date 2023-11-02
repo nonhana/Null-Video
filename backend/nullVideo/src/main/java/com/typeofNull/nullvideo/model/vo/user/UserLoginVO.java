@@ -30,7 +30,7 @@ public class UserLoginVO implements Serializable {
 
     private String gender;
 
-    private Integer videoTotalFavourNum;
+    private Integer videoTotalThumbNum;
 
     private Integer videoNum;
     /**
