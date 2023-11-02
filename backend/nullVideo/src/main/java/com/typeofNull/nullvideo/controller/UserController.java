@@ -74,12 +74,12 @@ public class UserController {
      * @return
      */
     @GetMapping ("/getUserInfo")
-    public BaseResponse<UserLoginVO> getUserInfoByToken(HttpServletRequest request){
+    public BaseResponse<UserLoginVO> getUserInfoByToken(String userId,HttpServletRequest request){
         String token = request.getHeader(TOKEN);
-        if(token==null || StrUtil.isBlank(token)){
+        if(StrUtil.isBlank(token)||StrUtil.isBlank(userId)){ //如果token和userId都为空，报错
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
-        UserLoginVO userLoginVo = userService.getUserLoginVo(token);
+        UserLoginVO userLoginVo = userService.getUserLoginVo(token,userId);
         return ResultUtils.success(userLoginVo);
     }
 
@@ -137,7 +137,7 @@ public class UserController {
      * @return
      */
     @DeleteMapping("/remove/follower")
-    public BaseResponse<Boolean> userRemoveFollower(@RequestBody UserRemoveFollowerRequest userRemoveFollowerRequest){
+    public BaseResponse<Boolean> userRemoveFollower(UserRemoveFollowerRequest userRemoveFollowerRequest){
        if(userRemoveFollowerRequest==null){
            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
        }

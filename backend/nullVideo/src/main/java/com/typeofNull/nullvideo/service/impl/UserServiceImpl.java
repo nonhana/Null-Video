@@ -1,6 +1,7 @@
 package com.typeofNull.nullvideo.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
@@ -14,6 +15,8 @@ import com.typeofNull.nullvideo.exception.BusinessException;
 import com.typeofNull.nullvideo.mapper.VideoMapper;
 import com.typeofNull.nullvideo.model.dto.user.UserUpdateRequest;
 import com.typeofNull.nullvideo.model.entity.*;
+import com.typeofNull.nullvideo.model.vo.admin.AdminAuditVideoVO;
+import com.typeofNull.nullvideo.model.vo.search.SearchUserVO;
 import com.typeofNull.nullvideo.model.vo.user.UserLoginVO;
 import com.typeofNull.nullvideo.model.vo.user.UserRegiserVO;
 import com.typeofNull.nullvideo.service.*;
@@ -29,10 +32,13 @@ import org.springframework.util.DigestUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static com.typeofNull.nullvideo.constant.UserConstant.*;
+import static com.typeofNull.nullvideo.constant.VideoConstant.VIDEO_MINE_PAGESIZE;
 
 /**
 * @author 徐小帅
@@ -54,6 +60,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Resource
     private FollowsService followsService;
+
+    @Resource
+    private VideoTypeService videoTypeService;
+
+    @Resource
+    private VideoTagService videoTagService;
+
+    @Resource
+    private VideoTagRelationService videoTagRelationService;
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -155,15 +170,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     @Override
-    public UserLoginVO getUserLoginVo(String token) {
-        String realToken=UserUtil.getRedisTokenKey(token);
-        String userJsonStr = stringRedisTemplate.opsForValue().get(realToken);
-        if(StrUtil.isBlank(userJsonStr)){
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"登录信息已过期");
-        }
-        User user = JSONUtil.toBean(userJsonStr, User.class);
-        if(user.getId()==null){
-            throw new BusinessException(ErrorCode.PARAMS_ERROR,"用户已注销");
+    public UserLoginVO getUserLoginVo(String token,String userId) {
+        User user;
+        if(StrUtil.isNotBlank(userId)){//userId不为空，要查的是其他用户的信息
+                user = this.getById(userId);
+        }else{
+            String realToken=UserUtil.getRedisTokenKey(token);
+            String userJsonStr = stringRedisTemplate.opsForValue().get(realToken);
+            if(StrUtil.isBlank(userJsonStr)){
+                throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"登录信息已过期");
+            }
+                user = JSONUtil.toBean(userJsonStr, User.class);
+            if(user.getId()==null){
+                throw new BusinessException(ErrorCode.PARAMS_ERROR,"用户已注销");
+            }
         }
         UserLoginVO userLoginVOInfo = getUserLoginVOInfo(user);
         return userLoginVOInfo;
@@ -262,6 +282,101 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         throw new BusinessException(ErrorCode.OPERATION_ERROR,"不能移除未关注的用户");
     }
 
+    @Override
+    public List<AdminAuditVideoVO> getAdminVideoVO(Long userId,Integer begin) {
+        //先判断权限
+        if(!isAdmin(userId)){
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+        }
+        //获取视频
+        int PageSize=VIDEO_MINE_PAGESIZE;
+        int offset=PageSize*begin;
+        QueryWrapper<Video> videoQueryWrapper = new QueryWrapper<>();
+        videoQueryWrapper.eq("video_status",0);
+        videoQueryWrapper.orderByAsc("create_time");//升序，最早的先审核
+        videoQueryWrapper.last("limit "+PageSize+" offset "+offset);
+        List<Video> videos = videoService.list(videoQueryWrapper);
+        List<AdminAuditVideoVO> adminAuditVideoVOS = videos.stream().map((item) -> {
+            AdminAuditVideoVO adminAuditVideoVO = new AdminAuditVideoVO();
+            //先处理Video
+            BeanUtil.copyProperties(item, adminAuditVideoVO, "createTime");
+            adminAuditVideoVO.setVideoId(item.getId() + "");
+            String formatTime = DateUtil.format(item.getCreateTime(), "yyyy-MM-dd HH:mm:ss");
+            adminAuditVideoVO.setCreateTime(formatTime);
+            //处理Tag
+            QueryWrapper<VideoTagRelation> videoTagRelationQueryWrapper = new QueryWrapper<>();
+            videoTagRelationQueryWrapper.eq("video_id", item.getId());
+            List<VideoTagRelation> list = videoTagRelationService.list(videoTagRelationQueryWrapper);
+            ArrayList<String> videoTags = new ArrayList<>();
+            for (VideoTagRelation v : list) {
+                VideoTag videoTag = videoTagService.getById(v.getVideoTagId());
+                if (videoTag == null) {
+                    continue;
+                }
+                videoTags.add(videoTag.getVideoTagName());
+            }
+            adminAuditVideoVO.setVideoTags(videoTags);
+            //处理Type
+            VideoType videoType = videoTypeService.getById(item.getVideoType());
+            adminAuditVideoVO.setVideoTypeName(videoType.getVideoTypeName());
+            //在处理Author
+            Long authorId = item.getUserId();
+            User user = this.getById(authorId);
+            if (user == null) {
+                throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "用户不存在或已注销");
+            }
+            adminAuditVideoVO.setAuthorId(authorId + "");
+            adminAuditVideoVO.setAuthorName(user.getUserName());
+            UserInfo userInfo = userInfoService.getOne(new QueryWrapper<UserInfo>().eq("user_id", authorId));
+            if (userInfo == null) {
+                throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "用户不存在或已注销");
+            }
+            if (userInfo.getUserAvatar() != null) {
+                adminAuditVideoVO.setAuthorAvatar(userInfo.getUserAvatar());
+            }
+            return adminAuditVideoVO;
+        }).collect(Collectors.toList());
+        return adminAuditVideoVOS;
+    }
+
+    @Override
+    public boolean updateVideoStatus(Long userId, Long videoId,Integer videoStatus) {
+        if(!isAdmin(userId)){
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+        }
+        Video video = videoService.getById(videoId);
+        if(video==null){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"视频已删除");
+        }
+        if(video.getVideoStatus()==videoStatus){
+            throw new BusinessException(ErrorCode.OPERATION_ERROR,"视频状态与修改状态一致");
+        }
+        video.setVideoStatus(videoStatus);
+        boolean isSuccess = videoService.updateById(video);
+        return isSuccess;
+    }
+
+    /**
+     * 查找搜索用户
+     * @param searchText
+     * @return
+     */
+    @Override
+    public List<SearchUserVO> searchUser(String searchText) {
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.like("user_name",searchText);
+        userQueryWrapper.orderByDesc("create_time");
+        List<User> users = this.list(userQueryWrapper);
+        List<SearchUserVO> searchUserVOList = users.stream().map(user -> {
+            QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
+            userInfoQueryWrapper.eq("user_id", user.getId());
+            UserInfo userInfo = userInfoService.getOne(userInfoQueryWrapper);
+            SearchUserVO searchUserVO = UserUtil.setSearchUserVO(userInfo, user.getUserName());
+            return searchUserVO;
+        }).collect(Collectors.toList());
+        return searchUserVOList;
+    }
+
     /**
      * 用于获得完整的用户信息
      * @param user
@@ -289,7 +404,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         for(Video v:videoList){
             sumThumb+=v.getVideoThumbNum();
         }
-        userLoginVO.setVideoTotalFavourNum(sumThumb);
+        userLoginVO.setVideoTotalThumbNum(sumThumb);
         userLoginVO.setVideoNum(videoList.size());
         return userLoginVO;
     }
@@ -302,6 +417,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     private boolean judgeUserExist(Long userId){
         User user = this.getById(userId);
         return user==null;
+    }
+
+    /**
+     * 判断用户是不是管理员
+     * @param userId
+     * @return
+     */
+    private boolean isAdmin(Long userId){
+        User user = this.getById(userId);
+        if(user==null){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        if(user.getUserRole()!=1){
+            return false;
+        }
+        return true;
     }
 }
 

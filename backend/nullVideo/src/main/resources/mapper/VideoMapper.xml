@@ -11,7 +11,6 @@
             <result property="videoUrl" column="video_url" jdbcType="VARCHAR"/>
             <result property="videoDescription" column="video_description" jdbcType="VARCHAR"/>
             <result property="videoType" column="video_type" jdbcType="INTEGER"/>
-            <result property="videoTags" column="video_tags" jdbcType="OTHER"/>
             <result property="videoFavourNum" column="video_favour_num" jdbcType="INTEGER"/>
             <result property="videoShareNum" column="video_share_num" jdbcType="INTEGER"/>
             <result property="videoThumbNum" column="video_thumb_num" jdbcType="INTEGER"/>
@@ -25,7 +24,7 @@
     <sql id="Base_Column_List">
         id,user_id,video_cover_url,
         video_url,video_description,video_type,
-        video_tags,video_favour_num,video_share_num,
+        video_favour_num,video_share_num,
         video_thumb_num,video_play_num,video_status,
         video_role,create_time,update_time
     </sql>

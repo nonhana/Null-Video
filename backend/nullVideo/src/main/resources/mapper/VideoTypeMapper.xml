@@ -10,13 +10,14 @@
             <result property="videoTopic" column="video_topic" jdbcType="VARCHAR"/>
             <result property="videoTopicDescription" column="video_topic_description" jdbcType="VARCHAR"/>
             <result property="isParent" column="is_parent" jdbcType="TINYINT"/>
-            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="parentId" column="parent_id" jdbcType="BIGINT"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,video_type_name,video_topic,
         video_topic_description,is_parent,create_time,
-        update_time
+        update_time,parent_id
     </sql>
 </mapper>

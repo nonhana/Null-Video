@@ -1,6 +1,8 @@
 spring:
   application:
     name: nullVideo
+  main:
+    allow-circular-references: true
   # DataSource Config
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

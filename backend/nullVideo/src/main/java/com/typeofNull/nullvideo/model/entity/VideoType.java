@@ -41,6 +41,9 @@ public class VideoType implements Serializable {
      */
     private Integer isParent;
 
+
+    private Long parentId;
+
     /**
      * 
      */

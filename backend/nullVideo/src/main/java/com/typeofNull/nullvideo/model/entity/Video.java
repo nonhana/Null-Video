@@ -46,10 +46,6 @@ public class Video implements Serializable {
      */
     private Integer videoType;
 
-    /**
-     * 
-     */
-    private Object videoTags;
 
     /**
      * 收藏数
@@ -112,7 +108,6 @@ public class Video implements Serializable {
             && (this.getVideoUrl() == null ? other.getVideoUrl() == null : this.getVideoUrl().equals(other.getVideoUrl()))
             && (this.getVideoDescription() == null ? other.getVideoDescription() == null : this.getVideoDescription().equals(other.getVideoDescription()))
             && (this.getVideoType() == null ? other.getVideoType() == null : this.getVideoType().equals(other.getVideoType()))
-            && (this.getVideoTags() == null ? other.getVideoTags() == null : this.getVideoTags().equals(other.getVideoTags()))
             && (this.getVideoFavourNum() == null ? other.getVideoFavourNum() == null : this.getVideoFavourNum().equals(other.getVideoFavourNum()))
             && (this.getVideoShareNum() == null ? other.getVideoShareNum() == null : this.getVideoShareNum().equals(other.getVideoShareNum()))
             && (this.getVideoThumbNum() == null ? other.getVideoThumbNum() == null : this.getVideoThumbNum().equals(other.getVideoThumbNum()))
@@ -133,7 +128,6 @@ public class Video implements Serializable {
         result = prime * result + ((getVideoUrl() == null) ? 0 : getVideoUrl().hashCode());
         result = prime * result + ((getVideoDescription() == null) ? 0 : getVideoDescription().hashCode());
         result = prime * result + ((getVideoType() == null) ? 0 : getVideoType().hashCode());
-        result = prime * result + ((getVideoTags() == null) ? 0 : getVideoTags().hashCode());
         result = prime * result + ((getVideoFavourNum() == null) ? 0 : getVideoFavourNum().hashCode());
         result = prime * result + ((getVideoShareNum() == null) ? 0 : getVideoShareNum().hashCode());
         result = prime * result + ((getVideoThumbNum() == null) ? 0 : getVideoThumbNum().hashCode());
@@ -157,7 +151,6 @@ public class Video implements Serializable {
         sb.append(", videoUrl=").append(videoUrl);
         sb.append(", videoDescription=").append(videoDescription);
         sb.append(", videoType=").append(videoType);
-        sb.append(", videoTags=").append(videoTags);
         sb.append(", videoFavourNum=").append(videoFavourNum);
         sb.append(", videoShareNum=").append(videoShareNum);
         sb.append(", videoThumbNum=").append(videoThumbNum);
