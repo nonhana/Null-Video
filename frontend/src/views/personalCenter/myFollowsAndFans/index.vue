@@ -1,12 +1,14 @@
 <template>
   <div class="index">
     <div class="title">
-      <div class="title-item" :class="presentStatus[0] ? 'hover' : ''" @mouseenter="changeStatus(0)"
-        @mouseleave="refreshStatus" @click="type = 'follow'">
+      <div class="title-bottom" :class="presentStatus[0] ? '' : 'register'">
+      </div>
+      <div class="title-item" :class="presentStatus[0] ? 'selected' : ''"
+        @click="type = 'follow'; presentStatus = [true, false]">
         <span>关注列表</span>
       </div>
-      <div class="title-item" :class="presentStatus[1] ? 'hover' : ''" @mouseenter="changeStatus(1)"
-        @mouseleave="refreshStatus" @click="type = 'fan'">
+      <div class="title-item" :class="presentStatus[1] ? 'selected' : ''"
+        @click="type = 'fan'; presentStatus = [false, true]">
         <span>粉丝列表</span>
       </div>
     </div>
@@ -38,40 +40,62 @@ const refreshStatus = () => {
 
 <style scoped lang="less">
 .index {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
   .title {
-    width: 17rem;
-    margin: 1rem;
+    position: relative;
     padding: 0.5rem;
     display: flex;
     justify-content: space-between;
-    font-size: 24px;
-    font-weight: bold;
-    color: @text;
     border-radius: @border-radius;
     background: #e5e5e5;
     box-shadow: @shadow-inner;
 
+    .title-bottom {
+      position: absolute;
+      width: calc(50% - 0.5rem);
+      height: calc(100% - 1rem);
+      background-color: #fff;
+      box-shadow: @shadow-outer;
+      border-radius: @border-radius;
+      z-index: 1;
+      transition: all 0.3s;
+    }
+
+    .register {
+      transform: translateX(100%);
+    }
+
+
     .title-item {
-      width: 7.5rem;
-      height: 3rem;
+      padding: 0.5rem;
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: @text-secondary;
       border-radius: @border-radius;
       transition: all 0.3s;
+      z-index: 2;
     }
 
-    .hover {
-      background: #ffffff;
-      box-shadow: @shadow-outer;
+    .title-item:hover {
+      color: @text;
+    }
+
+    .selected {
+      color: @text;
     }
   }
 
   .content {
+    margin-top: 1rem;
+    flex-grow: 1;
     width: 100%;
-    display: flex;
-    justify-content: center;
   }
 }
 </style>

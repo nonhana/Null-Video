@@ -163,7 +163,7 @@ onBeforeUnmount(() => {
     margin-top: 1rem;
     gap: 1rem;
 
-    &-item {
+    div {
       display: flex;
       align-items: center;
       justify-content: center;

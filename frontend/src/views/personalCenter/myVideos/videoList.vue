@@ -4,13 +4,9 @@
       <video-item :video-item="video" />
     </div>
     <!-- 占位div -->
-    <div
-      class="placeholder"
-      v-for="index in videoList.length % 4 !== 0
-        ? 4 - (videoList.length % 4)
-        : 0"
-      :key="index"
-    />
+    <div class="placeholder" v-for="index in videoList.length % 4 !== 0
+      ? 4 - (videoList.length % 4)
+      : 0" :key="index" />
   </div>
 </template>
 
@@ -68,11 +64,11 @@ const videoList = ref<VideoItemInfo[]>([
 .VideoList-wrapper {
   position: relative;
   width: 100%;
-  height: 48rem;
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   overflow-y: scroll;
+
   .placeholder {
     position: relative;
     margin: 0 0.5rem;

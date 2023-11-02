@@ -26,7 +26,6 @@ declare module 'vue' {
     NInput: typeof import('naive-ui')['NInput']
     NMessageProvider: typeof import('naive-ui')['NMessageProvider']
     NModal: typeof import('naive-ui')['NModal']
-    NModel: typeof import('naive-ui')['NModel']
     NP: typeof import('naive-ui')['NP']
     NRadio: typeof import('naive-ui')['NRadio']
     NSelect: typeof import('naive-ui')['NSelect']

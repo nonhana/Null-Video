@@ -15,20 +15,20 @@ import CollectionList from '@/views/personalCenter/myCollections/collectionList.
 
 <style scoped lang="less">
 .index {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
   .title {
-    width: 100%;
-    padding: 1rem;
-    display: flex;
-    justify-content: flex-start;
-    font-size: 24px;
+    font-size: 1.5rem;
     font-weight: bold;
-    color: #3d3d3d;
+    color: @text;
   }
 
   .content {
+    margin-top: 1rem;
+    flex-grow: 1;
     width: 100%;
-    display: flex;
-    justify-content: center;
   }
 
 }
