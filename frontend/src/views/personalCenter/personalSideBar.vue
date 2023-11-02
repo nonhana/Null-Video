@@ -27,8 +27,13 @@
             userInfo!.user_name
           }}</span>
           <div v-else>
-            <my-input type="text" placeholder="你的名称" :value="userInfo!.user_name" @input="updateName"
-              @blur="showNameInput" />
+            <my-input
+              type="text"
+              placeholder="你的名称"
+              :value="userInfo!.user_name"
+              @input="updateName"
+              @blur="showNameInput"
+            />
           </div>
           <span>id:&emsp;{{ userInfo!.user_id }}</span>
         </div>
@@ -53,41 +58,85 @@
         </div>
       </div>
       <div style="width: 100%" @dblclick="showSignatureInput">
-        <my-input type="textarea" placeholder="请输入签名" :value="userInfo!.user_signature" :min-rows="1" :max-rows="5"
-          :disabled="signatureInputVisable" @input="updateSignature" @blur="showSignatureInput" />
+        <my-input
+          type="textarea"
+          placeholder="请输入签名"
+          :value="userInfo!.user_signature"
+          :min-rows="1"
+          :max-rows="5"
+          :disabled="signatureInputVisable"
+          @input="updateSignature"
+          @blur="showSignatureInput"
+        />
       </div>
     </div>
     <n-divider />
     <div class="menu">
-      <div class="menu-item" :class="hovering[0] ? 'menu-hover' : ''" @click="chooseItem(0)" @mouseenter="hoverItem(0, 0)"
-        @mouseleave="hoverItem(1)">
-        <img :style="{
-          left: hovering[0] ? '0.5rem' : '0'
-        }" :src="arrowRight" alt="arrowRight" />
+      <div
+        class="menu-item"
+        :class="hovering[0] ? 'menu-hover' : ''"
+        @click="chooseItem(0)"
+        @mouseenter="hoverItem(0, 0)"
+        @mouseleave="hoverItem(1)"
+      >
+        <img
+          :style="{
+            left: hovering[0] ? '0.5rem' : '0'
+          }"
+          :src="arrowRight"
+          alt="arrowRight"
+        />
         <img :src="myVideos" alt="myVideos" />
         <span>发布视频</span>
       </div>
-      <div class="menu-item" :class="hovering[1] ? 'menu-hover' : ''" @click="chooseItem(1)" @mouseenter="hoverItem(0, 1)"
-        @mouseleave="hoverItem(1)">
-        <img :style="{
-          left: hovering[1] ? '0.5rem' : '0'
-        }" :src="arrowRight" alt="arrowRight" />
+      <div
+        class="menu-item"
+        :class="hovering[1] ? 'menu-hover' : ''"
+        @click="chooseItem(1)"
+        @mouseenter="hoverItem(0, 1)"
+        @mouseleave="hoverItem(1)"
+      >
+        <img
+          :style="{
+            left: hovering[1] ? '0.5rem' : '0'
+          }"
+          :src="arrowRight"
+          alt="arrowRight"
+        />
         <img :src="myCollections" alt="myCollections" />
         <span>收藏列表</span>
       </div>
-      <div class="menu-item" :class="hovering[2] ? 'menu-hover' : ''" @click="chooseItem(2)" @mouseenter="hoverItem(0, 2)"
-        @mouseleave="hoverItem(1)">
-        <img :style="{
-          left: hovering[2] ? '0.5rem' : '0'
-        }" :src="arrowRight" alt="arrowRight" />
+      <div
+        class="menu-item"
+        :class="hovering[2] ? 'menu-hover' : ''"
+        @click="chooseItem(2)"
+        @mouseenter="hoverItem(0, 2)"
+        @mouseleave="hoverItem(1)"
+      >
+        <img
+          :style="{
+            left: hovering[2] ? '0.5rem' : '0'
+          }"
+          :src="arrowRight"
+          alt="arrowRight"
+        />
         <img :src="myFollowsAndFans" alt="myFollowsAndFans" />
         <span>关注/粉丝</span>
       </div>
-      <div class="menu-item" :class="hovering[3] ? 'menu-hover' : ''" @click="chooseItem(3)" @mouseenter="hoverItem(0, 3)"
-        @mouseleave="hoverItem(1)">
-        <img :style="{
-          left: hovering[3] ? '0.5rem' : '0'
-        }" :src="arrowRight" alt="arrowRight" />
+      <div
+        class="menu-item"
+        :class="hovering[3] ? 'menu-hover' : ''"
+        @click="chooseItem(3)"
+        @mouseenter="hoverItem(0, 3)"
+        @mouseleave="hoverItem(1)"
+      >
+        <img
+          :style="{
+            left: hovering[3] ? '0.5rem' : '0'
+          }"
+          :src="arrowRight"
+          alt="arrowRight"
+        />
         <img :src="exit" alt="exit" />
         <span>退出登录</span>
       </div>
@@ -142,7 +191,6 @@ const confirmExit = () => {
     positiveText: '确定',
     negativeText: '取消',
     onPositiveClick: () => {
-      userStore.isLogin = false
       message.success('退出登录成功，2s后跳转首页')
       setTimeout(() => {
         router.push('/')

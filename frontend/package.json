@@ -19,6 +19,7 @@
     "pinia": "^2.1.6",
     "pinia-plugin-persistedstate": "^3.2.0",
     "video.js": "^8.6.1",
+    "videojs-contrib-hls": "^5.15.0",
     "vue": "^3.3.4",
     "vue-picture-cropper": "^0.6.2",
     "vue-router": "^4.2.5"
@@ -44,6 +45,7 @@
     "unplugin-auto-import": "^0.16.6",
     "unplugin-vue-components": "^0.25.2",
     "vfonts": "^0.0.3",
+    "videojs-resolution-switcher": "^0.4.2",
     "vite": "^4.4.5",
     "vue-tsc": "^1.8.5"
   }

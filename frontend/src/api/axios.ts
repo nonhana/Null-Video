@@ -1,9 +1,8 @@
 import axios, { AxiosRequestConfig } from 'axios'
-import router from '@/router/index'
-import { useUserStore } from '@/stores/user'
+import { useRouter } from 'vue-router'
 import { useNotification, NotificationType } from 'naive-ui'
 
-const userStore = useUserStore()
+const router = useRouter()
 const notification = useNotification()
 
 const notify = (content: string, type: NotificationType = 'warning') => {
@@ -15,8 +14,6 @@ const notify = (content: string, type: NotificationType = 'warning') => {
   })
 }
 
-notify('warning')
-
 function myAxios<T>(axiosConfig: AxiosRequestConfig): Promise<T> {
   const service = axios.create({
     baseURL: import.meta.env.VITE_API_URL as string,
@@ -25,7 +22,7 @@ function myAxios<T>(axiosConfig: AxiosRequestConfig): Promise<T> {
 
   // 请求拦截器：可以在发请求之前可以处理一些业务
   service.interceptors.request.use((config) => {
-    const token = userStore.token
+    const token = localStorage.getItem('token')
     config.headers.Authorization = token ? `Bearer ${token}` : ''
     return config
   })
@@ -50,7 +47,7 @@ function myAxios<T>(axiosConfig: AxiosRequestConfig): Promise<T> {
           break
         case 401:
           notify('登录过期,请重新登录')
-          userStore.logout()
+          localStorage.clear()
           setTimeout(() => {
             router.push('/login')
           }, 2000)

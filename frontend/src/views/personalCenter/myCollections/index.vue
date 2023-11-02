@@ -30,6 +30,5 @@ import CollectionList from '@/views/personalCenter/myCollections/collectionList.
     flex-grow: 1;
     width: 100%;
   }
-
 }
 </style>

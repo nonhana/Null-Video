@@ -3,7 +3,6 @@
     <div v-for="video in CollectionList" :key="video.video_id">
       <video-item :video-item="video" />
     </div>
-    <!-- 占位div，如果被4整除便无需占位 -->
     <div
       class="placeholder"
       v-for="index in CollectionList.length % 4 !== 0

@@ -9,7 +9,11 @@
           <Card style="margin-top: 2rem">
             <div class="video-choice">视频类型选择</div>
             <div class="video-types">
-              <div v-for="videoType in videoTypes" :key="videoType.id" :style="{ background: videoType.color }">
+              <div
+                v-for="videoType in videoTypes"
+                :key="videoType.id"
+                :style="{ background: videoType.color }"
+              >
                 {{ videoType.name }}
               </div>
             </div>
@@ -17,17 +21,16 @@
         </div>
         <div class="video-change">
           <div class="video-up" @click="videoChange(-1)">
-            <img src="@/assets/svgs/video-change.svg" alt="">
+            <img src="@/assets/svgs/video-change.svg" alt="" />
           </div>
           <div class="video-down" @click="videoChange(1)">
-            <img src="@/assets/svgs/video-change.svg" alt="">
+            <img src="@/assets/svgs/video-change.svg" alt="" />
           </div>
         </div>
-
       </n-gi>
       <n-gi :span="22">
         <Card :background-color="'#000'">
-          <video ref="videoPlayer" class="video-js"></video>
+          <video ref="videoPlayer" class="video-js" />
         </Card>
       </n-gi>
       <n-gi :span="13">
@@ -42,48 +45,54 @@
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount, ref, reactive } from 'vue'
 import videoInfo from './videoInfo.vue'
-import videojs from 'video.js'
-import 'video.js/dist/video-js.css' // 引入视频样式文件
-import Player from 'video.js/dist/types/player'
 import { NGrid } from 'naive-ui'
 import Card from '@nullVideo/card/card.vue'
 import Comment from '@nullVideo/comment/comment.vue'
-import Button from '@nullVideo/button/button.vue'
+// video.js相关依赖
+import videojs from 'video.js'
+import 'video.js/dist/video-js.css' // 引入视频样式文件
+// import 'videojs-contrib-hls'
+// import 'videojs-resolution-switcher/lib/videojs-resolution-switcher.css'
+// import 'videojs-resolution-switcher'
+import Player from 'video.js/dist/types/player'
 
-const videoTypes: { name: string, color: string, id: string }[] = reactive([{
-  name: '娱乐',
-  id: '123123',
-  color: '#ff8200'
-}, {
-  name: '政治',
-  id: '12313423123',
-  color: '#4a91ee'
-},
-{
-  name: '政治',
-  id: '35',
-  color: '#4a91ee'
-}, {
-  name: '政治',
-  id: '74568',
-  color: '#4a91ee'
-},
-{
-  name: '政治',
-  id: '435',
-  color: '#4a91ee'
-},
-{
-  name: '政治',
-  id: '123213213213',
-  color: '#4a91ee'
-},
-{
-  name: '政治',
-  id: '4545745',
-  color: '#4a91ee'
-}])
-
+const videoTypes: { name: string; color: string; id: string }[] = reactive([
+  {
+    name: '娱乐',
+    id: '123123',
+    color: '#ff8200'
+  },
+  {
+    name: '政治',
+    id: '12313423123',
+    color: '#4a91ee'
+  },
+  {
+    name: '政治',
+    id: '35',
+    color: '#4a91ee'
+  },
+  {
+    name: '政治',
+    id: '74568',
+    color: '#4a91ee'
+  },
+  {
+    name: '政治',
+    id: '435',
+    color: '#4a91ee'
+  },
+  {
+    name: '政治',
+    id: '123213213213',
+    color: '#4a91ee'
+  },
+  {
+    name: '政治',
+    id: '4545745',
+    color: '#4a91ee'
+  }
+])
 
 const videoQueue: { current: number; queue: string[] } = reactive({
   current: -1,
@@ -104,6 +113,7 @@ const videoChange = (ways: number) => {
 }
 
 onMounted(() => {
+  // 加载视频列表
   videoQueue.queue.push(
     ...['./video-test001.mp4', './video-test002.mp4', './video-test003.mp4']
   )
@@ -122,7 +132,6 @@ onMounted(() => {
           inline: false,
           CurrentTimeDisplay: true
         }
-        // // 暂停按钮隐藏
       }
     },
     () => {
@@ -148,7 +157,6 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: start;
-
 
   .video-choice {
     color: @text;
