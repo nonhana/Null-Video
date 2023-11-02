@@ -15,6 +15,8 @@ import CollectionList from '@/views/personalCenter/myCollections/collectionList.
 
 <style scoped lang="less">
 .index {
+  display: flex;
+  flex-direction: column;
   .title {
     width: 100%;
     padding: 1rem;
@@ -30,6 +32,5 @@ import CollectionList from '@/views/personalCenter/myCollections/collectionList.
     display: flex;
     justify-content: center;
   }
-
 }
 </style>

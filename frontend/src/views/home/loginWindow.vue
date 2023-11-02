@@ -136,6 +136,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { registerAPI } from '@/api/user/user'
 import close from '@/assets/svgs/close.svg'
 import myInput from '@nullVideo/form/input/input.vue'
 import myButton from '@nullVideo/button/button.vue'
@@ -262,8 +263,13 @@ const login = () => {
   console.log('loginForm', loginForm.value)
 }
 // 注册
-const register = () => {
+const register = async () => {
   console.log('registerForm', registerForm.value)
+  const res = await registerAPI({
+    userAccount: registerForm.value.username,
+    userPassword: registerForm.value.password,
+    checkPassword: registerForm.value.confirmPassword
+  })
 }
 
 watch(isLogining, (newVal, _) => {

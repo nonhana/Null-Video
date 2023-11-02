@@ -57,12 +57,17 @@ const jumpTo = (name: string) => {
       router.push('/postVideo')
       break
     case 'personalCenter':
-      router.push({
-        name: 'personalCenter',
-        params: {
-          user_id: userStore.userInfo.user_id
-        }
-      })
+      console.log(userStore.token)
+      if (userStore.token !== '') {
+        router.push({
+          name: 'personalCenter',
+          params: {
+            user_id: userStore.userInfo.user_id
+          }
+        })
+      } else {
+        windowVisable.value = true
+      }
       break
   }
 }

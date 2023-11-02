@@ -15,6 +15,8 @@ import videoList from '@/views/personalCenter/myVideos/videoList.vue'
 
 <style scoped lang="less">
 .index {
+  display: flex;
+  flex-direction: column;
   .title {
     width: 100%;
     padding: 1rem;

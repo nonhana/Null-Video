@@ -1,12 +1,22 @@
 <template>
   <div class="index">
     <div class="title">
-      <div class="title-item" :class="presentStatus[0] ? 'hover' : ''" @mouseenter="changeStatus(0)"
-        @mouseleave="refreshStatus" @click="type = 'follow'">
+      <div
+        class="title-item"
+        :class="presentStatus[0] ? 'hover' : ''"
+        @mouseenter="changeStatus(0)"
+        @mouseleave="refreshStatus"
+        @click="type = 'follow'"
+      >
         <span>关注列表</span>
       </div>
-      <div class="title-item" :class="presentStatus[1] ? 'hover' : ''" @mouseenter="changeStatus(1)"
-        @mouseleave="refreshStatus" @click="type = 'fan'">
+      <div
+        class="title-item"
+        :class="presentStatus[1] ? 'hover' : ''"
+        @mouseenter="changeStatus(1)"
+        @mouseleave="refreshStatus"
+        @click="type = 'fan'"
+      >
         <span>粉丝列表</span>
       </div>
     </div>
@@ -38,6 +48,8 @@ const refreshStatus = () => {
 
 <style scoped lang="less">
 .index {
+  display: flex;
+  flex-direction: column;
   .title {
     width: 17rem;
     margin: 1rem;
