@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.typeofNull.nullvideo.common.ErrorCode;
 import com.typeofNull.nullvideo.exception.BusinessException;
 import com.typeofNull.nullvideo.mapper.VideoMapper;
+import com.typeofNull.nullvideo.model.dto.video.VideoAddCommentRequest;
 import com.typeofNull.nullvideo.model.dto.video.VideoTagDealRequest;
 import com.typeofNull.nullvideo.model.dto.video.VideoUpdateRequest;
 import com.typeofNull.nullvideo.model.dto.video.VideoUploadRequest;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.typeofNull.nullvideo.constant.UserConstant.USER_DEFAULT_AVATAR;
 import static com.typeofNull.nullvideo.constant.VideoConstant.*;
 
 /**
@@ -98,6 +100,11 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
     public boolean addVideo(VideoUploadRequest videoUploadRequest) {
         String userIdStr = videoUploadRequest.getUserId();
         long userId = Long.parseLong(userIdStr);
+        //判断用户是否存在
+        long count = userService.count(new QueryWrapper<User>().eq("id", userId));
+        if(count<=0){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"用户不存在");
+        }
         //先处理视频
         Video video = new Video();
         BeanUtil.copyProperties(videoUploadRequest,video,"userId","videoRole");
@@ -144,7 +151,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
         int offset=pageSize*begin;
         LambdaQueryWrapper<Video> videoLambdaQueryWrapper = new LambdaQueryWrapper<>();
 
-        if(userId==null||authorId!=Long.parseLong(userId)){ //如果不是作者或者是游客，只能看公开的,审核过的
+        if(StrUtil.isBlank(userId)||authorId!=Long.parseLong(userId)){ //如果不是作者或者是游客，只能看公开的,审核过的
             videoLambdaQueryWrapper.eq(Video::getVideoRole,0);
             videoLambdaQueryWrapper.eq(Video::getVideoStatus,1);
         }
@@ -196,6 +203,9 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
     @Override
     public VideoDetailVO getVideoDetail(Long videoId,String userId) {
         Video video = this.getById(videoId);
+        if(video==null){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"视频不存在或已删除");
+        }
         VideoDetailVO videoDetailVO = new VideoDetailVO();
         BeanUtil.copyProperties(video,videoDetailVO,"videoPlayNum","createTime");
         //先设置Video内容
@@ -566,6 +576,181 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
         return videoShowVOS;
     }
 
+    @Override
+
+    public boolean addVideoComment(VideoAddCommentRequest videoAddCommentRequest) {
+        String videoCommentIdStr = videoAddCommentRequest.getVideoCommentId();
+        String videoIdStr = videoAddCommentRequest.getVideoId();
+        if(StrUtil.isBlank(videoIdStr)){ //校验
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"视频异常");
+        }
+        String userIdStr = videoAddCommentRequest.getUserId();
+        if(StrUtil.isBlank(userIdStr)){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"用户未登入或账号异常");
+        }
+        long videoId = Long.parseLong(videoIdStr);
+        Video video = this.getById(videoId);
+        if(video==null){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"视频已删除或不存在");
+        }
+        long userId = Long.parseLong(userIdStr);
+        VideoComment videoComment = new VideoComment(userId,videoId);
+        //判断是一级评论还是二级评论还是三级评论
+        if(StrUtil.isBlank(videoCommentIdStr)){//回复的为空，表示是一级评论
+            videoComment.setVideoCommentContent(videoAddCommentRequest.getVideoCommentContent());
+        }else{ //说明是二级评论或三级评论
+            long videoCommentId = Long.parseLong(videoCommentIdStr);
+            VideoComment videoTempComment = videoCommentService.getById(videoCommentId);
+            //判断到底是二级还是三级,如果是二级就设置parentId
+            if(videoTempComment.getParentId()==null){
+                videoComment.setParentId(videoTempComment.getId());
+            }else{
+                videoComment.setParentId(videoTempComment.getParentId());
+            }
+            videoComment.setAnswerId(videoTempComment.getId());
+            videoComment.setVideoCommentContent(videoAddCommentRequest.getVideoCommentContent());
+        }
+        boolean isSuccess = videoCommentService.save(videoComment);
+        return isSuccess;
+    }
+
+    @Override
+    public List<VideoCommentVO> getVideoComment(Long videoId,String userId) {
+        Video video = this.getById(videoId);
+        if(video==null){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"视频已删除或不存在");
+        }
+        //先找一级评论,再处理二三级
+        QueryWrapper<VideoComment> videoCommentQueryWrapper = new QueryWrapper<>();
+        videoCommentQueryWrapper.eq("video_id",videoId);
+        videoCommentQueryWrapper.eq("video_comment_status",0);
+        videoCommentQueryWrapper.orderByDesc("video_comment_thumb");
+        videoCommentQueryWrapper.orderByDesc("create_time");
+        videoCommentQueryWrapper.isNull("parent_id");
+        List<VideoComment> videoCommentList = videoCommentService.list(videoCommentQueryWrapper);
+        List<VideoCommentVO> videoCommentVOS = videoCommentList.stream().map(item -> {
+            //处理一级
+            VideoCommentVO videoCommentVO = setVideoComment(item,userId);
+            videoCommentVO.setIsChild(false);
+            videoCommentVO.setVideoCommentTo(null);
+            //处理完一级处理二三级，先按照点赞数降序，再按照时间降序
+            QueryWrapper<VideoComment> videoCommentQueryWrapperForSecond = new QueryWrapper<>();
+            videoCommentQueryWrapperForSecond.eq("video_id", videoId);
+            videoCommentQueryWrapperForSecond.eq("parent_id", item.getId());
+            videoCommentQueryWrapperForSecond.eq("video_comment_status",0);
+            videoCommentQueryWrapperForSecond.orderByDesc("video_comment_thumb");
+            videoCommentQueryWrapperForSecond.orderByDesc("create_time");
+            List<VideoComment> videoComments = videoCommentService.list(videoCommentQueryWrapperForSecond);
+            //处理二/三级评论
+            List<VideoCommentVO> otherComment = videoComments.stream().map(secondOrThirdComment -> {
+                Long answerId = secondOrThirdComment.getAnswerId();
+                Long parentId = secondOrThirdComment.getParentId();
+                if (answerId == parentId) {//如果回复的评论是一级评论，否则肯定是三级评论
+                    VideoCommentVO secondComment = setVideoComment(secondOrThirdComment,userId);
+                    secondComment.setIsChild(true);
+                    videoCommentVO.setVideoCommentTo(null);
+                    return secondComment;
+                } else {//三级评论
+                    VideoCommentVO thirdComment = setVideoComment(secondOrThirdComment,userId);
+                    thirdComment.setIsChild(true);
+                    VideoCommentToVO videoCommentToVO = new VideoCommentToVO();
+                    //处理一下回复的用户信息
+                    VideoComment answerComment = videoCommentService.getById(answerId);
+                    if(answerComment==null){//说明要回复的那条评论已经删掉了
+                        videoCommentToVO.setVideoCommentToUserName("评论已删除");
+                    }else{
+                        //评论没有被删
+                        User user = userService.getById(answerComment.getUserId());
+                        if (user == null) {//用户注销
+                            videoCommentToVO.setVideoCommentToUserName("用户已注销");
+                        } else {
+                            videoCommentToVO.setVideoCommentToUserName(user.getUserName());
+                            videoCommentToVO.setVideoCommentToUserId(user.getId() + "");
+                        }
+                    }
+                    thirdComment.setVideoCommentTo(videoCommentToVO);
+                    return thirdComment;
+                }
+            }).collect(Collectors.toList());
+            videoCommentVO.setVideoCommentChildren(otherComment);
+            return videoCommentVO;
+        }).collect(Collectors.toList());
+        return videoCommentVOS;
+    }
+
+    @Override
+    public boolean thumbVideoComment(Long videoCommentId,Long userId) {
+        String videoCommentKey=VIDEO_COMMENT_THUMB_KEY+videoCommentId;
+        Double score = stringRedisTemplate.opsForZSet().score(videoCommentKey, userId.toString());
+        boolean isSuccess;
+        if(score!=null){
+            //收藏过，取消，把用户信息移除set
+            //先把收藏数-1
+            isSuccess = videoCommentService.update().setSql("video_comment_thumb=video_comment_thumb-1").eq("id", videoCommentId).update();
+            //再把收藏记录删除
+            if(isSuccess){
+                stringRedisTemplate.opsForZSet().remove(videoCommentKey,userId.toString());
+            }
+        }else {
+            //如果没收藏过，收藏，并把用户信息放到set中
+            isSuccess = videoCommentService.update().setSql("video_comment_thumb=video_comment_thumb+1").eq("id", videoCommentId).update();
+            if(isSuccess){
+                stringRedisTemplate.opsForZSet().add(videoCommentKey,userId.toString(),System.currentTimeMillis());
+            }
+        }
+        return isSuccess;
+    }
+
+    @Override
+    public boolean removeVideoComment(Long userId, Long videoCommentId) {
+        VideoComment videoComment = videoCommentService.getById(videoCommentId);
+        if(videoComment==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"评论已删除或不存在");
+        }
+        Video video = this.getById(videoComment.getVideoId());
+        Long authorId = video.getUserId();
+        if(authorId==userId|| userId==videoComment.getUserId()){
+            boolean isSuccess = videoCommentService.removeById(videoCommentId);
+            return isSuccess;
+        }else{
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+        }
+    }
+
+    /**
+     * VideoCommentVO转换
+     * @param videoComment
+     * @return
+     */
+    private VideoCommentVO setVideoComment(VideoComment videoComment,String userId){
+        VideoCommentVO videoCommentVO = new VideoCommentVO();
+        videoCommentVO.setVideoCommentId(videoComment.getId()+"");
+        videoCommentVO.setVideoCommentUserId(videoComment.getUserId()+"");
+        String formatTime = DateUtil.format(videoComment.getCreateTime(), "yyyy-MM-dd HH:mm:ss");
+        videoCommentVO.setVideoCommentCreateTime(formatTime);
+        videoCommentVO.setVideoCommentThumbNum(videoComment.getVideoCommentThumb());
+        videoCommentVO.setVideoCommentContent(videoComment.getVideoCommentContent());
+        //处理用户
+        User user = userService.getById(videoComment.getUserId());
+        String userName=user==null?"用户已注销":user.getUserName();
+        videoCommentVO.setVideoCommentUserName(userName);
+        if(user!=null){ //头像给默认头像
+            UserInfo userInfo = userInfoService.getOne(new QueryWrapper<UserInfo>().eq("user_id", user.getId()));
+            videoCommentVO.setVideoCommentUserAvatar(userInfo.getUserAvatar());
+        }else{
+            videoCommentVO.setVideoCommentUserAvatar(USER_DEFAULT_AVATAR);
+        }
+        //处理是否点赞
+        if(StrUtil.isNotBlank(userId)){
+            String videoCommentKey=VIDEO_COMMENT_THUMB_KEY+videoComment.getId();
+            Double score = stringRedisTemplate.opsForZSet().score(videoCommentKey, userId);
+            videoCommentVO.setIsThumb(score==null?1:0);
+        }else{
+            videoCommentVO.setIsThumb(1);
+
+        }
+        return videoCommentVO;
+    }
 
     /**
      * VideoTagVO转换

@@ -1,12 +1,9 @@
 package com.typeofNull.nullvideo.controller;
 
 import cn.hutool.core.util.StrUtil;
-import com.sun.corba.se.spi.activation.ServerAlreadyRegisteredHelper;
 import com.typeofNull.nullvideo.common.BaseResponse;
 import com.typeofNull.nullvideo.common.ErrorCode;
 import com.typeofNull.nullvideo.common.ResultUtils;
-import com.typeofNull.nullvideo.model.vo.search.SearchUserAndVideoVO;
-import com.typeofNull.nullvideo.model.vo.search.SearchVO;
 import com.typeofNull.nullvideo.model.vo.search.SearchVideoVO;
 import com.typeofNull.nullvideo.service.SearchService;
 import org.springframework.web.bind.annotation.GetMapping;

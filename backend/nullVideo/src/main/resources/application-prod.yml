@@ -3,9 +3,10 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://124.222.255.122:3306/null_video
-    username: root
+    username: null_video
     password: 123456
   redis:
     port: 6379
     host: 124.222.255.122
     database: 0
+    password: 123456

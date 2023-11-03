@@ -7,6 +7,7 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.server.HttpServerRequest;
 import cn.hutool.json.JSONUtil;
+import cn.hutool.jwt.JWTUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -17,6 +18,7 @@ import com.typeofNull.nullvideo.model.dto.user.UserUpdateRequest;
 import com.typeofNull.nullvideo.model.entity.*;
 import com.typeofNull.nullvideo.model.vo.admin.AdminAuditVideoVO;
 import com.typeofNull.nullvideo.model.vo.search.SearchUserVO;
+import com.typeofNull.nullvideo.model.vo.user.UserFollowVO;
 import com.typeofNull.nullvideo.model.vo.user.UserLoginVO;
 import com.typeofNull.nullvideo.model.vo.user.UserRegiserVO;
 import com.typeofNull.nullvideo.service.*;
@@ -74,7 +76,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     private StringRedisTemplate stringRedisTemplate;
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public UserRegiserVO userRegister(String userAccount, String userPassword, String checkPassword) {
         //校验参数
         if(userAccount.length()<=4 ){
@@ -114,8 +116,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             Long userId = user.getId();
             //创建个人信息
             UserInfo userInfo = new UserInfo();
+            userInfo.setUserAvatar(USER_DEFAULT_AVATAR);
             userInfo.setUserId(userId);
+            userInfo.setUserProfile(USER_DEFAULT_PROFILE);
             boolean userInfoSave = userInfoService.save(userInfo);
+
             if(!userInfoSave){
                 throw new BusinessException(ErrorCode.OPERATION_ERROR,"注册失败");
             }
@@ -133,6 +138,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             UserLoginVO userLoginVOInfo = getUserLoginVOInfo(user);
             UserRegiserVO userRegiserVO = new UserRegiserVO();
             BeanUtil.copyProperties(userLoginVOInfo,userRegiserVO);
+            userRegiserVO.setUserRole(0);
             String token = UUID.randomUUID( true).toString();
             userRegiserVO.setToken(token);
             String realToken=UserUtil.getRedisTokenKey(token);
@@ -163,6 +169,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         //信息正确,发放token
         String uuid = UUID.randomUUID( true).toString();
+//        JWTUtil.createToken();
         String token= USER_LOGIN_STATE+":"+uuid;
         String userJsonStr = JSONUtil.toJsonStr(user);
         stringRedisTemplate.opsForValue().set(token,userJsonStr,LOGIN_CODE_TTL, TimeUnit.MINUTES);
@@ -181,6 +188,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
                 throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"登录信息已过期");
             }
                 user = JSONUtil.toBean(userJsonStr, User.class);
+                user=this.getById(user.getId());
             if(user.getId()==null){
                 throw new BusinessException(ErrorCode.PARAMS_ERROR,"用户已注销");
             }
@@ -318,7 +326,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             adminAuditVideoVO.setVideoTags(videoTags);
             //处理Type
             VideoType videoType = videoTypeService.getById(item.getVideoType());
-            adminAuditVideoVO.setVideoTypeName(videoType.getVideoTypeName());
+            if(videoType!=null){
+                adminAuditVideoVO.setVideoTypeName(videoType.getVideoTypeName());
+            }
             //在处理Author
             Long authorId = item.getUserId();
             User user = this.getById(authorId);
@@ -377,6 +387,50 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return searchUserVOList;
     }
 
+    @Override
+    public List<UserFollowVO> getFollow(String userIdStr, Integer option) {
+        long userId = Long.parseLong(userIdStr);
+        long count = this.count(new QueryWrapper<User>().eq("id",userId));
+        if(count<=0){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"用户数据异常");
+        }
+        QueryWrapper<Follows> followsQueryWrapper = new QueryWrapper<>();
+        followsQueryWrapper.orderByDesc("create_time");
+        if(option==0){
+            followsQueryWrapper.eq("follower_id",userId);
+            List<Follows> follows = followsService.list(followsQueryWrapper);
+                List<UserFollowVO> userFollowVOS = follows.stream().map(follow -> {
+                User user = this.getById(follow.getFollowingId());
+                UserFollowVO userFollowVO = new UserFollowVO();
+                userFollowVO.setFollowId(user.getId() + "");
+                userFollowVO.setFollowName(user.getUserName());
+                QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
+                userInfoQueryWrapper.eq("user_id", user.getId());
+                UserInfo userInfo = userInfoService.getOne(userInfoQueryWrapper);
+                userFollowVO.setFollowAvatar(userInfo.getUserAvatar());
+                userFollowVO.setFollowProfile(userInfo.getUserProfile());
+                return userFollowVO;
+            }).collect(Collectors.toList());
+            return userFollowVOS;
+        }else{
+            followsQueryWrapper.eq("following_id",userId);
+            List<Follows> follows = followsService.list(followsQueryWrapper);
+            List<UserFollowVO> userFollowVOS = follows.stream().map(follow -> {
+                User user = this.getById(follow.getFollowingId());
+                UserFollowVO userFollowVO = new UserFollowVO();
+                userFollowVO.setFollowId(user.getId() + "");
+                userFollowVO.setFollowName(user.getUserName());
+                QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
+                userInfoQueryWrapper.eq("user_id", user.getId());
+                UserInfo userInfo = userInfoService.getOne(userInfoQueryWrapper);
+                userFollowVO.setFollowAvatar(userInfo.getUserAvatar());
+                userFollowVO.setFollowProfile(userInfo.getUserProfile());
+                return userFollowVO;
+            }).collect(Collectors.toList());
+            return userFollowVOS;
+        }
+    }
+
     /**
      * 用于获得完整的用户信息
      * @param user
@@ -400,10 +454,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         LambdaQueryWrapper<Video> videoLambdaQueryWrapper = new LambdaQueryWrapper<>();
         videoLambdaQueryWrapper.eq(Video::getUserId,userInfo.getUserId());
         List<Video> videoList = videoService.list(videoLambdaQueryWrapper);
+
         Integer sumThumb=0;
+        Integer sumFavour=0;
         for(Video v:videoList){
             sumThumb+=v.getVideoThumbNum();
+            sumFavour+=v.getVideoFavourNum();
         }
+        userLoginVO.setVideoTotalFavourNum(sumFavour);
         userLoginVO.setVideoTotalThumbNum(sumThumb);
         userLoginVO.setVideoNum(videoList.size());
         return userLoginVO;

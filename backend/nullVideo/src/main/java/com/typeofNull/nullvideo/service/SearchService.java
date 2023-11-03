@@ -1,6 +1,7 @@
 package com.typeofNull.nullvideo.service;
 
 import com.typeofNull.nullvideo.model.vo.search.SearchVideoVO;
+import com.typeofNull.nullvideo.model.vo.user.UserFollowVO;
 
 import java.util.List;
 
@@ -14,4 +15,5 @@ public interface SearchService {
     List<SearchVideoVO> searchSpecialVideo(Long videoTypeId);
 
     Object searchAll(String searchText,Integer option);
+
 }

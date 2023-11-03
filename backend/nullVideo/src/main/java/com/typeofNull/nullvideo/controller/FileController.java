@@ -55,7 +55,7 @@ public class FileController {
         HashMap<String, String> map = new HashMap<>();
         Configuration configuration = new Configuration(Region.autoRegion());
         UploadManager uploadManager = new UploadManager(configuration);
-        String key = createNewFileName(multipartFile.getOriginalFilename());
+        String key = createNewFileName(multipartFile.getOriginalFilename(),multipartFile.getContentType());
         try{
             //认证
             Auth auth = Auth.create(accessKey, secretKey);
@@ -79,9 +79,8 @@ public class FileController {
     }
 
 
-    private String createNewFileName(String originalFilename) {
-        // 获取后缀
-        String suffix = StrUtil.subAfter(originalFilename, ".", true);
+    private String createNewFileName(String originalFilename,String fileType) {
+        String suffix = fileType.substring(fileType.lastIndexOf("/")+1);
         // 生成目录
         String name = UUID.randomUUID().toString();
         return StrUtil.format("{}.{}",  name, suffix);

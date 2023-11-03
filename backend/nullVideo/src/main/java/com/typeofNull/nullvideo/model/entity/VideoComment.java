@@ -69,6 +69,14 @@ public class VideoComment implements Serializable {
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
+    public VideoComment(){
+
+    }
+    public VideoComment(Long userId,Long videoId){
+        this.userId=userId;
+        this.videoId=videoId;
+    }
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {

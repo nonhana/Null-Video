@@ -20,5 +20,5 @@ public class AdminUpdateVideoStatusRequest implements Serializable {
     /**
      * 1-审核通过 2-不通过
      */
-    private String videoStatus;
+    private Integer videoStatus;
 }
