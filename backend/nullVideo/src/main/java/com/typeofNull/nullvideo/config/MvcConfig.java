@@ -20,6 +20,8 @@ public class MvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
        registry.addInterceptor(new RefreshTokenInterceptor(stringRedisTemplate))
-               .excludePathPatterns("/**").order(0);
+               .excludePathPatterns("/user/register","/user/login",
+                       "/video/get/page","video/get","/video/get/comment",
+                       "/search/video/type","search/all");
     }
 }

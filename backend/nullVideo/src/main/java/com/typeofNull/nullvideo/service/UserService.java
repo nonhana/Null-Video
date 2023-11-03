@@ -7,6 +7,7 @@ import com.typeofNull.nullvideo.model.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.typeofNull.nullvideo.model.vo.admin.AdminAuditVideoVO;
 import com.typeofNull.nullvideo.model.vo.search.SearchUserVO;
+import com.typeofNull.nullvideo.model.vo.user.UserFollowVO;
 import com.typeofNull.nullvideo.model.vo.user.UserLoginVO;
 import com.typeofNull.nullvideo.model.vo.user.UserRegiserVO;
 
@@ -39,4 +40,8 @@ public interface UserService extends IService<User> {
     boolean updateVideoStatus(Long userId,Long videoId,Integer videoStatus);
 
     List<SearchUserVO> searchUser(String searchText);
+
+    List<UserFollowVO> getFollow(String userId,Integer option);
+
+
 }

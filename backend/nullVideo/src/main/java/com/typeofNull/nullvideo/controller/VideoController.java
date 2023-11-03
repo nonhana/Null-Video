@@ -50,7 +50,7 @@ public class VideoController {
      * @return
      */
     @GetMapping("/get/page")
-    public BaseResponse<List<VideoShowVO>> getVideoShowOnPage(String authorId,String userId,@RequestParam(defaultValue = "0") Integer begin){
+    public BaseResponse<List<VideoShowVO>> getVideoShowOnPage(String authorId,@RequestParam(required = false) String userId,@RequestParam(defaultValue = "0") Integer begin){
         if(StrUtil.isBlank(authorId)){
             return ResultUtils.error(ErrorCode.PARAMS_ERROR,"请求参数为空");
         }
@@ -239,6 +239,58 @@ public class VideoController {
      */
     @PostMapping("/add/comment")
     public BaseResponse<Boolean> commentVideo(@RequestBody VideoAddCommentRequest videoAddCommentRequest){
-        return null;
+        if(videoAddCommentRequest==null){
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
+        }
+        boolean isSuccess = videoService.addVideoComment(videoAddCommentRequest);
+        return ResultUtils.success(isSuccess);
+    }
+
+    /**
+     * 获取视频评论
+     * @param videoId
+     * @return
+     */
+    @GetMapping("/get/comment")
+    public BaseResponse<List<VideoCommentVO>> getVideoComment(String videoId,@RequestParam(required = false) String userId){
+        if(StrUtil.isBlank(videoId)){
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
+        }
+        List<VideoCommentVO> videoComment = videoService.getVideoComment(Long.parseLong(videoId), userId);
+        return ResultUtils.success(videoComment);
+    }
+
+    /**
+     * 点赞/取消 评论
+     * @param videoThumbCommentRequest
+     * @return
+     */
+    @PostMapping("/thumb/comment")
+    public BaseResponse<Boolean> thumbComment(@RequestBody VideoThumbCommentRequest videoThumbCommentRequest){
+        if(videoThumbCommentRequest==null){
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
+        }
+        String videoCommentIdStr = videoThumbCommentRequest.getVideoCommentId();
+        String userIdStr = videoThumbCommentRequest.getUserId();
+        if (StrUtil.hasBlank(videoCommentIdStr,userIdStr)) {
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
+        }
+        boolean isSuccess = videoService.thumbVideoComment(Long.parseLong(videoCommentIdStr), Long.parseLong(userIdStr));
+        return ResultUtils.success(isSuccess);
+    }
+
+    /**
+     * 删除评论
+     * @param userId
+     * @param videoCommentId
+     * @return
+     */
+    @DeleteMapping("/remove/comment")
+    public BaseResponse<Boolean> removeVideoComment(String userId,String videoCommentId){
+        if(StrUtil.hasBlank(userId,videoCommentId)){
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
+        }
+        boolean isSuccess = videoService.removeVideoComment(Long.parseLong(userId), Long.parseLong(videoCommentId));
+        return ResultUtils.success(isSuccess);
     }
 }

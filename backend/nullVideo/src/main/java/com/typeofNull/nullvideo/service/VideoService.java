@@ -1,5 +1,6 @@
 package com.typeofNull.nullvideo.service;
 
+import com.typeofNull.nullvideo.model.dto.video.VideoAddCommentRequest;
 import com.typeofNull.nullvideo.model.dto.video.VideoUpdateRequest;
 import com.typeofNull.nullvideo.model.dto.video.VideoUploadRequest;
 import com.typeofNull.nullvideo.model.entity.Video;
@@ -47,4 +48,12 @@ public interface VideoService extends IService<Video> {
     List<SearchVideoVO> searchVideo(String searchText);
 
     List<VideoShowVO> getThumbOrFavourVideo(Long userId,Integer option);
+
+    boolean addVideoComment(VideoAddCommentRequest videoAddCommentRequest);
+
+    List<VideoCommentVO> getVideoComment(Long videoId,String userId);
+
+    boolean thumbVideoComment(Long videoCommentId,Long userId);
+
+    boolean removeVideoComment(Long userId,Long videoCommentId);
 }

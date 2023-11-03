@@ -12,8 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.concurrent.TimeUnit;
 
-import static com.typeofNull.nullvideo.constant.UserConstant.LOGIN_CODE_TTL;
-import static com.typeofNull.nullvideo.constant.UserConstant.USER_LOGIN_STATE;
+import static com.typeofNull.nullvideo.constant.UserConstant.*;
 
 /**
  * @author Andy
@@ -32,7 +31,7 @@ public class RefreshTokenInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         //token是否为空
-        String token = request.getHeader("authorization");
+        String token = request.getHeader(TOKEN);
         if(token==null|| StrUtil.isBlank(token)){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }

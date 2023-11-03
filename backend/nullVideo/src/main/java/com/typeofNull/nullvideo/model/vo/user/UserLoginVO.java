@@ -32,6 +32,8 @@ public class UserLoginVO implements Serializable {
 
     private Integer videoTotalThumbNum;
 
+    private Integer videoTotalFavourNum;
+
     private Integer videoNum;
     /**
      * 0-普通用户 1-管理员

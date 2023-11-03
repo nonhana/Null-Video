@@ -51,11 +51,11 @@ public class AdminController {
         }
         String videoIdStr = adminUpdateVideoStatusRequest.getVideoId();
         String userIdStr = adminUpdateVideoStatusRequest.getUserId();
-        String videoStatusStr = adminUpdateVideoStatusRequest.getVideoStatus();
-        if(StrUtil.hasBlank(videoIdStr,userIdStr,videoStatusStr)){
+        Integer videoStatus = adminUpdateVideoStatusRequest.getVideoStatus();
+        if(StrUtil.hasBlank(videoIdStr,userIdStr)|| (videoStatus<=0&&videoStatus>=3)){
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
-        boolean isSuccess = userService.updateVideoStatus(Long.parseLong(userIdStr), Long.parseLong(videoIdStr),Integer.parseInt(videoStatusStr));
+        boolean isSuccess = userService.updateVideoStatus(Long.parseLong(userIdStr), Long.parseLong(videoIdStr),videoStatus);
         return ResultUtils.success(isSuccess);
     }
 }

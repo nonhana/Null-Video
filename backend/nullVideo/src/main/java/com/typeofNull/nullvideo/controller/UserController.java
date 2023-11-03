@@ -6,6 +6,7 @@ import com.typeofNull.nullvideo.common.BaseResponse;
 import com.typeofNull.nullvideo.common.ErrorCode;
 import com.typeofNull.nullvideo.common.ResultUtils;
 import com.typeofNull.nullvideo.model.dto.user.*;
+import com.typeofNull.nullvideo.model.vo.user.UserFollowVO;
 import com.typeofNull.nullvideo.model.vo.user.UserLoginVO;
 import com.typeofNull.nullvideo.model.vo.user.UserRegiserVO;
 import com.typeofNull.nullvideo.service.UserService;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.List;
 
 import static com.typeofNull.nullvideo.constant.UserConstant.TOKEN;
 
@@ -74,9 +77,9 @@ public class UserController {
      * @return
      */
     @GetMapping ("/getUserInfo")
-    public BaseResponse<UserLoginVO> getUserInfoByToken(String userId,HttpServletRequest request){
+    public BaseResponse<UserLoginVO> getUserInfoByToken(@RequestParam(required = false) String userId,HttpServletRequest request){
         String token = request.getHeader(TOKEN);
-        if(StrUtil.isBlank(token)||StrUtil.isBlank(userId)){ //如果token和userId都为空，报错
+        if(StrUtil.isBlank(token)){ //如果token和userId都为空，报错
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
         UserLoginVO userLoginVo = userService.getUserLoginVo(token,userId);
@@ -129,6 +132,22 @@ public class UserController {
         }
         boolean isSuccess = userService.userFollowing(userIdStr, followingIdStr);
         return ResultUtils.success(isSuccess);
+    }
+
+    /**
+     * 查看用户关注和粉丝
+     * @param userId
+     * @param option
+     * @return
+     */
+    @GetMapping("/get/follow")
+    public BaseResponse<List<UserFollowVO>> showFollowVO(String userId, Integer option){
+        //0-关注 1-粉丝
+        if(option<0&&option>2 || StrUtil.isBlank(userId)){
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
+        }
+        List<UserFollowVO> userFollow = userService.getFollow(userId,option);
+        return ResultUtils.success(userFollow);
     }
 
     /**

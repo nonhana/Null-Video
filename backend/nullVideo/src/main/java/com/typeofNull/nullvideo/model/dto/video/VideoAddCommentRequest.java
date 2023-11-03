@@ -17,7 +17,12 @@ public class VideoAddCommentRequest implements Serializable {
 
     private String userId;
 
-    private String answerId;
+    /**
+     * 可以为null,如果是一级评论就不需要传
+     */
+    private String videoCommentId;
 
-    private String videoCommentStatus;
+    private String videoCommentContent;
 }
+
+

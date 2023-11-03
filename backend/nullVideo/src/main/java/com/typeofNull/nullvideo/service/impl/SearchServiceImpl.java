@@ -6,6 +6,7 @@ import com.typeofNull.nullvideo.model.vo.search.SearchUserAndVideoVO;
 import com.typeofNull.nullvideo.model.vo.search.SearchUserVO;
 import com.typeofNull.nullvideo.model.vo.search.SearchVO;
 import com.typeofNull.nullvideo.model.vo.search.SearchVideoVO;
+import com.typeofNull.nullvideo.model.vo.user.UserFollowVO;
 import com.typeofNull.nullvideo.service.SearchService;
 import com.typeofNull.nullvideo.service.UserService;
 import com.typeofNull.nullvideo.service.VideoService;
@@ -51,4 +52,6 @@ public class SearchServiceImpl implements SearchService {
         }
         throw new BusinessException(ErrorCode.PARAMS_ERROR);
     }
+
+
 }

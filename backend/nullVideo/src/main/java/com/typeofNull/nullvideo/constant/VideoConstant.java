@@ -17,4 +17,6 @@ public interface VideoConstant {
 
     String VIDEO_FAVOUR_KEY="video:favour:";
 
+    String VIDEO_COMMENT_THUMB_KEY="video:comment:thumb";
+
 }

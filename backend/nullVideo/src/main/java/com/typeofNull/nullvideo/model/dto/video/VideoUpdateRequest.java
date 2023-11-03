@@ -14,7 +14,7 @@ import java.util.List;
 public class VideoUpdateRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private String videDescription;
+    private String videoDescription;
 
     private String videoId;
 
