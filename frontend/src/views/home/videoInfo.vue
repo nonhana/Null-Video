@@ -8,7 +8,7 @@
         <div class="author-name">{{ 'TZX' }}</div>
         <div class="author-fence">{{ 100 }} 位粉丝</div>
       </div>
-      <Button height="2.25rem" width="4.5rem">关注</Button>
+      <Button height="2.25rem" width="4.5rem" style="font-weight: bold">关注</Button>
     </div>
 
     <div class="video-intro">
@@ -108,7 +108,7 @@ const tags: { name: string; id: string; color: string }[] = reactive([
       height: 2rem;
       padding: 1rem;
       border-radius: @border-radius;
-      box-shadow: @shadow-outer;
+      // box-shadow: @shadow-outer;
       color: #fff;
       font-size: 0.875rem;
       font-weight: bold;
@@ -129,7 +129,7 @@ const tags: { name: string; id: string; color: string }[] = reactive([
 
   .video-operation {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
 
     > div {
       cursor: pointer;

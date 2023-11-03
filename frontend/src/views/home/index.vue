@@ -9,11 +9,8 @@
           <Card style="margin-top: 2rem">
             <div class="video-choice">视频类型选择</div>
             <div class="video-types">
-              <div
-                v-for="videoType in videoTypes"
-                :key="videoType.id"
-                :style="{ background: videoType.color }"
-              >
+              <div v-for="(videoType, index ) in videoTypes" :key="videoType.id"
+                :class="{ 'selected': videoType.selected }" @click="typeSelect(index)">
                 {{ videoType.name }}
               </div>
             </div>
@@ -43,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, ref, reactive } from 'vue'
+import { onMounted, onBeforeMount, onBeforeUnmount, ref, reactive } from 'vue'
 import videoInfo from './videoInfo.vue'
 import { NGrid } from 'naive-ui'
 import Card from '@nullVideo/card/card.vue'
@@ -55,44 +52,69 @@ import 'video.js/dist/video-js.css' // 引入视频样式文件
 // import 'videojs-resolution-switcher/lib/videojs-resolution-switcher.css'
 // import 'videojs-resolution-switcher'
 import Player from 'video.js/dist/types/player'
+const defaultVideoTypes = [
+  {
+    name: "全部",
+    id: "123123",
+    selected: true
+  },
+  {
+    name: "政治",
+    id: "12313423123",
+    selected: true
+  },
+  {
+    name: "娱乐",
+    id: "35",
+    selected: true
+  },
+  {
+    name: "体育",
+    id: "74568",
+    selected: true
+  },
+  {
+    name: "学习",
+    id: "435",
+    selected: true
+  },
+  {
+    name: "艺术",
+    id: "123213213213",
+    selected: true
+  },
+  {
+    name: "美食",
+    id: "4545745",
+    selected: true
+  },
+]
 
-const videoTypes: { name: string; color: string; id: string }[] = reactive([
-  {
-    name: '娱乐',
-    id: '123123',
-    color: '#ff8200'
-  },
-  {
-    name: '政治',
-    id: '12313423123',
-    color: '#4a91ee'
-  },
-  {
-    name: '政治',
-    id: '35',
-    color: '#4a91ee'
-  },
-  {
-    name: '政治',
-    id: '74568',
-    color: '#4a91ee'
-  },
-  {
-    name: '政治',
-    id: '435',
-    color: '#4a91ee'
-  },
-  {
-    name: '政治',
-    id: '123213213213',
-    color: '#4a91ee'
-  },
-  {
-    name: '政治',
-    id: '4545745',
-    color: '#4a91ee'
+let videoTypes: { name: string; selected: boolean; id: string }[] = reactive(
+  JSON.parse(
+    localStorage.getItem('videoTypes') || JSON.stringify(defaultVideoTypes)
+  )
+)
+
+// 切换 type 状态，同时存入本地数据
+const typeSelect = (index: number) => {
+  const flag = videoTypes[index].selected
+  if (index === 0) {
+    if (!flag) {
+      videoTypes.forEach((item) => {
+        item.selected = true
+      })
+    } else {
+      videoTypes[0].selected = false
+    }
+  } else {
+    if (flag) {
+      videoTypes[0].selected = false
+    }
+    videoTypes[index].selected = !videoTypes[index].selected
   }
-])
+  localStorage.setItem('videoTypes', JSON.stringify(videoTypes))
+}
 
 const videoQueue: { current: number; queue: string[] } = reactive({
   current: -1,
@@ -112,7 +134,21 @@ const videoChange = (ways: number) => {
   player.src(videoQueue.queue[videoQueue.current])
 }
 
+onBeforeMount(() => {
+  // 挂载前判断类型结构是否正确
+  if (
+    JSON.parse(localStorage.getItem('videoTypes') || '[]').length !==
+    defaultVideoTypes
+  ) {
+    localStorage.setItem('videoTypes', JSON.stringify(defaultVideoTypes))
+  }
+
+})
+
 onMounted(() => {
+  console.log(JSON.parse(
+    localStorage.getItem('videoTypes') || JSON.stringify(defaultVideoTypes)
+  ))
   // 加载视频列表
   videoQueue.queue.push(
     ...['./video-test001.mp4', './video-test002.mp4', './video-test003.mp4']
@@ -178,10 +214,24 @@ onBeforeUnmount(() => {
       height: 2rem;
       padding: 1rem;
       border-radius: @border-radius;
-      // box-shadow: @shadow-outer;
-      color: #fff;
+      color: @text-secondary;
       font-size: 0.875rem;
       font-weight: bold;
+      transition: all 0.3s;
+      background-color: @bg-color-secondary;
+      cursor: pointer;
+
+      &:hover {
+        color: @text;
+      }
+    }
+
+
+
+    .selected {
+      color: #fff;
+      box-shadow: @shadow-outer;
+      background-color: @bg-color-primary;
     }
   }
 

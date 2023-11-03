@@ -9,7 +9,7 @@
         <span>{{ userInfo.user_signature }}</span>
       </div>
     </div>
-    <Button :type="status ? '' : 'info'" @click="follow">{{
+    <Button style="font-weight: bold" :type="status ? '' : 'info'" @click="follow">{{
       status ? '取关' : '关注'
     }}</Button>
   </div>
