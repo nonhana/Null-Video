@@ -6,8 +6,14 @@
         @click="type = 'follow'; presentStatus = [true, false]">
         <span>关注列表</span>
       </div>
-      <div class="title-item" :class="presentStatus[1] ? 'selected' : ''"
-        @click="type = 'fan'; presentStatus = [false, true]">
+      <div
+        class="title-item"
+        :class="presentStatus[1] ? 'selected' : ''"
+        @click="
+          type = 'fan'
+          presentStatus = [false, true]
+        "
+      >
         <span>粉丝列表</span>
       </div>
     </div>

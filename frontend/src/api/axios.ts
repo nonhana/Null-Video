@@ -14,16 +14,23 @@ const notify = (content: string, type: NotificationType = 'warning') => {
   })
 }
 
-function myAxios<T>(axiosConfig: AxiosRequestConfig): Promise<T> {
+// 定义res.data的类型
+interface Data {
+  code: number
+  data: any
+  message: string
+}
+
+function myAxios(axiosConfig: AxiosRequestConfig): Promise<Data> {
   const service = axios.create({
-    baseURL: import.meta.env.VITE_API_URL as string,
-    timeout: import.meta.env.VITE_API_TIMEOUT
+    baseURL: 'http://124.222.255.122:8080',
+    timeout: 30000
   })
 
   // 请求拦截器：可以在发请求之前可以处理一些业务
   service.interceptors.request.use((config) => {
     const token = localStorage.getItem('token')
-    config.headers.Authorization = token ? `Bearer ${token}` : ''
+    config.headers.Authorization = token ?? ''
     return config
   })
 

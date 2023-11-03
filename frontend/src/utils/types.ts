@@ -3,7 +3,7 @@
 
 // 用户信息
 export interface UserInfo {
-  user_id: number
+  user_id: string
   user_name: string
   user_signature: string
   user_avatar: string

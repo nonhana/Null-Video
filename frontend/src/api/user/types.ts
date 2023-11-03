@@ -14,11 +14,11 @@ export interface getUserInfoAPIParams {
 }
 
 export interface updateInfoAPIParams {
-  userId: number
-  gender: string
-  userAvatar: null
-  userName: string
-  userProfile: string
+  userId: string
+  gender?: string
+  userAvatar?: null
+  userName?: string
+  userProfile?: string
 }
 
 export interface followActionAPIParams {
