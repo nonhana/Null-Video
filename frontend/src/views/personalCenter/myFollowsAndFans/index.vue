@@ -1,14 +1,28 @@
 <template>
   <div class="index">
     <div class="title">
-      <div class="title-bottom" :class="presentStatus[0] ? '' : 'register'">
-      </div>
-      <div class="title-item" :class="presentStatus[0] ? 'selected' : ''"
-        @click="type = 'follow'; presentStatus = [true, false]">
+      <div
+        class="title-bottom"
+        :class="presentStatus[0] ? '' : 'register'"
+      ></div>
+      <div
+        class="title-item"
+        :class="presentStatus[0] ? 'selected' : ''"
+        @click="
+          type = 'follow'
+          presentStatus = [true, false]
+        "
+      >
         <span>关注列表</span>
       </div>
-      <div class="title-item" :class="presentStatus[1] ? 'selected' : ''"
-        @click="type = 'fan'; presentStatus = [false, true]">
+      <div
+        class="title-item"
+        :class="presentStatus[1] ? 'selected' : ''"
+        @click="
+          type = 'fan'
+          presentStatus = [false, true]
+        "
+      >
         <span>粉丝列表</span>
       </div>
     </div>
@@ -67,7 +81,6 @@ const refreshStatus = () => {
     .register {
       transform: translateX(100%);
     }
-
 
     .title-item {
       padding: 0.5rem;
