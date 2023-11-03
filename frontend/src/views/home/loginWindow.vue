@@ -3,8 +3,7 @@
     <Card width="37.5rem" height="28.125rem">
       <div class="head">
         <div class="title">
-          <div class="title-bottom" :class="presentStatus[0] ? '' : 'register'">
-          </div>
+          <div class="title-bottom" :class="presentStatus[0] ? '' : 'register'"></div>
           <div class="title-item" :class="presentStatus[0] ? 'selected' : ''"
             @click="isLogining = true; presentStatus = [true, false]">
             <span>登录</span>
@@ -13,8 +12,6 @@
             @click="isLogining = false; presentStatus = [false, true]">
             <span>注册</span>
           </div>
-
-
         </div>
         <div class="close" @click="emits('close')">
           <img :src="close" alt="close" />
@@ -46,8 +43,6 @@
             </n-radio>
           </div>
         </div>
-
-
       </n-form>
 
       <n-form v-else ref="registerRef" :model="registerForm" :rules="registerRules">
@@ -211,6 +206,7 @@ const register = async () => {
     userPassword: registerForm.value.password,
     checkPassword: registerForm.value.confirmPassword
   })
+  console.log(res)
 }
 
 watch(isLogining, (newVal, _) => {
@@ -289,8 +285,6 @@ watch(isLogining, (newVal, _) => {
       .selected {
         color: @text;
       }
-
-
     }
 
     .close {
@@ -335,8 +329,6 @@ watch(isLogining, (newVal, _) => {
       align-items: center;
     }
   }
-
-
 
   .button {
     margin: 2rem auto 0;

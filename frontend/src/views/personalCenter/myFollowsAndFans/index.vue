@@ -1,8 +1,7 @@
 <template>
   <div class="index">
     <div class="title">
-      <div class="title-bottom" :class="presentStatus[0] ? '' : 'register'">
-      </div>
+      <div class="title-bottom" :class="presentStatus[0] ? '' : 'register'"></div>
       <div class="title-item" :class="presentStatus[0] ? 'selected' : ''"
         @click="type = 'follow'; presentStatus = [true, false]">
         <span>关注列表</span>
@@ -24,18 +23,6 @@ import userList from '@/views/personalCenter/myFollowsAndFans/userList.vue'
 
 const type = ref<'follow' | 'fan'>('follow')
 const presentStatus = ref<boolean[]>([true, false])
-
-const changeStatus = (index: number) => {
-  presentStatus.value = [false, false]
-  presentStatus.value[index] = true
-}
-const refreshStatus = () => {
-  if (type.value === 'follow') {
-    presentStatus.value = [true, false]
-  } else {
-    presentStatus.value = [false, true]
-  }
-}
 </script>
 
 <style scoped lang="less">
@@ -67,7 +54,6 @@ const refreshStatus = () => {
     .register {
       transform: translateX(100%);
     }
-
 
     .title-item {
       padding: 0.5rem;

@@ -1,40 +1,85 @@
 <template>
   <div class="title">
     <span>Step2：基本信息填写</span>
-    <Button width="7.5rem" height="2.5rem" @click="emits('previousStep')">上一步</Button>
+    <Button width="7.5rem" height="2.5rem" @click="emits('previousStep')"
+      >上一步</Button
+    >
   </div>
 
   <div class="form">
-    <n-form ref="formRef" label-placement="left" label-width="auto" require-mark-placement="right-hanging"
-      :model="videoForm" :rules="rules">
+    <n-form
+      ref="formRef"
+      label-placement="left"
+      label-width="auto"
+      require-mark-placement="right-hanging"
+      :model="videoForm"
+      :rules="rules"
+    >
       <n-form-item path="cover" label="视频封面">
-        <n-upload list-type="image-card" @before-upload="fileSelected" @preview="fileDetected">
+        <n-upload
+          list-type="image-card"
+          @before-upload="fileSelected"
+          @preview="fileDetected"
+        >
           点击上传
         </n-upload>
-        <n-modal v-model:show="showModal" preset="card" style="width: 600px" title="图片预览">
+        <n-modal
+          v-model:show="showModal"
+          preset="card"
+          style="width: 600px"
+          title="图片预览"
+        >
           <img :src="previewImageUrl" style="width: 100%" />
         </n-modal>
         <!-- 图片裁剪组件 -->
-        <imgCropper :source-file="coverSourceFile" :cropped-file-type="coverCroppedFileType"
-          :dialog-visible="coverDialogVisible" @upload-image="uploadImage" @close-dialog="closeDialog" />
+        <imgCropper
+          :source-file="coverSourceFile"
+          :cropped-file-type="coverCroppedFileType"
+          :dialog-visible="coverDialogVisible"
+          @upload-image="uploadImage"
+          @close-dialog="closeDialog"
+        />
       </n-form-item>
       <n-form-item path="description" label="视频简介">
-        <n-input v-model:value="videoForm.video_description" type="textarea" placeholder="请随便介绍一下你要上传的视频~" show-count
-          :maxlength="100" @keydown.enter.prevent />
+        <n-input
+          v-model:value="videoForm.video_description"
+          type="textarea"
+          placeholder="请随便介绍一下你要上传的视频~"
+          show-count
+          :maxlength="100"
+          @keydown.enter.prevent
+        />
       </n-form-item>
       <n-form-item path="type" label="视频分类">
-        <n-select style="width: 15rem" v-model:value="videoForm.video_type" placeholder="选择一个合理的分类~"
-          :options="VIDEO_CATEGORY" />
+        <n-select
+          style="width: 15rem"
+          v-model:value="videoForm.video_type"
+          placeholder="选择一个合理的分类~"
+          :options="VIDEO_CATEGORY"
+        />
       </n-form-item>
       <n-form-item path="tag" label="视频标签">
-        <n-select style="width: 23rem" v-model:value="videoForm.video_tags" placeholder="为自己的视频添加标签，让更多人看到~" multiple
-          :options="VIDEO_TAG" />
+        <n-select
+          style="width: 23rem"
+          v-model:value="videoForm.video_tags"
+          placeholder="为自己的视频添加标签，让更多人看到~"
+          multiple
+          :options="VIDEO_TAG"
+        />
       </n-form-item>
       <n-form-item path="permission" label="视频权限">
-        <n-radio :checked="videoForm.video_permission === 0" :value="0" @change="permissionChoose">
+        <n-radio
+          :checked="videoForm.video_permission === 0"
+          :value="0"
+          @change="permissionChoose"
+        >
           朋友可见
         </n-radio>
-        <n-radio :checked="videoForm.video_permission === 1" :value="1" @change="permissionChoose">
+        <n-radio
+          :checked="videoForm.video_permission === 1"
+          :value="1"
+          @change="permissionChoose"
+        >
           所有人可见
         </n-radio>
       </n-form-item>

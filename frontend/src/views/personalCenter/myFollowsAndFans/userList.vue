@@ -1,14 +1,24 @@
 <template>
   <div class="UserList-wrapper">
     <div v-if="type === 'follow'">
-      <div class="item" v-for="user in followList" :key="user.user_info.user_id">
-        <user-item :user-info="user.user_info" :follow-status="user.follow_status" />
+      <div
+        class="item"
+        v-for="user in followList"
+        :key="user.user_info.user_id"
+      >
+        <user-item
+          :user-info="user.user_info"
+          :follow-status="user.follow_status"
+        />
         <hr />
       </div>
     </div>
     <div v-else>
       <div class="item" v-for="user in fanList" :key="user.user_info.user_id">
-        <user-item :user-info="user.user_info" :follow-status="user.follow_status" />
+        <user-item
+          :user-info="user.user_info"
+          :follow-status="user.follow_status"
+        />
         <hr />
       </div>
     </div>

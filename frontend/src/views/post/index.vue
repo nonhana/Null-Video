@@ -10,7 +10,6 @@
         </div>
       </transition>
     </Card>
-
   </div>
 </template>
 
@@ -18,7 +17,7 @@
 import { ref } from 'vue'
 import videoUpload from './videoUpload.vue'
 import videoForm from './videoForm.vue'
-import Card from '@nullVideo/card/card.vue';
+import Card from '@nullVideo/card/card.vue'
 
 // 当前步骤
 const currentStep = ref<number>(1)

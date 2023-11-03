@@ -2,7 +2,9 @@
   <div class="video-upload">
     <div class="title">
       <span>Step1：上传视频文件</span>
-      <Button width="7.5rem" height="2.5rem" @click="emits('nextStep')">下一步</Button>
+      <Button width="7.5rem" height="2.5rem" @click="emits('nextStep')"
+        >下一步</Button
+      >
     </div>
     <div class="upload">
       <n-upload directory-dnd :max="5" @change="handleChange">
@@ -28,7 +30,6 @@
 import { ArchiveOutline as ArchiveIcon } from '@vicons/ionicons5'
 import Button from '@nullVideo/button/button.vue'
 import type { UploadFileInfo } from 'naive-ui'
-
 
 const emits = defineEmits<{
   (e: 'nextStep'): void
@@ -56,7 +57,6 @@ const handleChange = (options: { fileList: UploadFileInfo[] }) => {
     color: @text;
   }
 }
-
 
 .upload {
   position: relative;

@@ -9,8 +9,12 @@
           <Card style="margin-top: 2rem">
             <div class="video-choice">视频类型选择</div>
             <div class="video-types">
-              <div v-for="(videoType, index ) in videoTypes" :key="videoType.id"
-                :class="{ 'selected': videoType.selected }" @click="typeSelect(index)">
+              <div
+                v-for="(videoType, index) in videoTypes"
+                :key="videoType.id"
+                :class="{ selected: videoType.selected }"
+                @click="typeSelect(index)"
+              >
                 {{ videoType.name }}
               </div>
             </div>
@@ -54,40 +58,40 @@ import 'video.js/dist/video-js.css' // 引入视频样式文件
 import Player from 'video.js/dist/types/player'
 const defaultVideoTypes = [
   {
-    name: "全部",
-    id: "123123",
+    name: '全部',
+    id: '123123',
     selected: true
   },
   {
-    name: "政治",
-    id: "12313423123",
+    name: '政治',
+    id: '12313423123',
     selected: true
   },
   {
-    name: "娱乐",
-    id: "35",
+    name: '娱乐',
+    id: '35',
     selected: true
   },
   {
-    name: "体育",
-    id: "74568",
+    name: '体育',
+    id: '74568',
     selected: true
   },
   {
-    name: "学习",
-    id: "435",
+    name: '学习',
+    id: '435',
     selected: true
   },
   {
-    name: "艺术",
-    id: "123213213213",
+    name: '艺术',
+    id: '123213213213',
     selected: true
   },
   {
-    name: "美食",
-    id: "4545745",
+    name: '美食',
+    id: '4545745',
     selected: true
-  },
+  }
 ]
 
 let videoTypes: { name: string; selected: boolean; id: string }[] = reactive(
@@ -142,13 +146,14 @@ onBeforeMount(() => {
   ) {
     localStorage.setItem('videoTypes', JSON.stringify(defaultVideoTypes))
   }
-
 })
 
 onMounted(() => {
-  console.log(JSON.parse(
-    localStorage.getItem('videoTypes') || JSON.stringify(defaultVideoTypes)
-  ))
+  console.log(
+    JSON.parse(
+      localStorage.getItem('videoTypes') || JSON.stringify(defaultVideoTypes)
+    )
+  )
   // 加载视频列表
   videoQueue.queue.push(
     ...['./video-test001.mp4', './video-test002.mp4', './video-test003.mp4']
@@ -225,8 +230,6 @@ onBeforeUnmount(() => {
         color: @text;
       }
     }
-
-
 
     .selected {
       color: #fff;

@@ -8,7 +8,9 @@
         <div class="author-name">{{ 'TZX' }}</div>
         <div class="author-fence">{{ 100 }} 位粉丝</div>
       </div>
-      <Button height="2.25rem" width="4.5rem" style="font-weight: bold">关注</Button>
+      <Button height="2.25rem" width="4.5rem" style="font-weight: bold"
+        >关注</Button
+      >
     </div>
 
     <div class="video-intro">

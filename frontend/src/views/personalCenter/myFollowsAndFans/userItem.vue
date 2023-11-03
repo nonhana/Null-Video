@@ -9,9 +9,12 @@
         <span>{{ userInfo.user_signature }}</span>
       </div>
     </div>
-    <Button style="font-weight: bold" :type="status ? '' : 'info'" @click="follow">{{
-      status ? '取关' : '关注'
-    }}</Button>
+    <Button
+      style="font-weight: bold"
+      :type="status ? '' : 'info'"
+      @click="follow"
+      >{{ status ? '取关' : '关注' }}</Button
+    >
   </div>
 </template>
 

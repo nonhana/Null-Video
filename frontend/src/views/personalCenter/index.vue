@@ -23,7 +23,7 @@ import Card from '@nullVideo/card/card.vue'
   justify-content: center;
   align-items: flex-start;
 
-  >div {
+  > div {
     height: 100%;
     margin-right: 2rem;
   }

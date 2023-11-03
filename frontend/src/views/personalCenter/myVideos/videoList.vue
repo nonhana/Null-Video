@@ -4,9 +4,13 @@
       <video-item :video-item="video" />
     </div>
     <!-- 占位div -->
-    <div class="placeholder" v-for="index in videoList.length % 4 !== 0
-      ? 4 - (videoList.length % 4)
-      : 0" :key="index" />
+    <div
+      class="placeholder"
+      v-for="index in videoList.length % 4 !== 0
+        ? 4 - (videoList.length % 4)
+        : 0"
+      :key="index"
+    />
   </div>
 </template>
 
