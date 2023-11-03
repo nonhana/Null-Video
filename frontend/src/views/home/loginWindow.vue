@@ -148,15 +148,17 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { registerAPI, loginAPI } from '@/api/user/user'
+import { registerAPI, loginAPI, getUserInfoAPI } from '@/api/user/user'
 import { useUserStore } from '@/stores/user'
 import close from '@/assets/svgs/close.svg'
 import myInput from '@nullVideo/form/input/input.vue'
 import Button from '@nullVideo/button/button.vue'
-import { FormItemRule, FormRules } from 'naive-ui'
+import { FormItemRule, FormRules, useMessage } from 'naive-ui'
 import Card from '@nullVideo/card/card.vue'
 
 const userStore = useUserStore()
+
+const message = useMessage()
 
 const emits = defineEmits<{
   (e: 'close'): void
@@ -265,18 +267,59 @@ const radioChoose = (e: Event) => {
   }
 }
 // 登录
-const login = () => {
-  console.log('loginForm', loginForm.value)
+const login = async () => {
+  const res = await loginAPI({
+    userAccount: loginForm.value.username,
+    userPassword: loginForm.value.password
+  })
+  if (res.code === 0) {
+    userStore.token = res.data
+    localStorage.setItem('token', res.data)
+    const sourceUserInfo = (await getUserInfoAPI({})).data
+    userStore.setUserInfo({
+      user_id: sourceUserInfo.userId,
+      user_avatar: sourceUserInfo.userAvatar,
+      user_signature: sourceUserInfo.userProfile ?? '',
+      user_name: sourceUserInfo.userName,
+      user_collectnum: sourceUserInfo.userCollectNum ?? 0,
+      user_fansnum: sourceUserInfo.followerNum,
+      user_follownum: sourceUserInfo.followingNum,
+      user_likenum: sourceUserInfo.videoTotalThumbsNum
+    })
+    message.success('登录成功')
+    emits('close')
+  }
 }
 // 注册
 const register = async () => {
-  console.log('registerForm', registerForm.value)
-  const res = await registerAPI({
+  const registerRes = await registerAPI({
     userAccount: registerForm.value.username,
     userPassword: registerForm.value.password,
     checkPassword: registerForm.value.confirmPassword
   })
-  console.log(res)
+  if (registerRes.code === 0) {
+    const loginRes = await loginAPI({
+      userAccount: registerForm.value.username,
+      userPassword: registerForm.value.password
+    })
+    if (loginRes.code === 0) {
+      userStore.token = loginRes.data
+      localStorage.setItem('token', loginRes.data)
+      const sourceUserInfo = (await getUserInfoAPI({})).data
+      userStore.setUserInfo({
+        user_id: sourceUserInfo.userId,
+        user_avatar: sourceUserInfo.userAvatar,
+        user_signature: sourceUserInfo.userProfile ?? '',
+        user_name: sourceUserInfo.userName,
+        user_collectnum: sourceUserInfo.userCollectNum ?? 0,
+        user_fansnum: sourceUserInfo.followerNum,
+        user_follownum: sourceUserInfo.followingNum,
+        user_likenum: sourceUserInfo.videoTotalThumbsNum
+      })
+      message.success('注册成功')
+      emits('close')
+    }
+  }
 }
 
 watch(isLogining, (newVal, _) => {

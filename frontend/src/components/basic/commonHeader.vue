@@ -17,7 +17,13 @@
         </div>
       </n-gi>
       <n-gi :span="1" :offset="3">
-        <div class="avatar" @click="jumpTo('personalCenter')" />
+        <div class="avatar" @click="jumpTo('personalCenter')">
+          <img
+            v-if="userStore.userInfo.user_avatar"
+            :src="userStore.userInfo.user_avatar"
+            alt="userAvatar"
+          />
+        </div>
       </n-gi>
     </n-grid>
     <transition name="dialog">
@@ -107,8 +113,14 @@ const jumpTo = (name: string) => {
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 100%;
+  overflow: hidden;
   background: @bg-color-primary;
   cursor: pointer;
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 100%;
+  }
 }
 
 .window {

@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import { NConfigProvider, GlobalThemeOverrides } from 'naive-ui'
 import commonHeader from '@nullVideo/basic/commonHeader.vue'
-// import loginWindow from './views/home/loginWindow.vue';
+import loginWindow from './views/home/loginWindow.vue'
 
 // native-ui 全局主题变量
 const themeOverrides: GlobalThemeOverrides = {

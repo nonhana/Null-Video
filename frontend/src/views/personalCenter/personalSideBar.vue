@@ -45,15 +45,15 @@
           <span>获赞</span>
         </div>
         <div class="data-item">
-          <span>{{ userInfo!.user_likenum }}</span>
+          <span>{{ userInfo!.user_collectnum }}</span>
           <span>收藏</span>
         </div>
         <div class="data-item">
-          <span>{{ userInfo!.user_likenum }}</span>
+          <span>{{ userInfo!.user_follownum }}</span>
           <span>关注</span>
         </div>
         <div class="data-item">
-          <span>{{ userInfo!.user_likenum }}</span>
+          <span>{{ userInfo!.user_fansnum }}</span>
           <span>粉丝</span>
         </div>
       </div>
@@ -149,6 +149,7 @@ import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import type { UserInfo } from '@/utils/types'
+import { updateInfoAPI } from '@/api/user/user'
 import myInput from '@/components/form/input/input.vue'
 import imgCropper from '@/components/utils/imgCropper.vue'
 import arrowRight from '@/assets/svgs/arrow-right.svg'
@@ -173,6 +174,7 @@ const fileSelected = () => {
   console.log(file)
   avatarSourceFile = file
   avatarCroppedFileType = avatarSourceFile?.type ?? ''
+  console.log('avatarCroppedFileType', avatarCroppedFileType)
   avatarDialogVisible.value = true
 }
 const uploadImage = (value: { imgURL: string }) => {
@@ -260,9 +262,15 @@ const showNameInput = () => {
       content: '确定更改？',
       positiveText: '确定',
       negativeText: '取消',
-      onPositiveClick: () => {
-        nameInputVisable.value = !nameInputVisable.value
-        message.success('更改成功')
+      onPositiveClick: async () => {
+        const res = await updateInfoAPI({
+          userId: userInfo.value!.user_id,
+          userName: userInfo.value!.user_name
+        })
+        if (res.code === 0) {
+          nameInputVisable.value = !nameInputVisable.value
+          message.success('更改成功')
+        }
       }
     })
   } else {
@@ -277,9 +285,15 @@ const showSignatureInput = () => {
       content: '确定更改？',
       positiveText: '确定',
       negativeText: '取消',
-      onPositiveClick: () => {
-        signatureInputVisable.value = !signatureInputVisable.value
-        message.success('更改成功')
+      onPositiveClick: async () => {
+        const res = await updateInfoAPI({
+          userId: userInfo.value!.user_id,
+          userProfile: userInfo.value!.user_signature
+        })
+        if (res.code === 0) {
+          signatureInputVisable.value = !signatureInputVisable.value
+          message.success('更改成功')
+        }
       }
     })
   } else {
@@ -299,17 +313,17 @@ watch(
   () => route.params.user_id,
   (user_id) => {
     console.log(
-      Number(user_id),
+      user_id,
       userStore.userInfo.user_id,
-      Number(user_id) === userStore.userInfo.user_id
+      user_id === userStore.userInfo.user_id
     )
-    if (Number(user_id) === userStore.userInfo.user_id) {
+    if (user_id === userStore.userInfo.user_id) {
       isMyCenter.value = true
       userInfo.value = userStore.userInfo
     } else {
       isMyCenter.value = false
       userInfo.value = {
-        user_id: 2,
+        user_id: '2',
         user_name: 'JaneDoe',
         user_signature: 'Another signature.',
         user_avatar: 'https://dummyimage.com/400X400',

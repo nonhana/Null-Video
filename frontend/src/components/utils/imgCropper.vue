@@ -37,7 +37,11 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { uploadFileAPI } from '@/api/file-action/file-action'
 import VuePictureCropper, { cropper } from 'vue-picture-cropper'
+import { useMessage } from 'naive-ui'
+
+const message = useMessage()
 
 const props = defineProps<{
   dialogVisible: boolean
@@ -46,7 +50,7 @@ const props = defineProps<{
 }>()
 
 const emits = defineEmits<{
-  (event: 'uploadImage', value: { type: number; imgURL: string }): void
+  (event: 'uploadImage', value: { imgURL: string }): void
   (event: 'closeDialog'): void
 }>()
 
@@ -69,6 +73,12 @@ const confirmCropper = async () => {
 
   if (croppedFile) {
     console.log(uploadFile)
+    const res = await uploadFileAPI({ multipartFile: uploadFile })
+    console.log(res.data.url, res.data)
+    if (res.code === 0) {
+      message.success('上传成功')
+      emits('uploadImage', { imgURL: res.data.url })
+    }
   }
 }
 
