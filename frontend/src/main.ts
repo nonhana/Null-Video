@@ -25,6 +25,6 @@ const store = createPinia()
 store.use(piniaPluginPersistedstate) // 引入pinia持久化插件
 
 const app = createApp(App)
-app.use(router)
 app.use(store)
+app.use(router)
 app.mount('#app')

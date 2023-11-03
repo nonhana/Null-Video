@@ -3,7 +3,6 @@
     <div v-for="video in CollectionList" :key="video.video_id">
       <video-item :video-item="video" />
     </div>
-    <!-- 占位div，如果被4整除便无需占位 -->
     <div
       class="placeholder"
       v-for="index in CollectionList.length % 4 !== 0
@@ -58,7 +57,6 @@ const CollectionList = ref<VideoItemInfo[]>([
 .CollectionList-wrapper {
   position: relative;
   width: 100%;
-  height: 48rem;
   display: flex;
   justify-content: center;
   flex-wrap: wrap;

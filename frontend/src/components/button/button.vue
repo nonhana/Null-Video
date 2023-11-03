@@ -10,12 +10,10 @@ import { NButton } from 'naive-ui'
 
 defineProps({
   width: {
-    type: String,
-    default: '100%'
+    type: String
   },
   height: {
-    type: String,
-    default: 'auto'
+    type: String
   }
 })
 </script>
@@ -26,5 +24,6 @@ defineProps({
   /* Add more styles as needed */
   border-radius: @border-radius;
   box-shadow: @shadow-outer;
+  padding: 1rem;
 }
 </style>

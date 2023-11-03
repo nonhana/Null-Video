@@ -133,12 +133,7 @@ const fanList = ref<
 
 <style scoped lang="less">
 .UserList-wrapper {
-  position: relative;
   width: 100%;
-  height: 48rem;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 </style>
