@@ -1,15 +1,10 @@
 <template>
-  <div
-    class="comment-list"
-    v-for="comment in commentData"
-    :key="comment.comment_id"
-    :style="{
-      border: comment.isChild ? '' : '1px solid #D4D4D4',
-      padding: comment.isChild ? '' : '1rem',
-      marginBottom: comment.isChild ? '' : '1rem'
-      // boxShadow: comment.isChild ? '' : 'inset 0px 4px 10px 0px rgba(0, 0, 0, 0.3)'
-    }"
-  >
+  <div class="comment-list" v-for="comment in commentData" :key="comment.comment_id" :style="{
+    border: comment.isChild ? '' : '1px solid #D4D4D4',
+    padding: comment.isChild ? '' : '1rem',
+    marginBottom: comment.isChild ? '' : '1rem'
+    // boxShadow: comment.isChild ? '' : 'inset 0px 4px 10px 0px rgba(0, 0, 0, 0.3)'
+  }">
     <div class="flex">
       <div class="comment-content">
         <img class="comment-header" :src="comment.user.header" alt="" />
@@ -17,7 +12,7 @@
           <div class="comment-name">
             {{ comment.user.name }}
             <div class="comment-to" v-if="comment.comment_to">
-              <img src="@/assets/svgs/arrow-comment-to.svg" alt="" />
+              <arrowCommentToSVG />
               <div>{{ comment.comment_to.name }}</div>
             </div>
           </div>
@@ -26,11 +21,7 @@
           </div>
           <div class="comment-operate">
             <div class="comment-response" @click="showReply(comment)">回复</div>
-            <div
-              class="comment-delete"
-              v-if="comment.user.id"
-              @click="deleteComment(comment.comment_id)"
-            >
+            <div class="comment-delete" v-if="comment.user.id" @click="deleteComment(comment.comment_id)">
               删除
             </div>
           </div>
@@ -42,38 +33,23 @@
       <commentBox />
     </div>
 
-    <ul
-      v-if="
-        comment.children.length && showCommentChildren.get(comment.comment_id)
-      "
-    >
+    <ul v-if="comment.children.length && showCommentChildren.get(comment.comment_id)
+      ">
       <comment-list :commentData="comment.children" />
     </ul>
 
-    <div
-      class="show-comment-children"
-      v-if="!comment.isChild && comment.children.length"
-      @click="
-        showCommentChildren.set(
-          comment.comment_id,
-          !showCommentChildren.get(comment.comment_id)
-        )
-      "
-    >
+    <div class="show-comment-children" v-if="!comment.isChild && comment.children.length" @click="
+      showCommentChildren.set(
+        comment.comment_id,
+        !showCommentChildren.get(comment.comment_id)
+      )
+      ">
       <div v-if="!showCommentChildren.get(comment.comment_id)">
-        <img
-          src="@/assets/svgs/arrow-down.svg"
-          alt=""
-          style="transform: scale(0.8)"
-        />
+        <arrowDownSVG />
         <span>展开 {{ comment.children.length }} 条回复</span>
       </div>
       <div v-if="showCommentChildren.get(comment.comment_id)">
-        <img
-          src="@/assets/svgs/arrow-up.svg"
-          alt=""
-          style="transform: scale(0.8)"
-        />
+        <arrowUpSVG />
         <span>收起</span>
       </div>
     </div>
@@ -83,6 +59,10 @@
 import { ref, onMounted, defineProps, reactive } from 'vue'
 import commentList from './commentList.vue'
 import commentBox from './commentBox.vue'
+import arrowDownSVG from '@nullSvg/arrow-down.svg'
+import arrowUpSVG from '@nullSvg/arrow-up.svg'
+import arrowCommentToSVG from '@nullSvg/arrow-comment-to.svg'
+
 
 const props = defineProps<{
   commentData: any[]
@@ -146,7 +126,7 @@ onMounted(async () => {
       border-radius: 100%;
     }
 
-    > div {
+    >div {
       margin-left: 1rem;
 
       .comment-name {
@@ -193,12 +173,12 @@ onMounted(async () => {
     padding: 0;
     list-style-type: none;
 
-    > div {
+    >div {
       margin-top: 0.5rem;
     }
   }
 
-  .show-comment-children > div {
+  .show-comment-children>div {
     display: flex;
     align-items: center;
     margin-left: 3.5rem;
@@ -212,7 +192,7 @@ onMounted(async () => {
     }
   }
 
-  .show-comment-children > div :hover {
+  .show-comment-children>div :hover {
     color: @bg-color-primary;
   }
 }

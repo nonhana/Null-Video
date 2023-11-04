@@ -19,120 +19,67 @@
           >
             <span>登录</span>
           </div>
-          <div
-            class="title-item"
-            :class="presentStatus[1] ? 'selected' : ''"
-            @click="
-              () => {
-                isLogining = false
-                presentStatus = [false, true]
-              }
-            "
-          >
+          <div class="title-item" :class="presentStatus[1] ? 'selected' : ''" @click="() => {
+            isLogining = false
+            presentStatus = [false, true]
+          }
+            ">
             <span>注册</span>
           </div>
         </div>
         <div class="close" @click="emits('close')">
-          <img :src="close" alt="close" />
+          <closeSVG />
         </div>
       </div>
 
-      <n-form
-        v-if="isLogining"
-        ref="loginRef"
-        :model="loginForm"
-        :rules="loginRules"
-      >
+      <n-form v-if="isLogining" ref="loginRef" :model="loginForm" :rules="loginRules">
         <div class="form">
           <div class="form-item">
             <span>账号:</span>
             <n-form-item path="account">
-              <my-input
-                width="20.875rem"
-                height="2.5rem"
-                type="text"
-                placeholder="请输入用户名或邮箱"
-                :value="loginForm.username"
-                @input="loginForm.username = $event"
-              />
+              <my-input width="20.875rem" height="2.5rem" type="text" placeholder="请输入用户名或邮箱" :value="loginForm.username"
+                @input="loginForm.username = $event" />
             </n-form-item>
           </div>
           <div class="form-item">
             <span>密码:</span>
             <n-form-item path="password">
-              <my-input
-                width="20.875rem"
-                height="2.5rem"
-                type="password"
-                placeholder="请输入密码"
-                :value="loginForm.password"
-                @input="loginForm.password = $event"
-              />
+              <my-input width="20.875rem" height="2.5rem" type="password" placeholder="请输入密码" :value="loginForm.password"
+                @input="loginForm.password = $event" />
             </n-form-item>
           </div>
           <div class="radios">
-            <n-radio
-              :checked="rememberUsername"
-              value="account"
-              @change="radioChoose"
-            >
+            <n-radio :checked="rememberUsername" value="account" @change="radioChoose">
               记住账号
             </n-radio>
-            <n-radio
-              :checked="rememberPassword"
-              value="password"
-              @change="radioChoose"
-            >
+            <n-radio :checked="rememberPassword" value="password" @change="radioChoose">
               记住密码
             </n-radio>
           </div>
         </div>
       </n-form>
 
-      <n-form
-        v-else
-        ref="registerRef"
-        :model="registerForm"
-        :rules="registerRules"
-      >
+      <n-form v-else ref="registerRef" :model="registerForm" :rules="registerRules">
         <div class="form">
           <div class="form-item">
             <span>账号:</span>
             <n-form-item path="account">
-              <my-input
-                width="20.875rem"
-                height="2.5rem"
-                type="text"
-                placeholder="请输入用户名或邮箱"
-                :value="registerForm.username"
-                @input="registerForm.username = $event"
-              />
+              <my-input width="20.875rem" height="2.5rem" type="text" placeholder="请输入用户名或邮箱"
+                :value="registerForm.username" @input="registerForm.username = $event" />
             </n-form-item>
           </div>
           <div class="form-item">
             <span>密码:</span>
             <n-form-item path="password">
-              <my-input
-                width="20.875rem"
-                height="2.5rem"
-                type="password"
-                placeholder="请输入密码"
-                :value="registerForm.password"
-                @input="loginForm.password = $event"
-              />
+              <my-input width="20.875rem" height="2.5rem" type="password" placeholder="请输入密码"
+                :value="registerForm.password" @input="loginForm.password = $event" />
             </n-form-item>
           </div>
           <div class="form-item">
             <span>确认密码:</span>
             <n-form-item path="confirmPassword">
-              <my-input
-                width="20.875rem"
-                height="2.5rem"
-                type="password"
-                placeholder="请再次输入密码"
-                :value="registerForm.confirmPassword"
-                @input="registerForm.confirmPassword = $event"
-              />
+              <my-input width="20.875rem" height="2.5rem" type="password" placeholder="请再次输入密码"
+                :value="registerForm.confirmPassword" @input="registerForm.confirmPassword = $event" />
             </n-form-item>
           </div>
         </div>
@@ -150,7 +97,7 @@
 import { ref, watch } from 'vue'
 import { registerAPI, loginAPI, getUserInfoAPI } from '@/api/user/user'
 import { useUserStore } from '@/stores/user'
-import close from '@/assets/svgs/close.svg'
+import closeSVG from '@nullSvg/close.svg'
 import myInput from '@nullVideo/form/input/input.vue'
 import Button from '@nullVideo/button/button.vue'
 import { FormItemRule, FormRules, useMessage } from 'naive-ui'
@@ -352,11 +299,10 @@ watch(isLogining, (newVal, _) => {
   .head {
     display: flex;
     justify-content: space-between;
-    align-items: center;
 
     .title {
       position: relative;
-      padding: 0.5rem;
+      padding: 0.375rem;
       display: flex;
       justify-content: space-between;
       border-radius: @border-radius;
@@ -365,8 +311,8 @@ watch(isLogining, (newVal, _) => {
 
       .title-bottom {
         position: absolute;
-        width: calc(50% - 0.5rem);
-        height: calc(100% - 1rem);
+        width: calc(50% - 0.375rem);
+        height: calc(100% - 0.75rem);
         background-color: #fff;
         box-shadow: @shadow-outer;
         border-radius: @border-radius;
@@ -402,13 +348,16 @@ watch(isLogining, (newVal, _) => {
     }
 
     .close {
-      width: 32px;
-      height: 32px;
       cursor: pointer;
+      height: 2rem;
 
-      img {
-        width: 100%;
-        height: 100%;
+      ::v-deep svg path {
+        fill: @text-secondary;
+        transition: all 0.3s;
+      }
+
+      &:hover ::v-deep svg path {
+        fill: @text;
       }
     }
   }

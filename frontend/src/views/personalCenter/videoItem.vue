@@ -5,7 +5,7 @@
     @mouseleave="hover = false"
   >
     <div class="viewnum">
-      <img :src="views" alt="views" />
+      <viewsSVG />
       <span>{{ videoItem.video_viewnum }}</span>
     </div>
     <div :style="{ opacity: hover ? 1 : 0 }" class="template" />
@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { VideoItemInfo } from '@/utils/types'
-import views from '@/assets/svgs/views.svg'
+import viewsSVG from '@nullSvg/views.svg'
 
 defineProps<{
   videoItem: VideoItemInfo

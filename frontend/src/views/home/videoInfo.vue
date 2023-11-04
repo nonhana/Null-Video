@@ -8,9 +8,7 @@
         <div class="author-name">{{ 'TZX' }}</div>
         <div class="author-fence">{{ 100 }} 位粉丝</div>
       </div>
-      <Button height="2.25rem" width="4.5rem" style="font-weight: bold"
-        >关注</Button
-      >
+      <Button height="2.25rem" width="4.5rem" style="font-weight: bold">关注</Button>
     </div>
 
     <div class="video-intro">
@@ -25,25 +23,25 @@
 
     <div class="video-operation">
       <div>
-        <img src="@/assets/svgs/like.svg" alt="" />
+        <likeSVG />
         <div>
           {{ 1 }}
         </div>
       </div>
       <div>
-        <img src="@/assets/svgs/collection.svg" alt="" />
+        <collectionSVG />
         <div>
           {{ 1 }}
         </div>
       </div>
       <div>
-        <img src="@/assets/svgs/share.svg" alt="" />
+        <shareSVG />
         <div>
           {{ 1 }}
         </div>
       </div>
       <div>
-        <img src="@/assets/svgs/comment.svg" alt="" />
+        <commentSVG />
         <div>
           {{ 1 }}
         </div>
@@ -55,6 +53,10 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import Button from '@nullVideo/button/button.vue'
+import likeSVG from '@nullSvg/like.svg'
+import collectionSVG from '@nullSvg/collection.svg'
+import shareSVG from '@nullSvg/share.svg'
+import commentSVG from '@nullSvg/comment.svg'
 
 const tags: { name: string; id: string; color: string }[] = reactive([
   {
@@ -133,10 +135,15 @@ const tags: { name: string; id: string; color: string }[] = reactive([
     display: flex;
     justify-content: space-between;
 
-    > div {
+    >div {
       cursor: pointer;
 
-      > div {
+      ::v-deep svg {
+        width: 2rem;
+        height: 2rem;
+      }
+
+      >div {
         margin-top: -0.75rem;
         text-align: center;
         font-size: 1rem;
