@@ -6,7 +6,7 @@
       </n-gi>
       <n-gi :span="16" :offset="5">
         <div class="search">
-          <Search height="2.5rem" />
+          <Search />
         </div>
       </n-gi>
       <n-gi :span="5" :offset="8">

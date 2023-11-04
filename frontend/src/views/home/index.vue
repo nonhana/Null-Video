@@ -9,10 +9,7 @@
           <Card style="margin-top: 2rem">
             <div class="video-choice">视频类型选择</div>
             <div class="video-types">
-              <div
-                v-for="(videoType, index) in videoTypes"
-                :key="videoType.id"
-                :class="{ selected: videoType.selected }"
+              <div v-for="(videoType, index) in videoTypes" :key="videoType.id" :class="{ selected: videoType.selected }"
                 @click="typeSelect(index)"
               >
                 {{ videoType.name }}
@@ -22,10 +19,10 @@
         </div>
         <div class="video-change">
           <div class="video-up" @click="videoChange(-1)">
-            <img src="@/assets/svgs/video-change.svg" alt="" />
+            <videoChangeSVG />
           </div>
           <div class="video-down" @click="videoChange(1)">
-            <img src="@/assets/svgs/video-change.svg" alt="" />
+            <videoChangeSVG />
           </div>
         </div>
       </n-gi>
@@ -56,6 +53,7 @@ import 'video.js/dist/video-js.css' // 引入视频样式文件
 // import 'videojs-resolution-switcher/lib/videojs-resolution-switcher.css'
 // import 'videojs-resolution-switcher'
 import Player from 'video.js/dist/types/player'
+import videoChangeSVG from '@nullSvg/video-change.svg'
 const defaultVideoTypes = [
   {
     name: '全部',
@@ -262,7 +260,7 @@ onBeforeUnmount(() => {
     .video-down {
       margin-top: 1rem;
 
-      img {
+      * {
         transform: rotate(180deg);
       }
     }

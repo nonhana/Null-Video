@@ -1,7 +1,7 @@
 <template>
   <div class="PersonalCenterVideoItem-wrapper">
     <div class="viewnum">
-      <img :src="views" alt="views" />
+      <viewsSVG />
       <span>{{ videoItem.video_viewnum }}</span>
     </div>
     <div class="background">
@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 import type { VideoItemInfo } from '@/utils/types'
-import views from '@/assets/svgs/views.svg'
+import viewsSVG from '@nullSvg/views.svg'
 
 defineProps<{
   videoItem: VideoItemInfo
@@ -26,6 +26,7 @@ defineProps<{
   width: 14.375rem;
   height: 20.625rem;
   border-radius: 1rem;
+
   .viewnum {
     position: relative;
     top: 18rem;
@@ -37,12 +38,14 @@ defineProps<{
     font-size: 20px;
     font-weight: bold;
     color: #ffffff;
-    img {
+
+    * {
       width: 2rem;
       height: 2rem;
       margin-right: 0.5rem;
     }
   }
+
   .background {
     position: absolute;
     bottom: 0;
@@ -50,10 +53,10 @@ defineProps<{
     height: 100%;
     border-radius: 1rem;
     overflow: hidden;
-    > img {
+
+    >img {
       width: 100%;
       height: 100%;
     }
   }
-}
-</style>
+}</style>

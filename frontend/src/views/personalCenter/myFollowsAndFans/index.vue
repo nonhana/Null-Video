@@ -10,7 +10,7 @@
         class="title-item"
         :class="presentStatus[1] ? 'selected' : ''"
         @click="
-          type = 'fan'
+          type = 'fan';
           presentStatus = [false, true]
         "
       >

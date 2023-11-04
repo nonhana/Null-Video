@@ -8,32 +8,17 @@
         <div class="template" @click="openAvatarSelector">
           <span> 更换头像 </span>
         </div>
-        <input
-          style="display: none"
-          ref="avatarSelector"
-          type="file"
-          @change="fileSelected"
-        />
+        <input style="display: none" ref="avatarSelector" type="file" @change="fileSelected" />
         <!-- 图片裁剪组件 -->
-        <imgCropper
-          :source-file="avatarSourceFile"
-          :cropped-file-type="avatarCroppedFileType"
-          :dialog-visible="avatarDialogVisible"
-          @upload-image="uploadImage"
-          @close-dialog="closeDialog"
-        />
+        <imgCropper :source-file="avatarSourceFile" :cropped-file-type="avatarCroppedFileType"
+          :dialog-visible="avatarDialogVisible" @upload-image="uploadImage" @close-dialog="closeDialog" />
         <div class="name">
           <span v-if="!nameInputVisable" @dblclick="showNameInput">{{
             userInfo!.user_name
           }}</span>
           <div v-else>
-            <my-input
-              type="text"
-              placeholder="你的名称"
-              :value="userInfo!.user_name"
-              @input="updateName"
-              @blur="showNameInput"
-            />
+            <my-input type="text" placeholder="你的名称" :value="userInfo!.user_name" @input="updateName"
+              @blur="showNameInput" />
           </div>
           <span>id:&emsp;{{ userInfo!.user_id }}</span>
         </div>
@@ -58,105 +43,46 @@
         </div>
       </div>
       <div style="width: 100%" @dblclick="showSignatureInput">
-        <my-input
-          type="textarea"
-          placeholder="请输入签名"
-          :value="userInfo!.user_signature"
-          :min-rows="1"
-          :max-rows="5"
-          :disabled="signatureInputVisable"
-          @input="updateSignature"
-          @blur="showSignatureInput"
-        />
+        <my-input type="textarea" placeholder="请输入签名" :value="userInfo!.user_signature" :min-rows="1" :max-rows="5"
+          :disabled="signatureInputVisable" @input="updateSignature" @blur="showSignatureInput" />
       </div>
     </div>
     <n-divider />
     <div class="menu">
-      <div
-        class="menu-item"
-        :class="hovering[0] ? 'menu-hover' : ''"
-        @click="chooseItem(0)"
-        @mouseenter="hoverItem(0, 0)"
-        @mouseleave="hoverItem(1)"
-      >
-        <img
-          :style="{
-            left: hovering[0] ? '0.5rem' : '0'
-          }"
-          :src="arrowRight"
-          alt="arrowRight"
-        />
+      <!-- <div class="menu-item" :class="hovering[0] ? 'menu-hover' : ''" @click="chooseItem(0)" @mouseenter="hoverItem(0, 0)"
+        @mouseleave="hoverItem(1)">
+        <img :style="{
+          left: hovering[0] ? '0.5rem' : '0'
+        }" :src="arrowRight" alt="arrowRight" />
         <img :src="myVideos" alt="myVideos" />
         <span>发布视频</span>
-      </div>
-      <div
-        class="menu-item"
-        :class="hovering[1] ? 'menu-hover' : ''"
-        @click="chooseItem(1)"
-        @mouseenter="hoverItem(0, 1)"
-        @mouseleave="hoverItem(1)"
-      >
-        <img
-          :style="{
-            left: hovering[1] ? '0.5rem' : '0'
-          }"
-          :src="arrowRight"
-          alt="arrowRight"
-        />
-        <img :src="myCollections" alt="myCollections" />
-        <span>收藏列表</span>
-      </div>
-      <div
-        class="menu-item"
-        :class="hovering[2] ? 'menu-hover' : ''"
-        @click="chooseItem(2)"
-        @mouseenter="hoverItem(0, 2)"
-        @mouseleave="hoverItem(1)"
-      >
-        <img
-          :style="{
-            left: hovering[2] ? '0.5rem' : '0'
-          }"
-          :src="arrowRight"
-          alt="arrowRight"
-        />
-        <img :src="myFollowsAndFans" alt="myFollowsAndFans" />
-        <span>关注/粉丝</span>
-      </div>
-      <div
-        class="menu-item"
-        :class="hovering[3] ? 'menu-hover' : ''"
-        @click="chooseItem(3)"
-        @mouseenter="hoverItem(0, 3)"
-        @mouseleave="hoverItem(1)"
-      >
-        <img
-          :style="{
-            left: hovering[3] ? '0.5rem' : '0'
-          }"
-          :src="arrowRight"
-          alt="arrowRight"
-        />
-        <img :src="exit" alt="exit" />
-        <span>退出登录</span>
+      </div> -->
+      <div v-for="(menu, index) in menuStatus" :key="menu.menuName" class="menu-item"
+        :class="{ 'menu-hover': hovering[index] }" @click="chooseItem(index)" @mouseenter="hoverItem(0, index)"
+        @mouseleave="hoverItem(1)">
+        <arrowRightSVG class="menu-item-arrow" :style="{
+          left: hovering[index] ? '0.5rem' : '0'
+        }" />
+        <component class="menu-item-img" :is="menu.menuSvg" />
+        <span>{{ menu.menuName }}</span>
       </div>
     </div>
   </Card>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, reactive, HTMLAttributes, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import type { UserInfo } from '@/utils/types'
 import { updateInfoAPI } from '@/api/user/user'
 import myInput from '@/components/form/input/input.vue'
 import imgCropper from '@/components/utils/imgCropper.vue'
-import arrowRight from '@/assets/svgs/arrow-right.svg'
-import myVideos from '@/assets/svgs/my-videos.svg'
-import myCollections from '@/assets/svgs/my-collections.svg'
-import myFollowsAndFans from '@/assets/svgs/my-follows-and-fans.svg'
-import exit from '@/assets/svgs/exit.svg'
+import arrowRightSVG from '@nullSvg/arrow-right.svg'
+import myVideosSVG from '@nullSvg/my-videos.svg'
+import myCollectionsSVG from '@nullSvg/my-collections.svg'
+import myFollowsAndFansSVG from '@nullSvg/my-follows-and-fans.svg'
+import exitSVG from '@nullSvg/exit.svg'
 import { useMessage, useDialog } from 'naive-ui'
 import Card from '@nullVideo/card/card.vue'
 
@@ -205,6 +131,7 @@ const avatarSelector = ref<HTMLInputElement>()
 /* Routes */
 const route = useRoute()
 const router = useRouter()
+const routeNameWhenMounted = router.currentRoute.value.name
 /* Stores */
 const userStore = useUserStore()
 /* Refs */
@@ -215,6 +142,28 @@ const nameInputVisable = ref<boolean>(false)
 const signatureInputVisable = ref<boolean>(true)
 /* Consts */
 const routeNameList = ['myVideos', 'myCollections', 'myFollowsAndFans', 'exit']
+const menuStatus: { menuName: string, menuSelected: boolean, menuSvg: HTMLAttributes }[] = reactive([
+  {
+    menuName: '发布视频',
+    menuSelected: routeNameWhenMounted === 'myVideos',
+    menuSvg: myVideosSVG
+  },
+  {
+    menuName: '收藏列表',
+    menuSelected: routeNameWhenMounted === 'myCollections',
+    menuSvg: myCollectionsSVG
+  },
+  {
+    menuName: '关注/粉丝',
+    menuSelected: routeNameWhenMounted === 'myFollowsAndFans',
+    menuSvg: myFollowsAndFansSVG
+  },
+  {
+    menuName: '退出登录',
+    menuSelected: routeNameWhenMounted === 'exit',
+    menuSvg: exitSVG
+  }
+])
 /* Functions */
 // 鼠标移动到菜单项时，箭头向右移动，其他菜单项箭头复位
 const hoverItem = (type: number, index?: number) => {
@@ -472,19 +421,15 @@ watch(
     transition: all 0.3s;
     cursor: pointer;
 
-    img {
-      &:nth-child(1) {
-        position: relative;
-        width: 1rem;
-        height: 1rem;
-        transition: all 0.3s;
-      }
+    &-arrow {
+      position: relative;
+      transition: all 0.3s;
+    }
 
-      &:nth-child(2) {
-        margin: 0 2rem 0 2rem;
-        width: 2rem;
-        height: 2rem;
-      }
+    ::v-deep &-img {
+      margin: 0 1rem 0 2rem;
+      width: 2rem;
+      height: 2rem;
     }
 
     &:hover {

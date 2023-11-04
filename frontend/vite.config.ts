@@ -9,6 +9,8 @@ import postCssPxToRem from 'postcss-pxtorem'
 import viteCompression from 'vite-plugin-compression' // 用于gzip压缩
 import imageminPlugin from 'vite-plugin-imagemin' // 用于图片压缩
 import externalGlobals from 'rollup-plugin-external-globals' // 用于从CDN引入外部库
+import svgLoader from 'vite-svg-loader'
+
 
 export default defineConfig(() => {
   return {
@@ -64,12 +66,14 @@ export default defineConfig(() => {
         webp: {
           quality: 75
         },
-      })
+      }),
+      svgLoader() // svg 引入组件
     ],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'), // 设置`@`指向`src`目录
-        '@nullVideo': path.resolve(__dirname, './src/components') // 自定义别名
+        '@nullVideo': path.resolve(__dirname, './src/components'), // 通用组件
+        '@nullSvg': path.resolve(__dirname, './src/assets/svgs')
       }
     },
     server: {

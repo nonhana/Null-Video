@@ -1,13 +1,9 @@
 <template>
   <div class="search" :style="{ height }">
     <n-input-group>
-      <n-input
-        :style="{ height }"
-        class="search-input"
-        :placeholder="placeholder"
-      />
+      <n-input :style="{ height }" class="search-input" :placeholder="placeholder" />
       <n-button :style="{ height }" class="search-button" ghost>
-        <img src="@/assets/svgs/search.svg" alt="" />
+        <searchSVG />
       </n-button>
     </n-input-group>
   </div>
@@ -16,6 +12,7 @@
 <script setup lang="ts">
 import { defineProps } from 'vue'
 import { NInputGroup, NInput, NButton } from 'naive-ui'
+import searchSVG from '@nullSvg/search.svg'
 
 defineProps({
   height: {
