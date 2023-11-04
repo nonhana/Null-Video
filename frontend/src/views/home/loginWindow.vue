@@ -3,9 +3,20 @@
     <Card width="37.5rem" height="28.125rem">
       <div class="head">
         <div class="title">
-          <div class="title-bottom" :class="presentStatus[0] ? '' : 'register'"></div>
-          <div class="title-item" :class="presentStatus[0] ? 'selected' : ''"
-            @click="isLogining = true; presentStatus = [true, false]">
+          <div
+            class="title-bottom"
+            :class="presentStatus[0] ? '' : 'register'"
+          ></div>
+          <div
+            class="title-item"
+            :class="presentStatus[0] ? 'selected' : ''"
+            @click="
+              () => {
+                isLogining = true
+                presentStatus = [true, false]
+              }
+            "
+          >
             <span>登录</span>
           </div>
           <div
@@ -265,15 +276,16 @@ const login = async () => {
     userStore.token = res.data
     localStorage.setItem('token', res.data)
     const sourceUserInfo = (await getUserInfoAPI({})).data
+    console.log(sourceUserInfo)
     userStore.setUserInfo({
       user_id: sourceUserInfo.userId,
       user_avatar: sourceUserInfo.userAvatar,
       user_signature: sourceUserInfo.userProfile ?? '',
       user_name: sourceUserInfo.userName,
-      user_collectnum: sourceUserInfo.userCollectNum ?? 0,
+      user_collectnum: sourceUserInfo.videoTotalFavourNum,
       user_fansnum: sourceUserInfo.followerNum,
       user_follownum: sourceUserInfo.followingNum,
-      user_likenum: sourceUserInfo.videoTotalThumbsNum
+      user_likenum: sourceUserInfo.videoTotalThumbNum
     })
     message.success('登录成功')
     emits('close')

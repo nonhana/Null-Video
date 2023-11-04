@@ -30,7 +30,7 @@
             <my-input
               type="text"
               placeholder="你的名称"
-              :value="userInfo!.user_name"
+              :value="userInfo!.user_name!"
               @input="updateName"
               @blur="showNameInput"
             />
@@ -61,7 +61,7 @@
         <my-input
           type="textarea"
           placeholder="请输入签名"
-          :value="userInfo!.user_signature"
+          :value="userInfo!.user_signature!"
           :min-rows="1"
           :max-rows="5"
           :disabled="signatureInputVisable"
@@ -149,16 +149,17 @@ import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import type { UserInfo } from '@/utils/types'
-import { updateInfoAPI } from '@/api/user/user'
+import { getUserInfoAPI, updateInfoAPI } from '@/api/user/user'
 import myInput from '@/components/form/input/input.vue'
 import imgCropper from '@/components/utils/imgCropper.vue'
+import { useMessage, useDialog } from 'naive-ui'
+import Card from '@nullVideo/card/card.vue'
+/* 静态资源引入 */
 import arrowRight from '@/assets/svgs/arrow-right.svg'
 import myVideos from '@/assets/svgs/my-videos.svg'
 import myCollections from '@/assets/svgs/my-collections.svg'
 import myFollowsAndFans from '@/assets/svgs/my-follows-and-fans.svg'
 import exit from '@/assets/svgs/exit.svg'
-import { useMessage, useDialog } from 'naive-ui'
-import Card from '@nullVideo/card/card.vue'
 
 /* 头像图片相关 */
 const avatarDialogVisible = ref<boolean>(false)
@@ -171,14 +172,19 @@ const openAvatarSelector = () => {
 // 选择文件后输出文件信息
 const fileSelected = () => {
   const file = avatarSelector.value!.files![0]
-  console.log(file)
   avatarSourceFile = file
   avatarCroppedFileType = avatarSourceFile?.type ?? ''
-  console.log('avatarCroppedFileType', avatarCroppedFileType)
   avatarDialogVisible.value = true
 }
-const uploadImage = (value: { imgURL: string }) => {
-  userInfo.value!.user_avatar = value.imgURL
+const uploadImage = async (value: { imgURL: string }) => {
+  userInfo.value!.user_avatar = 'http://' + value.imgURL
+  const res = await updateInfoAPI({
+    userId: userInfo.value!.user_id!,
+    userAvatar: userInfo.value!.user_avatar
+  })
+  if (res.code === 0) {
+    message.success('头像更新成功')
+  }
 }
 const closeDialog = () => {
   avatarDialogVisible.value = false
@@ -193,6 +199,8 @@ const confirmExit = () => {
     positiveText: '确定',
     negativeText: '取消',
     onPositiveClick: () => {
+      userStore.logout()
+      localStorage.clear()
       message.success('退出登录成功，2s后跳转首页')
       setTimeout(() => {
         router.push('/')
@@ -264,12 +272,12 @@ const showNameInput = () => {
       negativeText: '取消',
       onPositiveClick: async () => {
         const res = await updateInfoAPI({
-          userId: userInfo.value!.user_id,
+          userId: userInfo.value!.user_id!,
           userName: userInfo.value!.user_name
         })
         if (res.code === 0) {
           nameInputVisable.value = !nameInputVisable.value
-          message.success('更改成功')
+          message.success('更新用户名成功')
         }
       }
     })
@@ -287,12 +295,12 @@ const showSignatureInput = () => {
       negativeText: '取消',
       onPositiveClick: async () => {
         const res = await updateInfoAPI({
-          userId: userInfo.value!.user_id,
+          userId: userInfo.value!.user_id!,
           userProfile: userInfo.value!.user_signature
         })
         if (res.code === 0) {
           signatureInputVisable.value = !signatureInputVisable.value
-          message.success('更改成功')
+          message.success('更新签名成功')
         }
       }
     })
@@ -311,26 +319,24 @@ const updateSignature = (value: string) => {
 /* Watches */
 watch(
   () => route.params.user_id,
-  (user_id) => {
-    console.log(
-      user_id,
-      userStore.userInfo.user_id,
-      user_id === userStore.userInfo.user_id
-    )
+  async (user_id) => {
     if (user_id === userStore.userInfo.user_id) {
       isMyCenter.value = true
       userInfo.value = userStore.userInfo
     } else {
       isMyCenter.value = false
-      userInfo.value = {
-        user_id: '2',
-        user_name: 'JaneDoe',
-        user_signature: 'Another signature.',
-        user_avatar: 'https://dummyimage.com/400X400',
-        user_likenum: 111,
-        user_collectnum: 222,
-        user_follownum: 333,
-        user_fansnum: 444
+      const res = await getUserInfoAPI({ userId: user_id as string })
+      if (res.code === 0) {
+        userInfo.value = {
+          user_id: res.data.userId,
+          user_avatar: res.data.userAvatar,
+          user_signature: res.data.userProfile ?? '',
+          user_name: res.data.userName,
+          user_collectnum: res.data.userCollectNum ?? 0,
+          user_fansnum: res.data.followerNum,
+          user_follownum: res.data.followingNum,
+          user_likenum: res.data.videoTotalThumbsNum
+        }
       }
     }
   },

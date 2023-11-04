@@ -26,7 +26,18 @@
         />
       </div>
       <template #footer>
-        <span class="dialog-footer">
+        <div
+          style="
+            position: relative;
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+          "
+          v-if="loading"
+        >
+          <n-spin />
+        </div>
+        <span v-else class="dialog-footer">
           <n-button @click="visible = false">取 消</n-button>
           <n-button type="primary" @click="confirmCropper">确 定</n-button>
         </span>
@@ -54,6 +65,7 @@ const emits = defineEmits<{
   (event: 'closeDialog'): void
 }>()
 
+const loading = ref<boolean>(false)
 const visible = ref<boolean>(false)
 const aspectRatio = ref<number>(1 / 1)
 
@@ -62,6 +74,7 @@ let croppedFile: File | null | undefined = null
 
 //获取裁剪图片的file对象
 const confirmCropper = async () => {
+  loading.value = true
   croppedFile = await cropper?.getFile()
 
   // 把Blob转换成file，type为croppedFileType
@@ -78,8 +91,10 @@ const confirmCropper = async () => {
     if (res.code === 0) {
       message.success('上传成功')
       emits('uploadImage', { imgURL: res.data.url })
+      emits('closeDialog')
     }
   }
+  loading.value = false
 }
 
 watch(

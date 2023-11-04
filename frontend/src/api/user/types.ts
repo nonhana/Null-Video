@@ -10,13 +10,13 @@ export interface loginAPIParams {
 }
 
 export interface getUserInfoAPIParams {
-  user_id?: string
+  userId?: string
 }
 
 export interface updateInfoAPIParams {
   userId: string
   gender?: string
-  userAvatar?: null
+  userAvatar?: string
   userName?: string
   userProfile?: string
 }
@@ -41,6 +41,17 @@ export interface delVideoAPIParams {
   videoId: number
 }
 
-export interface likeVideoAPIParams {}
+export interface likeVideoAPIParams {
+  userId: string
+  videoId: string
+}
 
-export interface collectVideoAPIParams {}
+export interface collectVideoAPIParams {
+  userId: string
+  videoId: string
+}
+
+export interface getLikeCollectVideoListAPIParams {
+  userId: string
+  option: 0 | 1
+}

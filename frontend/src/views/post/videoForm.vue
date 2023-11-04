@@ -16,29 +16,32 @@
       :rules="rules"
     >
       <n-form-item path="cover" label="视频封面">
-        <n-upload
-          list-type="image-card"
-          @before-upload="fileSelected"
-          @preview="fileDetected"
-        >
-          点击上传
-        </n-upload>
-        <n-modal
-          v-model:show="showModal"
-          preset="card"
-          style="width: 600px"
-          title="图片预览"
-        >
-          <img :src="previewImageUrl" style="width: 100%" />
-        </n-modal>
-        <!-- 图片裁剪组件 -->
-        <imgCropper
-          :source-file="coverSourceFile"
-          :cropped-file-type="coverCroppedFileType"
-          :dialog-visible="coverDialogVisible"
-          @upload-image="uploadImage"
-          @close-dialog="closeDialog"
-        />
+        <div class="cover">
+          <div
+            v-if="videoForm.video_cover"
+            class="cover-preview"
+            @click="openCoverSelector"
+          >
+            <img :src="videoForm.video_cover" alt="video_cover" />
+          </div>
+          <div v-else class="cover-template" @click="openCoverSelector">
+            <span>点击上传</span>
+          </div>
+          <input
+            style="display: none"
+            ref="coverSelector"
+            type="file"
+            @change="fileSelected"
+          />
+          <!-- 图片裁剪组件 -->
+          <imgCropper
+            :source-file="coverSourceFile"
+            :cropped-file-type="coverCroppedFileType"
+            :dialog-visible="coverDialogVisible"
+            @upload-image="uploadImage"
+            @close-dialog="closeDialog"
+          />
+        </div>
       </n-form-item>
       <n-form-item path="description" label="视频简介">
         <n-input
@@ -51,11 +54,11 @@
         />
       </n-form-item>
       <n-form-item path="type" label="视频分类">
-        <n-select
+        <n-tree-select
           style="width: 15rem"
           v-model:value="videoForm.video_type"
           placeholder="选择一个合理的分类~"
-          :options="VIDEO_CATEGORY"
+          :options="videoTypes"
         />
       </n-form-item>
       <n-form-item path="tag" label="视频标签">
@@ -64,23 +67,37 @@
           v-model:value="videoForm.video_tags"
           placeholder="为自己的视频添加标签，让更多人看到~"
           multiple
-          :options="VIDEO_TAG"
+          :options="videoTags"
+        />
+        <n-input
+          style="width: 14rem; margin-left: 1rem"
+          type="text"
+          v-model:value="newTagText"
+          placeholder="输入新标签，按回车添加"
+          @keydown.enter="addTag"
         />
       </n-form-item>
       <n-form-item path="permission" label="视频权限">
         <n-radio
-          :checked="videoForm.video_permission === 0"
-          :value="0"
+          :checked="videoForm.video_permission === '公开'"
+          value="公开"
           @change="permissionChoose"
         >
-          朋友可见
+          公开
         </n-radio>
         <n-radio
-          :checked="videoForm.video_permission === 1"
-          :value="1"
+          :checked="videoForm.video_permission === '好友可见'"
+          value="好友可见"
           @change="permissionChoose"
         >
-          所有人可见
+          好友可见
+        </n-radio>
+        <n-radio
+          :checked="videoForm.video_permission === '仅自己可见'"
+          value="仅自己可见"
+          @change="permissionChoose"
+        >
+          仅自己可见
         </n-radio>
       </n-form-item>
     </n-form>
@@ -92,25 +109,45 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { VIDEO_CATEGORY, VIDEO_TAG } from '@/utils/constants'
+import { ref, onMounted } from 'vue'
+import type { UploadVideoInfo } from '@/utils/types'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
+import { useUploadVideoStore } from '@/stores/uploadVideo'
+import {
+  getTagsAPI,
+  addTagAPI,
+  postVideoAPI,
+  getVideoTypeAPI
+} from '@/api/video/video'
 import Button from '@nullVideo/button/button.vue'
 import imgCropper from '@nullVideo/utils/imgCropper.vue'
-import { UploadFileInfo, FormRules } from 'naive-ui'
+import { useMessage, FormRules } from 'naive-ui'
+import { TreeSelectOption } from 'naive-ui'
 
-/* 头像图片相关 */
+const router = useRouter()
+const message = useMessage()
+const userStore = useUserStore()
+const uploadVideoStore = useUploadVideoStore()
+
+/* 封面图片相关 */
+const coverSelector = ref<HTMLInputElement>()
 const coverDialogVisible = ref<boolean>(false)
 let coverSourceFile: File | null | undefined = null
 let coverCroppedFileType: string = '' // 裁剪后的文件类型
+// 点击更换头像时，打开文件选择器
+const openCoverSelector = () => {
+  coverSelector.value!.click()
+}
 // 选择文件后输出文件信息
-const fileSelected = (file: File) => {
+const fileSelected = () => {
+  const file = coverSelector.value!.files![0]
   coverSourceFile = file
   coverCroppedFileType = coverSourceFile?.type ?? ''
   coverDialogVisible.value = true
 }
 const uploadImage = (value: { imgURL: string }) => {
-  // userInfo.value!.user_cover = value.imgURL
-  videoForm.value.video_cover = value.imgURL
+  videoForm.value.video_cover = 'http://' + value.imgURL
 }
 const closeDialog = () => {
   coverDialogVisible.value = false
@@ -122,17 +159,19 @@ const emits = defineEmits<{
 }>()
 
 /* Refs */
-const previewImageUrl = ref<string>('')
-const showModal = ref<boolean>(false)
 // 视频信息的表单
-const videoForm = ref({
-  video_title: '',
-  video_description: '',
-  video_cover: '',
-  video_type: [],
-  video_tags: [],
-  video_permission: 0
-})
+const videoForm = ref<UploadVideoInfo>(uploadVideoStore.uploadVideoInfo)
+// 标签列表
+const videoTags = ref<
+  {
+    value: number
+    label: string
+  }[]
+>([])
+// 新标签的文本
+const newTagText = ref('')
+// 类别列表
+const videoTypes = ref<TreeSelectOption[]>([])
 
 /* Consts */
 const rules: FormRules = {
@@ -181,22 +220,97 @@ const rules: FormRules = {
 }
 
 /* Functions */
-// 检测到上传的封面文件
-const fileDetected = (file: UploadFileInfo) => {
-  const { url } = file
-  console.log(url)
-  previewImageUrl.value = url as string
-  showModal.value = true
-}
 // 点击上传视频按钮上传视频
-const postVideo = () => {
+const postVideo = async () => {
   console.log(videoForm.value)
+  if (videoForm.value.video_url === '') {
+    message.error('请先返回上一步上传视频')
+    return
+  } else if (
+    videoForm.value.video_cover === '' ||
+    videoForm.value.video_description === '' ||
+    videoForm.value.video_type === '' ||
+    videoForm.value.video_tags.length === 0 ||
+    videoForm.value.video_permission === ''
+  ) {
+    message.error('请填写完整的视频信息')
+    return
+  }
+  const formRes = {
+    userId: userStore.userInfo.user_id as string,
+    videoCoverUrl: videoForm.value.video_cover as string,
+    videoUrl: videoForm.value.video_url as string,
+    videoDescription: videoForm.value.video_description as string,
+    videoTypeId: videoForm.value.video_type as string,
+    videoRole: videoForm.value.video_permission as string,
+    videoTagsId: videoForm.value.video_tags as string[]
+  }
+  const res = await postVideoAPI(formRes)
+  if (res.code === 0) {
+    uploadVideoStore.reset()
+    message.success('投稿成功，2s后跳转到首页')
+    setTimeout(() => {
+      router.push('/')
+    }, 2000)
+  }
 }
 // 选择视频权限
 const permissionChoose = (e: Event) => {
   const target = e.target as HTMLInputElement
-  videoForm.value.video_permission = Number(target.value)
+  videoForm.value.video_permission = <'公开' | '好友可见' | '仅自己可见' | ''>(
+    target.value
+  )
 }
+// 添加标签
+const addTag = async () => {
+  if (newTagText.value === '') {
+    message.error('请输入标签内容')
+    return
+  }
+  const res = await addTagAPI({
+    videoTagName: newTagText.value
+  })
+  if (res.code === 0) {
+    message.success('添加成功')
+    newTagText.value = ''
+    getTags()
+  }
+}
+// 获取视频分类
+const getVideoType = async () => {
+  const res = await getVideoTypeAPI({})
+  if (res.code === 0) {
+    videoTypes.value = res.data.map((item: any) => {
+      return {
+        key: item.videoTypeId,
+        label: item.videoTypeName,
+        children: item.videoTypeTopic.map((topic: any) => {
+          return {
+            key: topic.videoTypeId,
+            label: topic.videoTopicName
+          }
+        })
+      }
+    })
+  }
+}
+// 获取标签
+const getTags = async () => {
+  const res = await getTagsAPI({})
+  if (res.code === 0) {
+    videoTags.value = res.data.map((item: any) => {
+      return {
+        value: item.videoTagId,
+        label: item.videoTagName
+      }
+    })
+  }
+}
+
+onMounted(() => {
+  getTags()
+  getVideoType()
+})
 </script>
 
 <style scoped lang="less">
@@ -215,6 +329,33 @@ const permissionChoose = (e: Event) => {
 .form {
   width: 60rem;
   margin: 2rem auto 0;
+  .cover {
+    position: relative;
+    width: 15rem;
+    height: 15rem;
+    &-template {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      border: 1px dashed #999999;
+      cursor: pointer;
+      span {
+        font-size: 1rem;
+        color: @text;
+      }
+    }
+    &-preview {
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
 }
 
 .footer {
