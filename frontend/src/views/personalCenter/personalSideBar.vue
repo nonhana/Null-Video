@@ -467,7 +467,7 @@ watch(
       transition: all 0.3s;
     }
 
-    ::v-deep &-img {
+    :deep(&-img) {
       margin: 0 1rem 0 2rem;
       width: 2rem;
       height: 2rem;

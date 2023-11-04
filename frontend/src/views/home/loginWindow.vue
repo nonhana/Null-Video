@@ -19,11 +19,16 @@
           >
             <span>登录</span>
           </div>
-          <div class="title-item" :class="presentStatus[1] ? 'selected' : ''" @click="() => {
-            isLogining = false
-            presentStatus = [false, true]
-          }
-            ">
+          <div
+            class="title-item"
+            :class="presentStatus[1] ? 'selected' : ''"
+            @click="
+              () => {
+                isLogining = false
+                presentStatus = [false, true]
+              }
+            "
+          >
             <span>注册</span>
           </div>
         </div>
@@ -32,54 +37,102 @@
         </div>
       </div>
 
-      <n-form v-if="isLogining" ref="loginRef" :model="loginForm" :rules="loginRules">
+      <n-form
+        v-if="isLogining"
+        ref="loginRef"
+        :model="loginForm"
+        :rules="loginRules"
+      >
         <div class="form">
           <div class="form-item">
             <span>账号:</span>
             <n-form-item path="account">
-              <my-input width="20.875rem" height="2.5rem" type="text" placeholder="请输入用户名或邮箱" :value="loginForm.username"
-                @input="loginForm.username = $event" />
+              <my-input
+                width="20.875rem"
+                height="2.5rem"
+                type="text"
+                placeholder="请输入用户名或邮箱"
+                :value="loginForm.username"
+                @input="loginForm.username = $event"
+              />
             </n-form-item>
           </div>
           <div class="form-item">
             <span>密码:</span>
             <n-form-item path="password">
-              <my-input width="20.875rem" height="2.5rem" type="password" placeholder="请输入密码" :value="loginForm.password"
-                @input="loginForm.password = $event" />
+              <my-input
+                width="20.875rem"
+                height="2.5rem"
+                type="password"
+                placeholder="请输入密码"
+                :value="loginForm.password"
+                @input="loginForm.password = $event"
+              />
             </n-form-item>
           </div>
           <div class="radios">
-            <n-radio :checked="rememberUsername" value="account" @change="radioChoose">
+            <n-radio
+              :checked="rememberUsername"
+              value="account"
+              @change="radioChoose"
+            >
               记住账号
             </n-radio>
-            <n-radio :checked="rememberPassword" value="password" @change="radioChoose">
+            <n-radio
+              :checked="rememberPassword"
+              value="password"
+              @change="radioChoose"
+            >
               记住密码
             </n-radio>
           </div>
         </div>
       </n-form>
 
-      <n-form v-else ref="registerRef" :model="registerForm" :rules="registerRules">
+      <n-form
+        v-else
+        ref="registerRef"
+        :model="registerForm"
+        :rules="registerRules"
+      >
         <div class="form">
           <div class="form-item">
             <span>账号:</span>
             <n-form-item path="account">
-              <my-input width="20.875rem" height="2.5rem" type="text" placeholder="请输入用户名或邮箱"
-                :value="registerForm.username" @input="registerForm.username = $event" />
+              <my-input
+                width="20.875rem"
+                height="2.5rem"
+                type="text"
+                placeholder="请输入用户名或邮箱"
+                :value="registerForm.username"
+                @input="registerForm.username = $event"
+              />
             </n-form-item>
           </div>
           <div class="form-item">
             <span>密码:</span>
             <n-form-item path="password">
-              <my-input width="20.875rem" height="2.5rem" type="password" placeholder="请输入密码"
-                :value="registerForm.password" @input="loginForm.password = $event" />
+              <my-input
+                width="20.875rem"
+                height="2.5rem"
+                type="password"
+                placeholder="请输入密码"
+                :value="registerForm.password"
+                @input="loginForm.password = $event"
+              />
             </n-form-item>
           </div>
           <div class="form-item">
             <span>确认密码:</span>
             <n-form-item path="confirmPassword">
-              <my-input width="20.875rem" height="2.5rem" type="password" placeholder="请再次输入密码"
-                :value="registerForm.confirmPassword" @input="registerForm.confirmPassword = $event" />
+              <my-input
+                width="20.875rem"
+                height="2.5rem"
+                type="password"
+                placeholder="请再次输入密码"
+                :value="registerForm.confirmPassword"
+                @input="registerForm.confirmPassword = $event"
+              />
             </n-form-item>
           </div>
         </div>
@@ -351,12 +404,12 @@ watch(isLogining, (newVal, _) => {
       cursor: pointer;
       height: 2rem;
 
-      ::v-deep svg path {
+      :deep(svg path) {
         fill: @text-secondary;
         transition: all 0.3s;
       }
 
-      &:hover ::v-deep svg path {
+      &:hover :deep(svg path) {
         fill: @text;
       }
     }
