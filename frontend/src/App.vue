@@ -2,16 +2,13 @@
   <n-notification-provider>
     <n-message-provider>
       <n-dialog-provider>
-        <n-configProvider
-          :theme-overrides="themeOverrides"
-          style="height: 100%"
-        >
+        <n-configProvider :theme-overrides="themeOverrides" style="height: 100%">
           <div class="app">
             <common-header />
             <div class="router">
               <router-view />
             </div>
-            <!-- <loginWindow /> -->
+            <loginWindow v-if="userStore.isLoginWindowShow" />
           </div>
         </n-configProvider>
       </n-dialog-provider>
@@ -20,10 +17,13 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import { NConfigProvider, GlobalThemeOverrides } from 'naive-ui'
 import commonHeader from '@nullVideo/basic/commonHeader.vue'
 import loginWindow from './views/home/loginWindow.vue'
+import { useUserStore } from './stores/user';
 
+const userStore = useUserStore()
 // native-ui 全局主题变量
 const themeOverrides: GlobalThemeOverrides = {
   common: {
@@ -35,6 +35,10 @@ const themeOverrides: GlobalThemeOverrides = {
     color: '#D4D4D4'
   }
 }
+
+onMounted(() => {
+  if (!localStorage.getItem('token')) userStore.showLoginWindow()
+})
 </script>
 
 <style scoped lang="less">
