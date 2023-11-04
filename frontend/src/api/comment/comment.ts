@@ -3,13 +3,16 @@ import myAxios from '../axios'
 import {
     addCommentAPIParams,
     getCommentAPIParams,
+    getCommentAPIResponse,
     delCommentAPIParams,
     likeCommentAPIParams
 } from './types'
 
 
 // 添加评论
-export const addCommentAPI = (data: addCommentAPIParams) => {
+export const addCommentAPI = (
+    data: addCommentAPIParams
+): getCommentAPIResponse => {
     return myAxios({
         url: '/api/video/add/comment',
         method: 'POST',

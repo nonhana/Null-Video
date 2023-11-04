@@ -6,7 +6,9 @@
       </n-gi>
       <n-gi :span="16" :offset="5">
         <div class="search">
-          <Search />
+          <Search>
+            <searchSVG />
+          </Search>
         </div>
       </n-gi>
       <n-gi :span="5" :offset="8">
@@ -29,6 +31,7 @@ import { useUserStore } from '@/stores/user'
 import { NGrid } from 'naive-ui'
 import Button from '@nullVideo/button/button.vue'
 import Search from '@nullVideo/form/search/search.vue'
+import searchSVG from '@nullSvg/search.svg'
 
 const router = useRouter()
 
