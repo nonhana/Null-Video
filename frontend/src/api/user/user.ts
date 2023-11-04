@@ -12,7 +12,8 @@ import {
   getVideoInfoAPIParams,
   delVideoAPIParams,
   likeVideoAPIParams,
-  collectVideoAPIParams
+  collectVideoAPIParams,
+  getLikeCollectVideoListAPIParams
 } from './types'
 
 // 用户注册
@@ -102,5 +103,16 @@ export const collectVideoAPI = (data: collectVideoAPIParams) => {
     url: '/api/video/favour',
     method: 'POST',
     data
+  })
+}
+
+// 获取点赞或者收藏的视频列表
+export const getLikeCollectVideoListAPI = (
+  params: getLikeCollectVideoListAPIParams
+) => {
+  return myAxios({
+    url: '/api/video/get/my/thumbOrFavour',
+    method: 'GET',
+    params
   })
 }

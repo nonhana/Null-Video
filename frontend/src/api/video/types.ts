@@ -1,6 +1,6 @@
 export interface getVideoListAPIParams {
   userId: string
-  begin: number
+  begin?: number
 }
 
 export interface getOthersVideoListAPIParams {
@@ -10,7 +10,7 @@ export interface getOthersVideoListAPIParams {
 }
 
 export interface getVideoTypeAPIParams {
-  typeId: number
+  typeId?: number
 }
 
 export interface addTagAPIParams {
@@ -18,7 +18,7 @@ export interface addTagAPIParams {
 }
 
 export interface getTagsAPIParams {
-  searchTag: string
+  searchTag?: string
 }
 
 export interface postVideoAPIParams {

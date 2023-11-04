@@ -1,17 +1,22 @@
 <template>
-  <n-message-provider>
-    <n-dialog-provider>
-      <n-configProvider :theme-overrides="themeOverrides" style="height: 100%">
-        <div class="app">
-          <common-header />
-          <div class="router">
-            <router-view />
+  <n-notification-provider>
+    <n-message-provider>
+      <n-dialog-provider>
+        <n-configProvider
+          :theme-overrides="themeOverrides"
+          style="height: 100%"
+        >
+          <div class="app">
+            <common-header />
+            <div class="router">
+              <router-view />
+            </div>
+            <!-- <loginWindow /> -->
           </div>
-          <!-- <loginWindow /> -->
-        </div>
-      </n-configProvider>
-    </n-dialog-provider>
-  </n-message-provider>
+        </n-configProvider>
+      </n-dialog-provider>
+    </n-message-provider>
+  </n-notification-provider>
 </template>
 
 <script setup lang="ts">

@@ -8,17 +8,32 @@
         <div class="template" @click="openAvatarSelector">
           <span> 更换头像 </span>
         </div>
-        <input style="display: none" ref="avatarSelector" type="file" @change="fileSelected" />
+        <input
+          style="display: none"
+          ref="avatarSelector"
+          type="file"
+          @change="fileSelected"
+        />
         <!-- 图片裁剪组件 -->
-        <imgCropper :source-file="avatarSourceFile" :cropped-file-type="avatarCroppedFileType"
-          :dialog-visible="avatarDialogVisible" @upload-image="uploadImage" @close-dialog="closeDialog" />
+        <imgCropper
+          :source-file="avatarSourceFile"
+          :cropped-file-type="avatarCroppedFileType"
+          :dialog-visible="avatarDialogVisible"
+          @upload-image="uploadImage"
+          @close-dialog="closeDialog"
+        />
         <div class="name">
           <span v-if="!nameInputVisable" @dblclick="showNameInput">{{
             userInfo!.user_name
           }}</span>
           <div v-else>
-            <my-input type="text" placeholder="你的名称" :value="userInfo!.user_name" @input="updateName"
-              @blur="showNameInput" />
+            <my-input
+              type="text"
+              placeholder="你的名称"
+              :value="userInfo!.user_name!"
+              @input="updateName"
+              @blur="showNameInput"
+            />
           </div>
           <span>id:&emsp;{{ userInfo!.user_id }}</span>
         </div>
@@ -43,8 +58,16 @@
         </div>
       </div>
       <div style="width: 100%" @dblclick="showSignatureInput">
-        <my-input type="textarea" placeholder="请输入签名" :value="userInfo!.user_signature" :min-rows="1" :max-rows="5"
-          :disabled="signatureInputVisable" @input="updateSignature" @blur="showSignatureInput" />
+        <my-input
+          type="textarea"
+          placeholder="请输入签名"
+          :value="userInfo!.user_signature!"
+          :min-rows="1"
+          :max-rows="5"
+          :disabled="signatureInputVisable"
+          @input="updateSignature"
+          @blur="showSignatureInput"
+        />
       </div>
     </div>
     <n-divider />
@@ -57,12 +80,21 @@
         <img :src="myVideos" alt="myVideos" />
         <span>发布视频</span>
       </div> -->
-      <div v-for="(menu, index) in menuStatus" :key="menu.menuName" class="menu-item"
-        :class="{ 'menu-hover': hovering[index] }" @click="chooseItem(index)" @mouseenter="hoverItem(0, index)"
-        @mouseleave="hoverItem(1)">
-        <arrowRightSVG class="menu-item-arrow" :style="{
-          left: hovering[index] ? '0.5rem' : '0'
-        }" />
+      <div
+        v-for="(menu, index) in menuStatus"
+        :key="menu.menuName"
+        class="menu-item"
+        :class="{ 'menu-hover': hovering[index] }"
+        @click="chooseItem(index)"
+        @mouseenter="hoverItem(0, index)"
+        @mouseleave="hoverItem(1)"
+      >
+        <arrowRightSVG
+          class="menu-item-arrow"
+          :style="{
+            left: hovering[index] ? '0.5rem' : '0'
+          }"
+        />
         <component class="menu-item-img" :is="menu.menuSvg" />
         <span>{{ menu.menuName }}</span>
       </div>
@@ -75,7 +107,7 @@ import { ref, watch, reactive, HTMLAttributes, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import type { UserInfo } from '@/utils/types'
-import { updateInfoAPI } from '@/api/user/user'
+import { getUserInfoAPI, updateInfoAPI } from '@/api/user/user'
 import myInput from '@/components/form/input/input.vue'
 import imgCropper from '@/components/utils/imgCropper.vue'
 import arrowRightSVG from '@nullSvg/arrow-right.svg'
@@ -97,14 +129,19 @@ const openAvatarSelector = () => {
 // 选择文件后输出文件信息
 const fileSelected = () => {
   const file = avatarSelector.value!.files![0]
-  console.log(file)
   avatarSourceFile = file
   avatarCroppedFileType = avatarSourceFile?.type ?? ''
-  console.log('avatarCroppedFileType', avatarCroppedFileType)
   avatarDialogVisible.value = true
 }
-const uploadImage = (value: { imgURL: string }) => {
-  userInfo.value!.user_avatar = value.imgURL
+const uploadImage = async (value: { imgURL: string }) => {
+  userInfo.value!.user_avatar = 'http://' + value.imgURL
+  const res = await updateInfoAPI({
+    userId: userInfo.value!.user_id!,
+    userAvatar: userInfo.value!.user_avatar
+  })
+  if (res.code === 0) {
+    message.success('头像更新成功')
+  }
 }
 const closeDialog = () => {
   avatarDialogVisible.value = false
@@ -119,6 +156,8 @@ const confirmExit = () => {
     positiveText: '确定',
     negativeText: '取消',
     onPositiveClick: () => {
+      userStore.logout()
+      localStorage.clear()
       message.success('退出登录成功，2s后跳转首页')
       setTimeout(() => {
         router.push('/')
@@ -142,7 +181,11 @@ const nameInputVisable = ref<boolean>(false)
 const signatureInputVisable = ref<boolean>(true)
 /* Consts */
 const routeNameList = ['myVideos', 'myCollections', 'myFollowsAndFans', 'exit']
-const menuStatus: { menuName: string, menuSelected: boolean, menuSvg: HTMLAttributes }[] = reactive([
+const menuStatus: {
+  menuName: string
+  menuSelected: boolean
+  menuSvg: HTMLAttributes
+}[] = reactive([
   {
     menuName: '发布视频',
     menuSelected: routeNameWhenMounted === 'myVideos',
@@ -213,12 +256,12 @@ const showNameInput = () => {
       negativeText: '取消',
       onPositiveClick: async () => {
         const res = await updateInfoAPI({
-          userId: userInfo.value!.user_id,
+          userId: userInfo.value!.user_id!,
           userName: userInfo.value!.user_name
         })
         if (res.code === 0) {
           nameInputVisable.value = !nameInputVisable.value
-          message.success('更改成功')
+          message.success('更新用户名成功')
         }
       }
     })
@@ -236,12 +279,12 @@ const showSignatureInput = () => {
       negativeText: '取消',
       onPositiveClick: async () => {
         const res = await updateInfoAPI({
-          userId: userInfo.value!.user_id,
+          userId: userInfo.value!.user_id!,
           userProfile: userInfo.value!.user_signature
         })
         if (res.code === 0) {
           signatureInputVisable.value = !signatureInputVisable.value
-          message.success('更改成功')
+          message.success('更新签名成功')
         }
       }
     })
@@ -260,26 +303,24 @@ const updateSignature = (value: string) => {
 /* Watches */
 watch(
   () => route.params.user_id,
-  (user_id) => {
-    console.log(
-      user_id,
-      userStore.userInfo.user_id,
-      user_id === userStore.userInfo.user_id
-    )
+  async (user_id) => {
     if (user_id === userStore.userInfo.user_id) {
       isMyCenter.value = true
       userInfo.value = userStore.userInfo
     } else {
       isMyCenter.value = false
-      userInfo.value = {
-        user_id: '2',
-        user_name: 'JaneDoe',
-        user_signature: 'Another signature.',
-        user_avatar: 'https://dummyimage.com/400X400',
-        user_likenum: 111,
-        user_collectnum: 222,
-        user_follownum: 333,
-        user_fansnum: 444
+      const res = await getUserInfoAPI({ userId: user_id as string })
+      if (res.code === 0) {
+        userInfo.value = {
+          user_id: res.data.userId,
+          user_avatar: res.data.userAvatar,
+          user_signature: res.data.userProfile ?? '',
+          user_name: res.data.userName,
+          user_collectnum: res.data.userCollectNum ?? 0,
+          user_fansnum: res.data.followerNum,
+          user_follownum: res.data.followingNum,
+          user_likenum: res.data.videoTotalThumbsNum
+        }
       }
     }
   },
