@@ -3,20 +3,12 @@
     <Card width="37.5rem" height="28.125rem">
       <div class="head">
         <div class="title">
-          <div
-            class="title-bottom"
-            :class="presentStatus[0] ? '' : 'register'"
-          ></div>
-          <div
-            class="title-item"
-            :class="presentStatus[0] ? 'selected' : ''"
-            @click="
-              () => {
-                isLogining = true
-                presentStatus = [true, false]
-              }
-            "
-          >
+          <div class="title-bottom" :class="presentStatus[0] ? '' : 'register'"></div>
+          <div class="title-item" :class="presentStatus[0] ? 'selected' : ''" @click="() => {
+            isLogining = true
+            presentStatus = [true, false]
+          }
+            ">
             <span>登录</span>
           </div>
           <div
@@ -32,7 +24,7 @@
             <span>注册</span>
           </div>
         </div>
-        <div class="close" @click="emits('close')">
+        <div class="close" @click="userStore.hideLoginWindow()">
           <closeSVG />
         </div>
       </div>
@@ -160,10 +152,6 @@ const userStore = useUserStore()
 
 const message = useMessage()
 
-const emits = defineEmits<{
-  (e: 'close'): void
-}>()
-
 const presentStatus = ref<boolean[]>([true, false])
 
 // 表单验证规则
@@ -288,7 +276,7 @@ const login = async () => {
       user_likenum: sourceUserInfo.videoTotalThumbNum
     })
     message.success('登录成功')
-    emits('close')
+    userStore.hideLoginWindow()
   }
 }
 // 注册
@@ -318,7 +306,7 @@ const register = async () => {
         user_likenum: sourceUserInfo.videoTotalThumbsNum
       })
       message.success('注册成功')
-      emits('close')
+      userStore.hideLoginWindow()
     }
   }
 }
@@ -443,6 +431,10 @@ watch(isLogining, (newVal, _) => {
       display: flex;
       justify-content: space-between;
       align-items: center;
+
+      div {
+        font-size: 0.75rem;
+      }
     }
   }
 

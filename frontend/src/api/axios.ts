@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import { useRouter } from 'vue-router'
 import { useNotification } from 'naive-ui'
+import { useUserStore } from '@/stores/user';
 
 const router = useRouter()
 
@@ -39,9 +40,57 @@ function myAxios(axiosConfig: AxiosRequestConfig): Promise<Data> {
       if (res.data.code === 0) {
         return res.data
       } else {
+        const userStore = useUserStore()
+        console.log('error', res)
         window.confirm('发生错误' + res.data.code + '：' + res.data.message)
+        switch (res.data.code) {
+          case 40000:
+            // 请求参数错误
+            console.log("请求参数错误");
+            break;
+          case 40100:
+            // 处理未登录
+            console.log("未登录");
+            break;
+          case 40101:
+            // 处理无权限
+            console.log("无权限");
+            break;
+          case 40400:
+            // 处理未找到
+            console.log("请求资源未找到");
+            break;
+          case 40300:
+            // 处理禁止访问
+            console.log("禁止访问");
+            break;
+          case 40500:
+            // 用户登陆状态异常
+            // 显示登录窗口
+            userStore.showLoginWindow();
+            console.log("用户登陆状态异常");
+            break;
+          case 50000:
+            // 处理系统错误
+            console.log("系统内部错误");
+            break;
+          case 50001:
+            // 处理操作错误
+            console.log("操作失败");
+            break;
+          case 1:
+            // 处理文件上传错误
+            console.log("上传文件失败");
+            break;
+          default:
+            // 处理其他错误
+            console.log("发生未知错误");
+            break;
+        }
+
         return Promise.reject(res.data.message)
       }
+
     },
     (err) => {
       switch (err.response.result_status) {
