@@ -33,7 +33,7 @@
       </n-gi>
       <n-gi :span="13">
         <Card>
-          <Comment />
+          <Comment :video-id="'3'"/>
         </Card>
       </n-gi>
     </n-grid>

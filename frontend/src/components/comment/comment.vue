@@ -1,12 +1,21 @@
 <template>
   <div class="comment">
     <CommentList :comment-data="commentList" />
+    <Input :value="commentValue" class="comment-input" placeholder="善言善语，文明交流" />
   </div>
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import CommentList from './commentList.vue'
+import Input from '@nullVideo/form/input/input.vue';
+import { getCommentAPI, addCommentAPI } from '@/api/comment/comment'
+
+const props = defineProps<{
+  videoId: string
+}>()
+
 const commentList = ref<any[]>([])
+const commentValue = ref<string>('')
 
 // mock评论数据
 function generateReview(count = 0, isChild = false): unknown {
@@ -27,9 +36,9 @@ function generateReview(count = 0, isChild = false): unknown {
     comment_id: id,
     comment_to: isChild
       ? {
-          id: Math.random().toString(36).substring(7),
-          name: Math.random().toString(36).substring(7)
-        }
+        id: Math.random().toString(36).substring(7),
+        name: Math.random().toString(36).substring(7)
+      }
       : null,
     user: {
       id,
@@ -43,7 +52,14 @@ function generateReview(count = 0, isChild = false): unknown {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
+  const res = await getCommentAPI({
+    videoId: props.videoId,
+    userId: '1'
+  })
+
+  console.log(res)
+
   // 获取mock数据
   for (let i = 0; i < 3; i++) {
     commentList.value.push(generateReview())
@@ -53,6 +69,13 @@ onMounted(() => {
 
 <style scoped lang="less">
 .comment {
+  position: relative;
   width: 100%;
+  height: 100%;
+
+  .comment-input {
+    position: absolute;
+    bottom: 0;
+  }
 }
 </style>
