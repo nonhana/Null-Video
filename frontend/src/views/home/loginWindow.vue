@@ -344,6 +344,7 @@ watch(isLogining, (newVal, _) => {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.2);
+  z-index: 999;
 
   .head {
     display: flex;
@@ -365,7 +366,7 @@ watch(isLogining, (newVal, _) => {
         background-color: #fff;
         box-shadow: @shadow-outer;
         border-radius: @border-radius;
-        z-index: 1;
+        z-index: 999;
         transition: all 0.3s;
       }
 
@@ -384,7 +385,7 @@ watch(isLogining, (newVal, _) => {
         color: @text-secondary;
         border-radius: @border-radius;
         transition: all 0.3s;
-        z-index: 2;
+        z-index: 1000;
       }
 
       .title-item:hover {

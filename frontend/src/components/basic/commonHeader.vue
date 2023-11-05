@@ -6,7 +6,9 @@
       </n-gi>
       <n-gi :span="16" :offset="5">
         <div class="search">
-          <Search />
+          <Search>
+            <searchSVG />
+          </Search>
         </div>
       </n-gi>
       <n-gi :span="5" :offset="8">
@@ -17,12 +19,16 @@
         </div>
       </n-gi>
       <n-gi :span="1" :offset="3">
-        <div class="avatar" @click="jumpTo('personalCenter')">
-          <img
+        <div class="avatar">
+          <n-dropdown
             v-if="userStore.userInfo.user_avatar"
-            :src="userStore.userInfo.user_avatar"
-            alt="userAvatar"
-          />
+            trigger="hover"
+            :options="options"
+            @select="handleSelect"
+          >
+            <img :src="userStore.userInfo.user_avatar" alt="userAvatar" />
+          </n-dropdown>
+          <div v-else @click="userStore.showLoginWindow()">登录</div>
         </div>
       </n-gi>
     </n-grid>
@@ -35,10 +41,28 @@ import { useUserStore } from '@/stores/user'
 import { NGrid } from 'naive-ui'
 import Button from '@nullVideo/button/button.vue'
 import Search from '@nullVideo/form/search/search.vue'
+import searchSVG from '@nullSvg/search.svg'
+import { useMessage } from 'naive-ui'
 
 const router = useRouter()
+const message = useMessage()
 
 const userStore = useUserStore()
+
+const options = [
+  {
+    label: '个人中心',
+    key: 'personalCenter'
+  },
+  {
+    label: '退出登录',
+    key: 'emit'
+  }
+]
+
+const handleSelect = (key: string) => {
+  jumpTo(key)
+}
 
 // 根据传入的name跳转到对应的页面
 const jumpTo = (name: string) => {
@@ -57,6 +81,13 @@ const jumpTo = (name: string) => {
           user_id: userStore.userInfo.user_id
         }
       })
+      break
+    case 'emit':
+      // 登出操作
+      userStore.logout()
+      localStorage.clear()
+      message.success('退出登录成功，即将跳转至首页')
+      router.push('/')
       break
   }
 }
@@ -97,13 +128,21 @@ const jumpTo = (name: string) => {
   height: 2.5rem;
   border-radius: 100%;
   overflow: hidden;
-  background: @bg-color-primary;
   cursor: pointer;
 
-  img {
+  img,
+  div {
     width: 100%;
     height: 100%;
     border-radius: 100%;
+  }
+
+  div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: @bg-color-primary;
+    color: white;
   }
 }
 </style>

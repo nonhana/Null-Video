@@ -158,10 +158,8 @@ const confirmExit = () => {
     onPositiveClick: () => {
       userStore.logout()
       localStorage.clear()
-      message.success('退出登录成功，2s后跳转首页')
-      setTimeout(() => {
-        router.push('/')
-      }, 2000)
+      message.success('退出登录成功，即将跳转至首页')
+      router.push('/')
     }
   })
 }

@@ -1,29 +1,45 @@
 <template>
   <div class="search" :style="{ height }">
     <n-input-group>
-      <n-input :style="{ height }" class="search-input" :placeholder="placeholder" />
-      <n-button :style="{ height }" class="search-button" ghost>
-        <searchSVG />
+      <n-input
+        :style="{ height }"
+        class="search-input"
+        :placeholder="placeholder"
+        v-model:value="inputValue"
+        @input="input"
+      />
+      <n-button
+        :style="{ height }"
+        class="search-button"
+        ghost
+        @click="clickEvent()"
+      >
+        <slot></slot>
       </n-button>
     </n-input-group>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue'
+import { ref } from 'vue'
 import { NInputGroup, NInput, NButton } from 'naive-ui'
-import searchSVG from '@nullSvg/search.svg'
 
-defineProps({
-  height: {
-    type: String,
-    default: 'auto'
-  },
-  placeholder: {
-    type: String,
-    default: '请输入要搜索的内容'
-  }
-})
+const { height, placeholder, value } = defineProps<{
+  height?: string
+  placeholder?: string
+  value: string
+  clickEvent: () => void
+}>()
+
+const emits = defineEmits<{
+  (e: 'input', value: string): void
+}>()
+
+const inputValue = ref(value)
+
+const input = (value: string) => {
+  emits('input', value)
+}
 </script>
 
 <style scoped lang="less">
