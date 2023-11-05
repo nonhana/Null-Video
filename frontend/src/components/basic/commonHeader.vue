@@ -11,12 +11,18 @@
       </n-gi>
       <n-gi :span="5" :offset="8">
         <div class="upload">
-          <Button width="7.5rem" height="2.5rem" @click="jumpTo('post')">我要创作</Button>
+          <Button width="7.5rem" height="2.5rem" @click="jumpTo('post')"
+            >我要创作</Button
+          >
         </div>
       </n-gi>
       <n-gi :span="1" :offset="3">
         <div class="avatar" @click="jumpTo('personalCenter')">
-          <img v-if="userStore.userInfo.user_avatar" :src="userStore.userInfo.user_avatar" alt="userAvatar" />
+          <img
+            v-if="userStore.userInfo.user_avatar"
+            :src="userStore.userInfo.user_avatar"
+            alt="userAvatar"
+          />
         </div>
       </n-gi>
     </n-grid>
@@ -36,6 +42,7 @@ const userStore = useUserStore()
 
 // 根据传入的name跳转到对应的页面
 const jumpTo = (name: string) => {
+  console.log('userStore', userStore)
   switch (name) {
     case 'home':
       router.push('/')

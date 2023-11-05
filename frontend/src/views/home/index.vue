@@ -9,7 +9,10 @@
           <Card style="margin-top: 2rem">
             <div class="video-choice">视频类型选择</div>
             <div class="video-types">
-              <div v-for="(videoType, index) in videoTypes" :key="videoType.id" :class="{ selected: videoType.selected }"
+              <div
+                v-for="(videoType, index) in videoTypes"
+                :key="videoType.id"
+                :class="{ selected: videoType.selected }"
                 @click="typeSelect(index)"
               >
                 {{ videoType.name }}
@@ -33,7 +36,7 @@
       </n-gi>
       <n-gi :span="13">
         <Card>
-          <Comment :video-id="'3'"/>
+          <Comment :video-id="'3'" />
         </Card>
       </n-gi>
     </n-grid>
@@ -42,6 +45,7 @@
 
 <script setup lang="ts">
 import { onMounted, onBeforeMount, onBeforeUnmount, ref, reactive } from 'vue'
+import { useVideoListStore } from '@/stores/videoList'
 import videoInfo from './videoInfo.vue'
 import { NGrid } from 'naive-ui'
 import Card from '@nullVideo/card/card.vue'
@@ -54,6 +58,10 @@ import 'video.js/dist/video-js.css' // 引入视频样式文件
 // import 'videojs-resolution-switcher'
 import Player from 'video.js/dist/types/player'
 import videoChangeSVG from '@nullSvg/video-change.svg'
+
+const videoListStore = useVideoListStore()
+
+// 默认的视频类型
 const defaultVideoTypes = [
   {
     name: '全部',
@@ -92,7 +100,7 @@ const defaultVideoTypes = [
   }
 ]
 
-let videoTypes: { name: string; selected: boolean; id: string }[] = reactive(
+const videoTypes: { name: string; selected: boolean; id: string }[] = reactive(
   JSON.parse(
     localStorage.getItem('videoTypes') || JSON.stringify(defaultVideoTypes)
   )
@@ -118,12 +126,15 @@ const typeSelect = (index: number) => {
   localStorage.setItem('videoTypes', JSON.stringify(videoTypes))
 }
 
+// 视频队列
 const videoQueue: { current: number; queue: string[] } = reactive({
   current: -1,
   queue: []
 })
+
 // 获取 video 实例
 const videoPlayer = ref()
+
 // 定义播放器对象
 let player: Player
 
@@ -152,9 +163,9 @@ onMounted(() => {
       localStorage.getItem('videoTypes') || JSON.stringify(defaultVideoTypes)
     )
   )
-  // 加载视频列表
+  // 从store中获取视频列表
   videoQueue.queue.push(
-    ...['./video-test001.mp4', './video-test002.mp4', './video-test003.mp4']
+    ...videoListStore.videoList.map((item) => item.videoUrl)
   )
 
   // 在组件挂载后初始化video.js播放器

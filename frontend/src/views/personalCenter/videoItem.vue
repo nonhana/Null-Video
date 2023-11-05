@@ -3,12 +3,15 @@
     class="PersonalCenterVideoItem-wrapper"
     @mouseenter="hover = true"
     @mouseleave="hover = false"
+    @click="jumpToVideoPage"
   >
     <div class="viewnum">
       <viewsSVG />
       <span>{{ videoItem.video_viewnum }}</span>
     </div>
-    <div :style="{ opacity: hover ? 1 : 0 }" class="template" />
+    <div :style="{ opacity: hover ? 1 : 0 }" class="template">
+      <videoItemPlaySVG />
+    </div>
     <div class="background">
       <img :src="videoItem.video_cover" alt="video_cover" />
     </div>
@@ -19,12 +22,18 @@
 import { ref } from 'vue'
 import type { VideoItemInfo } from '@/utils/types'
 import viewsSVG from '@nullSvg/views.svg'
+import videoItemPlaySVG from '@nullSvg/video-item-play.svg'
 
-defineProps<{
+const props = defineProps<{
   videoItem: VideoItemInfo
 }>()
 
 const hover = ref<boolean>(false)
+
+// 打开新视频页
+const jumpToVideoPage = () => {
+  window.open(`http://127.0.0.1:2000/home/${props.videoItem.video_id}`)
+}
 </script>
 
 <style scoped lang="less">
@@ -47,7 +56,7 @@ const hover = ref<boolean>(false)
     font-weight: bold;
     color: #ffffff;
     z-index: 3;
-    img {
+    svg {
       width: 2rem;
       height: 2rem;
       margin-right: 0.5rem;
@@ -58,6 +67,9 @@ const hover = ref<boolean>(false)
     bottom: 0;
     width: 100%;
     height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border-radius: 1rem;
     overflow: hidden;
     background-color: rgba(0, 0, 0, 0.5);

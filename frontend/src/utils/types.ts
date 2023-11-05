@@ -30,3 +30,17 @@ export interface UploadVideoInfo {
   video_tags: string[]
   video_permission: '公开' | '好友可见' | '仅自己可见' | ''
 }
+
+// 主页视频信息
+export interface HomeVideoInfo {
+  createTime: string
+  videoCommentNum: number
+  videoCoverUrl: string
+  videoDescription: string
+  videoId: string
+  videoPlayNum: string
+  videoRole: string
+  videoStatus: string
+  videoThumbNum: number
+  videoUrl: string
+}

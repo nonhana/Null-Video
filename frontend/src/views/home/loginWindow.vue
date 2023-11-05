@@ -3,12 +3,20 @@
     <Card width="37.5rem" height="28.125rem">
       <div class="head">
         <div class="title">
-          <div class="title-bottom" :class="presentStatus[0] ? '' : 'register'"></div>
-          <div class="title-item" :class="presentStatus[0] ? 'selected' : ''" @click="() => {
-            isLogining = true
-            presentStatus = [true, false]
-          }
-            ">
+          <div
+            class="title-bottom"
+            :class="presentStatus[0] ? '' : 'register'"
+          ></div>
+          <div
+            class="title-item"
+            :class="presentStatus[0] ? 'selected' : ''"
+            @click="
+              () => {
+                isLogining = true
+                presentStatus = [true, false]
+              }
+            "
+          >
             <span>登录</span>
           </div>
           <div

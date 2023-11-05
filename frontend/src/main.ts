@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import 'amfe-flexible'
-import { createPinia } from 'pinia'
+import pinia from './stores/store'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import router from './router'
 
@@ -21,10 +21,9 @@ window.onresize = function () {
   setRem()
 }
 
-const store = createPinia()
-store.use(piniaPluginPersistedstate) // 引入pinia持久化插件
+pinia.use(piniaPluginPersistedstate) // 引入pinia持久化插件
 
 const app = createApp(App)
-app.use(store)
+app.use(pinia)
 app.use(router)
 app.mount('#app')
