@@ -1,24 +1,27 @@
 <template>
   <div class="comment">
-    <CommentList :comment-data="commentList" />
+    <CommentList :comment-data="commentList" :video-id="videoId" />
     <div class="comment-input">
-      <Search :value="commentValue" @input="updateName" :placeholder="'善言善语，文明交流'" :click-event="addComment">
+      <Search
+        :value="commentValue"
+        @input="updateName"
+        :placeholder="'善言善语，文明交流'"
+        :click-event="addComment"
+      >
         <commentSVG />
       </Search>
     </div>
-
   </div>
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import CommentList from './commentList.vue'
-import Search from '@nullVideo/form/search/search.vue';
+import Search from '@nullVideo/form/search/search.vue'
 import commentSVG from '@nullSvg/comment.svg'
 import { getCommentAPI, addCommentAPI } from '@/api/comment/comment'
 import { getCommentAPIResponse } from '@/api/comment/types'
 
-
-const props = defineProps<{
+const { videoId, videoCommentUserId } = defineProps<{
   videoId: string
   videoCommentUserId: string
 }>()
@@ -31,21 +34,26 @@ const updateName = (value: string) => {
   commentValue.value = value
 }
 
+const getComment = async () => {
+  const res = await getCommentAPI({
+    videoId,
+    userId: '7'
+  })
+  commentList.value.length = 0
+  commentList.value.push(...res.data)
+}
+
 const addComment = async () => {
-  const res = await addCommentAPI({
-    videoId: props.videoId,
+  await addCommentAPI({
+    videoId,
     userId: '7',
     videoCommentContent: commentValue.value
   })
-  console.log(res)
+  getComment()
 }
 
-onMounted(async () => {
-  const res = await getCommentAPI({
-    videoId: props.videoId,
-    userId: '7'
-  })
-  commentList.value.push(...res.data)
+onMounted(() => {
+  getComment()
 })
 </script>
 

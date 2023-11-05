@@ -67,7 +67,7 @@ function myAxios(axiosConfig: AxiosRequestConfig): Promise<Data> {
           case 40500:
             // 用户登陆状态异常
             // 显示登录窗口
-            userStore.showLoginWindow();
+            userStore.logout();
             console.log("用户登陆状态异常");
             break;
           case 50000:

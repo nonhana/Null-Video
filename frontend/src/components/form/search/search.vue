@@ -1,9 +1,19 @@
 <template>
   <div class="search" :style="{ height }">
     <n-input-group>
-      <n-input :style="{ height }" class="search-input" :placeholder="placeholder" v-model:value="inputValue"
-        @input="input" />
-      <n-button :style="{ height }" class="search-button" ghost @click="clickEvent()">
+      <n-input
+        :style="{ height }"
+        class="search-input"
+        :placeholder="placeholder"
+        v-model:value="inputValue"
+        @input="input"
+      />
+      <n-button
+        :style="{ height }"
+        class="search-button"
+        ghost
+        @click="clickEvent()"
+      >
         <slot></slot>
       </n-button>
     </n-input-group>
@@ -11,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from 'vue'
 import { NInputGroup, NInput, NButton } from 'naive-ui'
 
 const { height, placeholder, value } = defineProps<{
@@ -30,8 +40,6 @@ const inputValue = ref(value)
 const input = (value: string) => {
   emits('input', value)
 }
-
-
 </script>
 
 <style scoped lang="less">

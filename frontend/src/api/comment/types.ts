@@ -18,7 +18,7 @@ export interface getCommentAPIResponse {
      * 是否点赞 0-点赞 1-没有
      */
     isThumb: number
-    videoCommentChildren: getCommentAPIResponse[]
+    videoCommentChildren: getCommentAPIResponse[] | null
     videoCommentContent: string
     videoCommentCreateTime: string
     videoCommentId: string
