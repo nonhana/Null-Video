@@ -2,11 +2,11 @@
   <div class="video-info">
     <div class="author">
       <div class="author-header">
-        <img src="" alt="" />
+        <img :src="userInfo.user_avatar" alt="user_avatar" />
       </div>
       <div class="author-info">
-        <div class="author-name">{{ 'TZX' }}</div>
-        <div class="author-fence">{{ 100 }} 位粉丝</div>
+        <div class="author-name">{{ userInfo.user_name }}</div>
+        <div class="author-fence">{{ userInfo.user_fans }} 位粉丝</div>
       </div>
       <Button height="2.25rem" width="4.5rem" style="font-weight: bold"
         >关注</Button
@@ -14,7 +14,7 @@
     </div>
 
     <div class="video-intro">
-      {{ '谁懂啊，路边遇到🦞头👨想加我vx……' }}
+      {{ userInfo.user_signature }}
     </div>
 
     <div class="video-tags">
@@ -27,25 +27,25 @@
       <div>
         <likeSVG />
         <div>
-          {{ 1 }}
+          {{ videoData.like_num }}
         </div>
       </div>
       <div>
         <collectionSVG />
         <div>
-          {{ 1 }}
+          {{ videoData.collection_num }}
         </div>
       </div>
       <div>
         <shareSVG />
         <div>
-          {{ 1 }}
+          {{ videoData.share_num }}
         </div>
       </div>
       <div>
         <commentSVG />
         <div>
-          {{ 1 }}
+          {{ videoData.comment_num }}
         </div>
       </div>
     </div>
@@ -53,12 +53,30 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { getUserInfoAPI, getVideoInfoAPI } from '@/api/user/user'
 import Button from '@nullVideo/button/button.vue'
 import likeSVG from '@nullSvg/like.svg'
 import collectionSVG from '@nullSvg/collection.svg'
 import shareSVG from '@nullSvg/share.svg'
 import commentSVG from '@nullSvg/comment.svg'
+
+const route = useRoute()
+
+const userInfo = ref({
+  user_id: '',
+  user_avatar: '',
+  user_name: '',
+  user_signature: '',
+  user_fans: 0
+})
+const videoData = ref({
+  like_num: 0,
+  collection_num: 0,
+  share_num: 0,
+  comment_num: 0
+})
 
 const tags: { name: string; id: string; color: string }[] = reactive([
   {
@@ -72,6 +90,43 @@ const tags: { name: string; id: string; color: string }[] = reactive([
     color: '#4a91ee'
   }
 ])
+
+watch(
+  () => route,
+  async (newV, _) => {
+    let currentItem: any
+    if (newV.query.type === 'personal') {
+      const res = await getVideoInfoAPI({
+        videoId: newV.params.video_id as string
+      })
+      if (res.code === 0) {
+        currentItem = res.data
+      }
+    } else {
+      currentItem = JSON.parse(localStorage.getItem('videoList')!).find(
+        (item: any) => item.videoId === newV.params.video_id
+      )
+    }
+    videoData.value.like_num = currentItem.videoThumbNum
+    videoData.value.collection_num = currentItem.videoFavourNum
+    videoData.value.share_num = currentItem.videoShareNum
+    videoData.value.comment_num = currentItem.videoCommentNum
+    const user_id = currentItem.authorId
+    const res = await getUserInfoAPI({
+      userId: user_id
+    })
+    if (res.code === 0) {
+      userInfo.value.user_id = user_id
+      userInfo.value.user_name = res.data.userName
+      userInfo.value.user_avatar = res.data.userAvatar
+      userInfo.value.user_signature = res.data.userProfile
+      userInfo.value.user_fans = res.data.followerNum
+    }
+  },
+  {
+    immediate: true
+  }
+)
 </script>
 <style scoped lang="less">
 .video-info {
@@ -85,6 +140,11 @@ const tags: { name: string; id: string; color: string }[] = reactive([
       height: 3rem;
       border-radius: 100%;
       background-color: rgb(8, 123, 255);
+      overflow: hidden;
+      img {
+        width: 100%;
+        height: 100%;
+      }
     }
 
     .author-info {

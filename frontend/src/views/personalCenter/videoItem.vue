@@ -32,7 +32,9 @@ const hover = ref<boolean>(false)
 
 // 打开新视频页
 const jumpToVideoPage = () => {
-  window.open(`http://127.0.0.1:2000/home/${props.videoItem.video_id}`)
+  window.open(
+    `http://127.0.0.1:2000/home/${props.videoItem.video_id}?type=personal`
+  )
 }
 </script>
 

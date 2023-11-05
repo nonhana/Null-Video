@@ -1,10 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import { getMyVideoListAPI } from '@/api/video/video'
-/* 自行引入Pinia */
-import pinia from '../stores/store'
-import { useVideoListStore } from '@/stores/videoList'
-
-const videoListStore = useVideoListStore(pinia)
+import { getRandomVideoAPI } from '@/api/video/video'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -62,12 +57,39 @@ export const router = createRouter({
 
 // 如果路由跳转到home，需要先获取一些视频的数据，取其中的第一个视频数据的video_id，然后跳转到home/:video_id
 router.beforeEach(async (to, _, next) => {
-  console.log(to)
   if (to.fullPath === '/home') {
-    const res = await getMyVideoListAPI({ userId: '8' })
+    if (localStorage.getItem('videoTypes')) {
+      // 筛选出selected为true的videoType
+      const videoTypes = JSON.parse(localStorage.getItem('videoTypes')!).filter(
+        (item: any) => item.selected
+      )
+      if (videoTypes[0].id !== 'all') {
+        // 获取每个videoType的视频数据
+        const res = await Promise.all(
+          videoTypes.map((item: any) =>
+            getRandomVideoAPI({
+              videoTypeId: item.id
+            })
+          )
+        )
+        // 把获取到的所有视频数据放到localStorage中
+        localStorage.setItem(
+          'videoList',
+          JSON.stringify(res.map((item) => item.data))
+        )
+        next({
+          name: 'home',
+          params: {
+            video_id: res[0].data[0].videoId
+          }
+        })
+      }
+    }
+    const res = await getRandomVideoAPI({
+      userId: JSON.parse(localStorage.getItem('user')!).userInfo.user_id
+    })
     if (res.code === 0) {
-      videoListStore.setVideoList(res.data)
-      console.log('videoListStore.videoList', videoListStore.videoList)
+      localStorage.setItem('videoList', JSON.stringify(res.data))
       next({
         name: 'home',
         params: {
@@ -75,9 +97,8 @@ router.beforeEach(async (to, _, next) => {
         }
       })
     }
-  } else {
-    next()
   }
+  next()
 })
 
 export default router

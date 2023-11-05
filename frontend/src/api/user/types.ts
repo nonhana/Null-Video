@@ -32,8 +32,8 @@ export interface delFanAPIParams {
 }
 
 export interface getVideoInfoAPIParams {
-  videoId: number
-  userId?: number
+  videoId: string
+  userId?: string
 }
 
 export interface delVideoAPIParams {

@@ -73,7 +73,7 @@ export const delFanAPI = (data: delFanAPIParams) => {
 // 查看作品详情
 export const getVideoInfoAPI = (params: getVideoInfoAPIParams) => {
   return myAxios({
-    url: '/api/get/video',
+    url: '/api/video/get',
     method: 'GET',
     params
   })
