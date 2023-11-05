@@ -1,6 +1,10 @@
 <template>
   <div class="comment">
-    <CommentList :comment-data="commentList" :video-id="videoId" />
+    <CommentList
+      :comment-data="commentList"
+      :video-id="videoId"
+      :comment-callback="commentCallback"
+    />
     <div class="comment-input">
       <Search
         :value="commentValue"
@@ -14,17 +18,19 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, watch } from 'vue'
 import CommentList from './commentList.vue'
 import Search from '@nullVideo/form/search/search.vue'
 import commentSVG from '@nullSvg/comment.svg'
 import { getCommentAPI, addCommentAPI } from '@/api/comment/comment'
 import { getCommentAPIResponse } from '@/api/comment/types'
+import { useUserStore } from '@/stores/user'
 
-const { videoId, videoCommentUserId } = defineProps<{
+const { videoId } = defineProps<{
   videoId: string
-  videoCommentUserId: string
 }>()
+
+const userStore = useUserStore()
 
 const commentList = ref<getCommentAPIResponse[]>([])
 const commentValue = ref<string>('')
@@ -34,27 +40,44 @@ const updateName = (value: string) => {
   commentValue.value = value
 }
 
+// 获取评论框的回调数据
+const commentCallback = (comment: getCommentAPIResponse) => {
+  console.log('get', comment)
+  commentList.value.forEach((item: getCommentAPIResponse, index: number) => {
+    // 匹配评论
+    if (item.videoCommentId === comment.videoCommentId) {
+      commentList.value[index] = comment
+    }
+  })
+}
+
 const getComment = async () => {
   const res = await getCommentAPI({
     videoId,
-    userId: '7'
+    userId: userStore.userInfo.user_id as string
   })
-  commentList.value.length = 0
-  commentList.value.push(...res.data)
+  if (res.code === 0) {
+    commentList.value.length = 0
+    commentList.value.push(...res.data)
+  }
 }
 
 const addComment = async () => {
-  await addCommentAPI({
+  const res = await addCommentAPI({
     videoId,
-    userId: '7',
+    userId: userStore.userInfo.user_id as string,
     videoCommentContent: commentValue.value
   })
-  getComment()
+  if (res.code === 0) commentList.value.unshift(res.data)
 }
 
-onMounted(() => {
-  getComment()
-})
+watch(
+  () => videoId,
+  () => {
+    getComment()
+  },
+  { immediate: true }
+)
 </script>
 
 <style scoped lang="less">

@@ -4,7 +4,7 @@
       <n-input
         class="comment-box-input"
         type="textarea"
-        v-model="content"
+        v-model:value="content"
         placeholder="善言善语,文明交流"
         maxlength="50"
         show-count
@@ -23,11 +23,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { addCommentAPI } from '@/api/comment/comment'
+import { getCommentAPIResponse } from '@/api/comment/types'
 import { useUserStore } from '@/stores/user'
 
-const { videoId, commentId } = defineProps<{
+const { videoId, commentId, commentCallback } = defineProps<{
   videoId: string
   commentId: string
+  commentCallback: (comment: getCommentAPIResponse) => void
 }>()
 
 const userStore = useUserStore()
@@ -36,12 +38,13 @@ const content = ref('')
 
 // 提交评论
 const submitComment = async () => {
-  await addCommentAPI({
+  const res = await addCommentAPI({
     videoId,
     userId: userStore.userInfo.user_id || '7',
     videoCommentId: commentId,
-    videoCommentContent: '123'
+    videoCommentContent: content.value
   })
+  if (res.code === 0) commentCallback(res.data)
 }
 </script>
 

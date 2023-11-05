@@ -71,7 +71,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'), // 设置`@`指向`src`目录
       '@nullVideo': path.resolve(__dirname, './src/components'), // 通用组件
-      '@nullSvg': path.resolve(__dirname, './src/assets/svgs')
+      '@nullSvg': path.resolve(__dirname, './src/assets/svgs') // svg
     }
   },
   server: {

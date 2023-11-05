@@ -13,12 +13,13 @@ export interface getCommentAPIParams {
 }
 
 export interface getCommentAPIResponse {
+[x: string]: any
     isChild: boolean
     /**
      * 是否点赞 0-点赞 1-没有
      */
     isThumb: number
-    videoCommentChildren: getCommentAPIResponse[] | null
+    videoCommentChildren: getCommentAPIResponse[]
     videoCommentContent: string
     videoCommentCreateTime: string
     videoCommentId: string

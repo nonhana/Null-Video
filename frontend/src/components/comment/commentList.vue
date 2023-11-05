@@ -15,7 +15,7 @@
         <div class="comment-main">
           <img
             class="comment-header"
-            :src="comment.videoCommentUserAvatar"
+            :src="comment.videoCommentUserAvatar || ''"
             alt=""
           />
           <div>
@@ -60,21 +60,26 @@
     </div>
 
     <div v-if="showReplyBox === comment.videoCommentId" class="comment-box">
-      <commentBox :video-id="videoId" :comment-id="comment.videoCommentId" />
+      <commentBox
+        :video-id="videoId"
+        :comment-id="comment.videoCommentId"
+        :comment-callback="commentCallbackFromBox"
+      />
     </div>
 
-    <ul
+    <div
+      class="comment-children"
       v-if="
-        comment.videoCommentChildren &&
         comment.videoCommentChildren.length &&
         showCommentChildren.get(comment.videoCommentId)
       "
     >
       <comment-list
-        :commentData="comment.videoCommentChildren || []"
+        :comment-data-child="comment.videoCommentChildren || []"
         :video-id="videoId"
+        :comment-callback="commentCallback"
       />
-    </ul>
+    </div>
 
     <div
       class="show-comment-children"
@@ -109,10 +114,13 @@ import { delCommentAPI, likeCommentAPI } from '@/api/comment/comment'
 import { getCommentAPIResponse } from '@/api/comment/types'
 import { useUserStore } from '@/stores/user'
 
-const { commentData, videoId } = defineProps<{
-  commentData: getCommentAPIResponse[]
-  videoId: string
-}>()
+const { commentData, commentDataChild, videoId, commentCallback } =
+  defineProps<{
+    commentData?: getCommentAPIResponse[]
+    commentDataChild?: getCommentAPIResponse[]
+    videoId: string
+    commentCallback: (comment: getCommentAPIResponse) => void
+  }>()
 
 const userStore = useUserStore()
 
@@ -124,31 +132,33 @@ const animationId = ref('')
 
 // 点赞评论
 const like = async (comment: getCommentAPIResponse) => {
-  receivedCommentData.value.forEach((item) => {
-    if (item.videoCommentId === comment.videoCommentId) {
-      // 点过赞,则取消点赞
-      if (comment.isThumb === 0) {
-        // 释放动画指向
-        animationId.value = ''
-        item.isThumb = 1
-        item.videoCommentThumbNum--
-      } else {
-        animationId.value = comment.videoCommentId
-        item.isThumb = 0
-        item.videoCommentThumbNum++
-      }
-    }
-  })
-
-  await likeCommentAPI({
-    userId: userStore.userInfo.user_id || '7',
+  const res = await likeCommentAPI({
+    userId: userStore.userInfo.user_id as string,
     videoCommentId: comment.videoCommentId
   })
+
+  if (res.code === 0) {
+    receivedCommentData.value.forEach((item) => {
+      if (item.videoCommentId === comment.videoCommentId) {
+        // 点过赞,则取消点赞
+        if (comment.isThumb === 0) {
+          // 释放动画指向
+          animationId.value = ''
+          item.isThumb = 1
+          item.videoCommentThumbNum--
+        } else {
+          animationId.value = comment.videoCommentId
+          item.isThumb = 0
+          item.videoCommentThumbNum++
+        }
+      }
+    })
+  }
 }
 
 // 显示回复框
 const showReply = (comment: getCommentAPIResponse) => {
-  if (showReplyBox.value == comment.videoCommentId) {
+  if (showReplyBox.value === comment.videoCommentId) {
     showReplyBox.value = ''
     return
   }
@@ -156,10 +166,16 @@ const showReply = (comment: getCommentAPIResponse) => {
   showReplyBox.value = comment.videoCommentId
 }
 
+// 评论回调函数
+const commentCallbackFromBox = (comment: getCommentAPIResponse) => {
+  showReply(comment)
+  commentCallback(comment)
+}
+
 // // 删除评论
 const deleteComment = (id: string) => {
   delCommentAPI({
-    userId: userStore.userInfo.user_id || '7',
+    userId: userStore.userInfo.user_id as string,
     videoCommentId: id
   })
 
@@ -189,10 +205,30 @@ const deleteComment = (id: string) => {
 watch(
   () => commentData,
   (newVal) => {
-    receivedCommentData.value = newVal
-    receivedCommentData.value.forEach((comment: getCommentAPIResponse) => {
-      showCommentChildren.value.set(comment.videoCommentId, false)
-    })
+    console.log(commentData)
+    receivedCommentData.value = newVal as getCommentAPIResponse[]
+    receivedCommentData.value &&
+      receivedCommentData.value.forEach((comment: getCommentAPIResponse) => {
+        // 防止打开状态被重置
+        if (!showCommentChildren.value.get(comment.videoCommentId)) {
+          showCommentChildren.value.set(comment.videoCommentId, false)
+        }
+      })
+  },
+  { immediate: true, deep: true }
+)
+
+watch(
+  () => commentDataChild,
+  (newVal) => {
+    receivedCommentData.value = newVal as getCommentAPIResponse[]
+    receivedCommentData.value &&
+      receivedCommentData.value.forEach((comment: getCommentAPIResponse) => {
+        // 防止打开状态被重置
+        if (!showCommentChildren.value.get(comment.videoCommentId)) {
+          showCommentChildren.value.set(comment.videoCommentId, false)
+        }
+      })
   },
   { immediate: true, deep: true }
 )
@@ -306,7 +342,7 @@ watch(
     }
   }
 
-  ul {
+  .comment-children {
     margin: 0 0 0 3.5rem;
     padding: 0;
     list-style-type: none;
