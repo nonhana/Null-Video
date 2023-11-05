@@ -53,7 +53,9 @@ public interface VideoService extends IService<Video> {
 
     List<VideoCommentVO> getVideoComment(Long videoId,String userId);
 
-    boolean thumbVideoComment(Long videoCommentId,Long userId);
+    VideoCommentVO thumbVideoComment(Long videoCommentId,Long userId);
 
     boolean removeVideoComment(Long userId,Long videoCommentId);
+
+    List<VideoDetailVO> getRandomVideo(String videoTypeId,String userId);
 }

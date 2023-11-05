@@ -20,4 +20,6 @@ public interface UserConstant {
      String USER_DEFAULT_AVATAR="https://shuaigef-1316577174.cos.ap-shanghai.myqcloud.com/carbon-footprint/202311022129396.jpeg";
 
      String USER_DEFAULT_PROFILE="初次见面，请多多关照~";
+
+     String USER_ANONYMITY_AVATAR="https://shuaigef-1316577174.cos.ap-shanghai.myqcloud.com/carbon-footprint/202311042159967.jfif";
 }
