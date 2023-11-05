@@ -1,5 +1,5 @@
 <template>
-  <div class="PersonalSideBar-wrapper">
+  <Card height="100%">
     <div class="info">
       <div class="header">
         <div class="avatar">
@@ -13,6 +13,14 @@
           ref="avatarSelector"
           type="file"
           @change="fileSelected"
+        />
+        <!-- 图片裁剪组件 -->
+        <imgCropper
+          :source-file="avatarSourceFile"
+          :cropped-file-type="avatarCroppedFileType"
+          :dialog-visible="avatarDialogVisible"
+          @upload-image="uploadImage"
+          @close-dialog="closeDialog"
         />
         <div class="name">
           <span v-if="!nameInputVisable" @dblclick="showNameInput">{{
@@ -37,15 +45,15 @@
           <span>获赞</span>
         </div>
         <div class="data-item">
-          <span>{{ userInfo!.user_likenum }}</span>
+          <span>{{ userInfo!.user_collectnum }}</span>
           <span>收藏</span>
         </div>
         <div class="data-item">
-          <span>{{ userInfo!.user_likenum }}</span>
+          <span>{{ userInfo!.user_follownum }}</span>
           <span>关注</span>
         </div>
         <div class="data-item">
-          <span>{{ userInfo!.user_likenum }}</span>
+          <span>{{ userInfo!.user_fansnum }}</span>
           <span>粉丝</span>
         </div>
       </div>
@@ -133,7 +141,7 @@
         <span>退出登录</span>
       </div>
     </div>
-  </div>
+  </Card>
 </template>
 
 <script setup lang="ts">
@@ -141,14 +149,40 @@ import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import type { UserInfo } from '@/utils/types'
+import { updateInfoAPI } from '@/api/user/user'
 import myInput from '@/components/form/input/input.vue'
+import imgCropper from '@/components/utils/imgCropper.vue'
 import arrowRight from '@/assets/svgs/arrow-right.svg'
 import myVideos from '@/assets/svgs/my-videos.svg'
 import myCollections from '@/assets/svgs/my-collections.svg'
 import myFollowsAndFans from '@/assets/svgs/my-follows-and-fans.svg'
 import exit from '@/assets/svgs/exit.svg'
 import { useMessage, useDialog } from 'naive-ui'
+import Card from '@nullVideo/card/card.vue'
 
+/* 头像图片相关 */
+const avatarDialogVisible = ref<boolean>(false)
+let avatarSourceFile: File | null | undefined = null
+let avatarCroppedFileType: string = '' // 裁剪后的文件类型
+// 点击更换头像时，打开文件选择器
+const openAvatarSelector = () => {
+  avatarSelector.value!.click()
+}
+// 选择文件后输出文件信息
+const fileSelected = () => {
+  const file = avatarSelector.value!.files![0]
+  console.log(file)
+  avatarSourceFile = file
+  avatarCroppedFileType = avatarSourceFile?.type ?? ''
+  console.log('avatarCroppedFileType', avatarCroppedFileType)
+  avatarDialogVisible.value = true
+}
+const uploadImage = (value: { imgURL: string }) => {
+  userInfo.value!.user_avatar = value.imgURL
+}
+const closeDialog = () => {
+  avatarDialogVisible.value = false
+}
 /* Hooks */
 const message = useMessage()
 const dialog = useDialog()
@@ -159,7 +193,6 @@ const confirmExit = () => {
     positiveText: '确定',
     negativeText: '取消',
     onPositiveClick: () => {
-      userStore.isLogin = false
       message.success('退出登录成功，2s后跳转首页')
       setTimeout(() => {
         router.push('/')
@@ -167,7 +200,6 @@ const confirmExit = () => {
     }
   })
 }
-
 /* DOMs */
 const avatarSelector = ref<HTMLInputElement>()
 /* Routes */
@@ -222,15 +254,6 @@ const chooseItem = (index: number) => {
       break
   }
 }
-// 点击更换头像时，打开文件选择器
-const openAvatarSelector = () => {
-  avatarSelector.value!.click()
-}
-// 选择文件后输出文件信息
-const fileSelected = () => {
-  const file = avatarSelector.value!.files![0]
-  console.log(file)
-}
 // 双击用户名/失去焦点时，显示/隐藏用户名输入框
 const showNameInput = () => {
   if (nameInputVisable.value) {
@@ -239,9 +262,15 @@ const showNameInput = () => {
       content: '确定更改？',
       positiveText: '确定',
       negativeText: '取消',
-      onPositiveClick: () => {
-        nameInputVisable.value = !nameInputVisable.value
-        message.success('更改成功')
+      onPositiveClick: async () => {
+        const res = await updateInfoAPI({
+          userId: userInfo.value!.user_id,
+          userName: userInfo.value!.user_name
+        })
+        if (res.code === 0) {
+          nameInputVisable.value = !nameInputVisable.value
+          message.success('更改成功')
+        }
       }
     })
   } else {
@@ -256,9 +285,15 @@ const showSignatureInput = () => {
       content: '确定更改？',
       positiveText: '确定',
       negativeText: '取消',
-      onPositiveClick: () => {
-        signatureInputVisable.value = !signatureInputVisable.value
-        message.success('更改成功')
+      onPositiveClick: async () => {
+        const res = await updateInfoAPI({
+          userId: userInfo.value!.user_id,
+          userProfile: userInfo.value!.user_signature
+        })
+        if (res.code === 0) {
+          signatureInputVisable.value = !signatureInputVisable.value
+          message.success('更改成功')
+        }
       }
     })
   } else {
@@ -278,17 +313,17 @@ watch(
   () => route.params.user_id,
   (user_id) => {
     console.log(
-      Number(user_id),
+      user_id,
       userStore.userInfo.user_id,
-      Number(user_id) === userStore.userInfo.user_id
+      user_id === userStore.userInfo.user_id
     )
-    if (Number(user_id) === userStore.userInfo.user_id) {
+    if (user_id === userStore.userInfo.user_id) {
       isMyCenter.value = true
       userInfo.value = userStore.userInfo
     } else {
       isMyCenter.value = false
       userInfo.value = {
-        user_id: 2,
+        user_id: '2',
         user_name: 'JaneDoe',
         user_signature: 'Another signature.',
         user_avatar: 'https://dummyimage.com/400X400',
@@ -311,149 +346,156 @@ watch(
 </script>
 
 <style scoped lang="less">
-.PersonalSideBar-wrapper {
-  position: relative;
-  width: 22rem;
-  height: 53rem;
-  padding: 1rem;
-  border-radius: 1rem;
-  background: @bg-color;
-  transition: all 0.3s;
-  &:hover {
-    box-shadow: 0rem 0.25rem 0.625rem 0rem rgba(0, 0, 0, 0.3);
-  }
-  .info {
+.info {
+  width: 100%;
+  height: 14.625rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  .header {
     width: 100%;
-    height: 14.625rem;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: space-between;
-    .header {
-      width: 100%;
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      .avatar {
-        margin-right: 1rem;
+    justify-content: flex-start;
+    align-items: center;
+
+    .avatar {
+      margin-right: 1rem;
+      width: 4rem;
+      height: 4rem;
+      border-radius: 2rem;
+      overflow: hidden;
+      cursor: pointer;
+
+      img {
         width: 4rem;
-        height: 4rem;
-        border-radius: 2rem;
-        overflow: hidden;
-        cursor: pointer;
-        img {
-          width: 4rem;
-        }
-      }
-      .template {
-        position: absolute;
-        width: 4rem;
-        height: 4rem;
-        border-radius: 2rem;
-        background: #000;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
-        opacity: 0;
-        transition: all 0.3s;
-        span {
-          font-family: Source Han Sans;
-          font-size: 1rem;
-          color: #fff;
-        }
-        &:hover {
-          opacity: 0.5;
-        }
-      }
-      .name {
-        margin-right: 2rem;
-        display: flex;
-        flex-direction: column;
-        span {
-          &:nth-child(1) {
-            font-family: Source Han Sans;
-            font-size: 24px;
-            color: @text;
-          }
-          &:nth-child(2) {
-            font-family: Source Han Sans;
-            font-size: 16px;
-            color: @text-secondary;
-          }
-        }
       }
     }
-    .data {
-      width: 100%;
+
+    .template {
+      position: absolute;
+      width: 4rem;
+      height: 4rem;
+      border-radius: 2rem;
+      background: #000;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      &-item {
-        span {
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.3s;
+
+      span {
+        font-family: Source Han Sans;
+        font-size: 1rem;
+        color: #fff;
+      }
+
+      &:hover {
+        opacity: 0.5;
+      }
+    }
+
+    .name {
+      margin-right: 2rem;
+      display: flex;
+      flex-direction: column;
+
+      span {
+        &:nth-child(1) {
+          font-family: Source Han Sans;
+          font-size: 24px;
+          color: @text;
+        }
+
+        &:nth-child(2) {
           font-family: Source Han Sans;
           font-size: 16px;
-          font-weight: bold;
-          color: @text;
-          &:nth-child(2) {
-            margin-left: 0.25rem;
-            font-weight: normal;
-          }
+          color: @text-secondary;
         }
       }
     }
-    .signature {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      border-radius: 1rem;
-      border: 1px solid #d4d4d4;
-      background: #fff;
-      font-family: Source Han Sans;
-      font-size: 1rem;
-      color: @text;
-    }
   }
-  .menu {
+
+  .data {
+    width: 100%;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
+    justify-content: space-between;
+    align-items: center;
+
     &-item {
-      margin: 1rem 0;
-      width: 20rem;
-      height: 4rem;
-      padding: 0 1rem;
-      border-radius: 1rem;
-      background: @bg-color;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      font-size: 1.2rem;
-      color: @text;
-      transition: all 0.3s;
-      cursor: pointer;
-      img {
-        &:nth-child(1) {
-          position: relative;
-          width: 1rem;
-          height: 1rem;
-          transition: all 0.3s;
-        }
+      span {
+        font-family: Source Han Sans;
+        font-size: 16px;
+        font-weight: bold;
+        color: @text;
+
         &:nth-child(2) {
-          margin: 0 2rem 0 2rem;
-          width: 2rem;
-          height: 2rem;
+          margin-left: 0.25rem;
+          font-weight: normal;
         }
-      }
-      &:hover {
-        background: @bg-color-secondary;
-        box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
       }
     }
   }
-  .menu-hover {
-    background: @bg-color-secondary;
-    box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
+
+  .signature {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    border: 1px solid #d4d4d4;
+    background: #fff;
+    font-family: Source Han Sans;
+    font-size: 1rem;
+    color: @text;
   }
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+
+  &-item {
+    margin: 1rem 0;
+    width: 20rem;
+    height: 4rem;
+    padding: 0 1rem;
+    border-radius: 1rem;
+    background: @bg-color;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 1.2rem;
+    color: @text;
+    transition: all 0.3s;
+    cursor: pointer;
+
+    img {
+      &:nth-child(1) {
+        position: relative;
+        width: 1rem;
+        height: 1rem;
+        transition: all 0.3s;
+      }
+
+      &:nth-child(2) {
+        margin: 0 2rem 0 2rem;
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+
+    &:hover {
+      background: @bg-color-secondary;
+      box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+.menu-hover {
+  background: @bg-color-secondary;
+  box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
 }
 </style>

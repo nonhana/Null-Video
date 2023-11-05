@@ -68,11 +68,11 @@ const videoList = ref<VideoItemInfo[]>([
 .VideoList-wrapper {
   position: relative;
   width: 100%;
-  height: 48rem;
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   overflow-y: scroll;
+
   .placeholder {
     position: relative;
     margin: 0 0.5rem;

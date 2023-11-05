@@ -8,7 +8,11 @@ import {
   getUserInfoAPIParams,
   updateInfoAPIParams,
   followActionAPIParams,
-  delFanAPIParams
+  delFanAPIParams,
+  getVideoInfoAPIParams,
+  delVideoAPIParams,
+  likeVideoAPIParams,
+  collectVideoAPIParams
 } from './types'
 
 // 用户注册
@@ -60,6 +64,42 @@ export const followActionAPI = (data: followActionAPIParams) => {
 export const delFanAPI = (data: delFanAPIParams) => {
   return myAxios({
     url: '/api/user/delFan',
+    method: 'POST',
+    data
+  })
+}
+
+// 查看作品详情
+export const getVideoInfoAPI = (params: getVideoInfoAPIParams) => {
+  return myAxios({
+    url: '/api/get/video',
+    method: 'GET',
+    params
+  })
+}
+
+// 删除作品
+export const delVideoAPI = (params: delVideoAPIParams) => {
+  return myAxios({
+    url: '/api/video/remove',
+    method: 'DELETE',
+    params
+  })
+}
+
+// 视频点赞/取消点赞
+export const likeVideoAPI = (data: likeVideoAPIParams) => {
+  return myAxios({
+    url: '/api/video/thumb',
+    method: 'POST',
+    data
+  })
+}
+
+// 视频收藏/取消收藏
+export const collectVideoAPI = (data: collectVideoAPIParams) => {
+  return myAxios({
+    url: '/api/video/favour',
     method: 'POST',
     data
   })

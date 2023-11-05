@@ -1,162 +1,160 @@
 <template>
-  <div class="loginWindow-wrapper">
-    <div class="head">
-      <div class="title">
-        <div
-          class="title-item"
-          :class="presentStatus[0] ? 'hover' : ''"
-          @mouseenter="changeStatus(0)"
-          @mouseleave="refreshStatus"
-          @click="isLogining = true"
-        >
-          <span>登录</span>
+  <div class="login-background">
+    <Card width="37.5rem" height="28.125rem">
+      <div class="head">
+        <div class="title">
+          <div class="title-bottom" :class="presentStatus[0] ? '' : 'register'"></div>
+          <div class="title-item" :class="presentStatus[0] ? 'selected' : ''"
+            @click="isLogining = true; presentStatus = [true, false]">
+            <span>登录</span>
+          </div>
+          <div
+            class="title-item"
+            :class="presentStatus[1] ? 'selected' : ''"
+            @click="
+              () => {
+                isLogining = false
+                presentStatus = [false, true]
+              }
+            "
+          >
+            <span>注册</span>
+          </div>
         </div>
-        <div
-          class="title-item"
-          :class="presentStatus[1] ? 'hover' : ''"
-          @mouseenter="changeStatus(1)"
-          @mouseleave="refreshStatus"
-          @click="isLogining = false"
-        >
-          <span>注册</span>
-        </div>
-      </div>
-      <div class="close" @click="emits('close')">
-        <img :src="close" alt="close" />
-      </div>
-    </div>
-    <n-form
-      v-if="isLogining"
-      ref="loginRef"
-      :model="loginForm"
-      :rules="loginRules"
-    >
-      <div class="form">
-        <div class="form-item">
-          <span>账号:</span>
-          <n-form-item path="account">
-            <my-input
-              width="20.875rem"
-              height="2.5rem"
-              type="text"
-              placeholder="请输入用户名或邮箱"
-              :value="loginForm.username"
-              @input="loginForm.username = $event"
-            />
-          </n-form-item>
-        </div>
-        <div class="form-item">
-          <span>密码:</span>
-          <n-form-item path="password">
-            <my-input
-              width="20.875rem"
-              height="2.5rem"
-              type="password"
-              placeholder="请输入密码"
-              :value="loginForm.password"
-              @input="loginForm.password = $event"
-            />
-          </n-form-item>
+        <div class="close" @click="emits('close')">
+          <img :src="close" alt="close" />
         </div>
       </div>
-    </n-form>
 
-    <n-form
-      v-else
-      ref="registerRef"
-      :model="registerForm"
-      :rules="registerRules"
-    >
-      <div class="form">
-        <div class="form-item">
-          <span>账号:</span>
-          <n-form-item path="account">
-            <my-input
-              width="20.875rem"
-              height="2.5rem"
-              type="text"
-              placeholder="请输入用户名或邮箱"
-              :value="registerForm.username"
-              @input="registerForm.username = $event"
-            />
-          </n-form-item>
+      <n-form
+        v-if="isLogining"
+        ref="loginRef"
+        :model="loginForm"
+        :rules="loginRules"
+      >
+        <div class="form">
+          <div class="form-item">
+            <span>账号:</span>
+            <n-form-item path="account">
+              <my-input
+                width="20.875rem"
+                height="2.5rem"
+                type="text"
+                placeholder="请输入用户名或邮箱"
+                :value="loginForm.username"
+                @input="loginForm.username = $event"
+              />
+            </n-form-item>
+          </div>
+          <div class="form-item">
+            <span>密码:</span>
+            <n-form-item path="password">
+              <my-input
+                width="20.875rem"
+                height="2.5rem"
+                type="password"
+                placeholder="请输入密码"
+                :value="loginForm.password"
+                @input="loginForm.password = $event"
+              />
+            </n-form-item>
+          </div>
+          <div class="radios">
+            <n-radio
+              :checked="rememberUsername"
+              value="account"
+              @change="radioChoose"
+            >
+              记住账号
+            </n-radio>
+            <n-radio
+              :checked="rememberPassword"
+              value="password"
+              @change="radioChoose"
+            >
+              记住密码
+            </n-radio>
+          </div>
         </div>
-        <div class="form-item">
-          <span>密码:</span>
-          <n-form-item path="password">
-            <my-input
-              width="20.875rem"
-              height="2.5rem"
-              type="password"
-              placeholder="请输入密码"
-              :value="registerForm.password"
-              @input="loginForm.password = $event"
-            />
-          </n-form-item>
+      </n-form>
+
+      <n-form
+        v-else
+        ref="registerRef"
+        :model="registerForm"
+        :rules="registerRules"
+      >
+        <div class="form">
+          <div class="form-item">
+            <span>账号:</span>
+            <n-form-item path="account">
+              <my-input
+                width="20.875rem"
+                height="2.5rem"
+                type="text"
+                placeholder="请输入用户名或邮箱"
+                :value="registerForm.username"
+                @input="registerForm.username = $event"
+              />
+            </n-form-item>
+          </div>
+          <div class="form-item">
+            <span>密码:</span>
+            <n-form-item path="password">
+              <my-input
+                width="20.875rem"
+                height="2.5rem"
+                type="password"
+                placeholder="请输入密码"
+                :value="registerForm.password"
+                @input="loginForm.password = $event"
+              />
+            </n-form-item>
+          </div>
+          <div class="form-item">
+            <span>确认密码:</span>
+            <n-form-item path="confirmPassword">
+              <my-input
+                width="20.875rem"
+                height="2.5rem"
+                type="password"
+                placeholder="请再次输入密码"
+                :value="registerForm.confirmPassword"
+                @input="registerForm.confirmPassword = $event"
+              />
+            </n-form-item>
+          </div>
         </div>
-        <div class="form-item">
-          <span>确认密码:</span>
-          <n-form-item path="confirmPassword">
-            <my-input
-              width="20.875rem"
-              height="2.5rem"
-              type="password"
-              placeholder="请再次输入密码"
-              :value="registerForm.confirmPassword"
-              @input="registerForm.confirmPassword = $event"
-            />
-          </n-form-item>
-        </div>
+      </n-form>
+
+      <div class="button">
+        <Button v-if="isLogining" @click="login" width="15rem">登录</Button>
+        <Button v-else @click="register" width="15rem">注册</Button>
       </div>
-    </n-form>
-    <div class="radios">
-      <n-radio
-        :checked="rememberUsername"
-        value="account"
-        @change="radioChoose"
-      >
-        记住账号
-      </n-radio>
-      <n-radio
-        :checked="rememberPassword"
-        value="password"
-        @change="radioChoose"
-      >
-        记住密码
-      </n-radio>
-    </div>
-    <div class="button">
-      <my-button v-if="isLogining" round type="primary" @click="login"
-        >登录</my-button
-      >
-      <my-button v-else type="primary" round @click="register">注册</my-button>
-    </div>
+    </Card>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { registerAPI, loginAPI, getUserInfoAPI } from '@/api/user/user'
+import { useUserStore } from '@/stores/user'
 import close from '@/assets/svgs/close.svg'
 import myInput from '@nullVideo/form/input/input.vue'
-import myButton from '@nullVideo/button/button.vue'
-import { FormItemRule, FormRules } from 'naive-ui'
+import Button from '@nullVideo/button/button.vue'
+import { FormItemRule, FormRules, useMessage } from 'naive-ui'
+import Card from '@nullVideo/card/card.vue'
+
+const userStore = useUserStore()
+
+const message = useMessage()
 
 const emits = defineEmits<{
   (e: 'close'): void
 }>()
 
 const presentStatus = ref<boolean[]>([true, false])
-const changeStatus = (index: number) => {
-  presentStatus.value = [false, false]
-  presentStatus.value[index] = true
-}
-const refreshStatus = () => {
-  if (isLogining.value) {
-    presentStatus.value = [true, false]
-  } else {
-    presentStatus.value = [false, true]
-  }
-}
+
 // 表单验证规则
 // 1. 登录
 const loginRules: FormRules = {
@@ -258,12 +256,59 @@ const radioChoose = (e: Event) => {
   }
 }
 // 登录
-const login = () => {
-  console.log('loginForm', loginForm.value)
+const login = async () => {
+  const res = await loginAPI({
+    userAccount: loginForm.value.username,
+    userPassword: loginForm.value.password
+  })
+  if (res.code === 0) {
+    userStore.token = res.data
+    localStorage.setItem('token', res.data)
+    const sourceUserInfo = (await getUserInfoAPI({})).data
+    userStore.setUserInfo({
+      user_id: sourceUserInfo.userId,
+      user_avatar: sourceUserInfo.userAvatar,
+      user_signature: sourceUserInfo.userProfile ?? '',
+      user_name: sourceUserInfo.userName,
+      user_collectnum: sourceUserInfo.userCollectNum ?? 0,
+      user_fansnum: sourceUserInfo.followerNum,
+      user_follownum: sourceUserInfo.followingNum,
+      user_likenum: sourceUserInfo.videoTotalThumbsNum
+    })
+    message.success('登录成功')
+    emits('close')
+  }
 }
 // 注册
-const register = () => {
-  console.log('registerForm', registerForm.value)
+const register = async () => {
+  const registerRes = await registerAPI({
+    userAccount: registerForm.value.username,
+    userPassword: registerForm.value.password,
+    checkPassword: registerForm.value.confirmPassword
+  })
+  if (registerRes.code === 0) {
+    const loginRes = await loginAPI({
+      userAccount: registerForm.value.username,
+      userPassword: registerForm.value.password
+    })
+    if (loginRes.code === 0) {
+      userStore.token = loginRes.data
+      localStorage.setItem('token', loginRes.data)
+      const sourceUserInfo = (await getUserInfoAPI({})).data
+      userStore.setUserInfo({
+        user_id: sourceUserInfo.userId,
+        user_avatar: sourceUserInfo.userAvatar,
+        user_signature: sourceUserInfo.userProfile ?? '',
+        user_name: sourceUserInfo.userName,
+        user_collectnum: sourceUserInfo.userCollectNum ?? 0,
+        user_fansnum: sourceUserInfo.followerNum,
+        user_follownum: sourceUserInfo.followingNum,
+        user_likenum: sourceUserInfo.videoTotalThumbsNum
+      })
+      message.success('注册成功')
+      emits('close')
+    }
+  }
 }
 
 watch(isLogining, (newVal, _) => {
@@ -283,91 +328,121 @@ watch(isLogining, (newVal, _) => {
 </script>
 
 <style scoped lang="less">
-.loginWindow-wrapper {
-  position: relative;
-  width: 35.5rem;
-  padding: 1rem 1rem 2rem;
-  border-radius: @border-radius;
-  background: @bg-color;
-  transition: all 0.3s;
+.login-background {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.2);
+
   .head {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     .title {
-      width: 15rem;
+      position: relative;
       padding: 0.5rem;
       display: flex;
       justify-content: space-between;
-      font-size: 24px;
-      font-weight: bold;
-      color: @text;
       border-radius: @border-radius;
       background: #e5e5e5;
       box-shadow: @shadow-inner;
+
+      .title-bottom {
+        position: absolute;
+        width: calc(50% - 0.5rem);
+        height: calc(100% - 1rem);
+        background-color: #fff;
+        box-shadow: @shadow-outer;
+        border-radius: @border-radius;
+        z-index: 1;
+        transition: all 0.3s;
+      }
+
+      .register {
+        transform: translateX(100%);
+      }
+
       .title-item {
-        width: 6.5rem;
-        height: 3rem;
+        padding: 0.5rem;
         display: flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: @text-secondary;
         border-radius: @border-radius;
         transition: all 0.3s;
+        z-index: 2;
       }
-      .hover {
-        background: #ffffff;
-        box-shadow: @shadow-outer;
+
+      .title-item:hover {
+        color: @text;
+      }
+
+      .selected {
+        color: @text;
       }
     }
+
     .close {
       width: 32px;
       height: 32px;
       cursor: pointer;
+
       img {
         width: 100%;
         height: 100%;
       }
     }
   }
+
   .form {
     position: relative;
     margin: 2rem auto 0;
-    width: 26.625rem;
+    width: 28rem;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
+
     &-item {
-      margin-bottom: 3rem;
+      margin-bottom: 2rem;
       width: 100%;
       height: 2.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-size: 1.25rem;
-      color: #3d3d3d;
+      color: @text;
+    }
+
+    .radios {
+      position: relative;
+      margin: 0 auto 2rem 0;
+      width: 28rem;
+      height: 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
   }
-  .radios {
-    position: relative;
-    margin: 0 auto;
-    width: 26.625rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+
   .button {
     margin: 2rem auto 0;
     position: relative;
     width: 15.875rem;
-    height: 2.8125rem;
     display: flex;
     justify-content: center;
-  }
 
-  &:hover {
-    box-shadow: @shadow-outer;
+    * {
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
   }
 }
 </style>
