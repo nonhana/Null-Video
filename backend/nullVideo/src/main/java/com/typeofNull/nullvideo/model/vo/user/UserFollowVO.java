@@ -21,4 +21,9 @@ public class UserFollowVO implements Serializable {
     private String followAvatar;
 
     private String followProfile;
+
+    /**
+     * 0-关注 1-没关注
+     */
+    private Integer followStatus;
 }

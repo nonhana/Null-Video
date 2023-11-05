@@ -266,7 +266,7 @@ public class VideoController {
      * @return
      */
     @PostMapping("/thumb/comment")
-    public BaseResponse<Boolean> thumbComment(@RequestBody VideoThumbCommentRequest videoThumbCommentRequest){
+    public BaseResponse<VideoCommentVO> thumbComment(@RequestBody VideoThumbCommentRequest videoThumbCommentRequest){
         if(videoThumbCommentRequest==null){
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
@@ -275,8 +275,8 @@ public class VideoController {
         if (StrUtil.hasBlank(videoCommentIdStr,userIdStr)) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
-        boolean isSuccess = videoService.thumbVideoComment(Long.parseLong(videoCommentIdStr), Long.parseLong(userIdStr));
-        return ResultUtils.success(isSuccess);
+        VideoCommentVO videoCommentVO = videoService.thumbVideoComment(Long.parseLong(videoCommentIdStr), Long.parseLong(userIdStr));
+        return ResultUtils.success(videoCommentVO);
     }
 
     /**
@@ -292,5 +292,15 @@ public class VideoController {
         }
         boolean isSuccess = videoService.removeVideoComment(Long.parseLong(userId), Long.parseLong(videoCommentId));
         return ResultUtils.success(isSuccess);
+    }
+
+    /**
+     * 随机获取分类视频用于首页播放
+     * @return
+     */
+    @GetMapping("/get/random")
+    public BaseResponse<List<VideoDetailVO>> getRandomVideo(@RequestParam(required = false) String videoTypeId,@RequestParam(required = false)String userId){
+        List<VideoDetailVO> randomVideo = videoService.getRandomVideo(videoTypeId, userId);
+        return ResultUtils.success(randomVideo);
     }
 }

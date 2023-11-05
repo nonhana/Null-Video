@@ -19,4 +19,16 @@ public interface VideoConstant {
 
     String VIDEO_COMMENT_THUMB_KEY="video:comment:thumb";
 
+//    String VIDEO_BASE_STORAGE="D:\\后端\\test\\";
+
+    String VIDEO_BASE_STORAGE="/www/wwwroot/null_video/temp";
+
+    String VIDEO_UPLOAD_DIR="video/";
+
+    /**
+     * 测试使用
+     */
+    String VIDEO_TEMP_STORAGE="D:\\后端\\test\\newTest\\";
+
+
 }

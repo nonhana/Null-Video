@@ -17,4 +17,6 @@ public class VideoCommentToVO implements Serializable {
 
     private String videoCommentToUserName;
 
+    private String videoCommentToUserAvatar;
+
 }

@@ -19,9 +19,7 @@ public class MvcConfig implements WebMvcConfigurer {
     private StringRedisTemplate stringRedisTemplate;
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-       registry.addInterceptor(new RefreshTokenInterceptor(stringRedisTemplate))
-               .excludePathPatterns("/user/register","/user/login",
-                       "/video/get/page","video/get","/video/get/comment",
-                       "/search/video/type","search/all");
+        registry.addInterceptor(new RefreshTokenInterceptor(stringRedisTemplate))
+                .excludePathPatterns("/**").order(0);
     }
 }

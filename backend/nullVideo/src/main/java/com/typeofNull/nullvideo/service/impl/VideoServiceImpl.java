@@ -2,6 +2,7 @@ package com.typeofNull.nullvideo.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.typeofNull.nullvideo.constant.UserConstant.USER_ANONYMITY_AVATAR;
 import static com.typeofNull.nullvideo.constant.UserConstant.USER_DEFAULT_AVATAR;
 import static com.typeofNull.nullvideo.constant.VideoConstant.*;
 
@@ -203,6 +205,8 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
     @Override
     public VideoDetailVO getVideoDetail(Long videoId,String userId) {
         Video video = this.getById(videoId);
+        //播放+1
+        this.update().setSql("video_play_num=video_play_num+1").eq("id",videoId).update();
         if(video==null){
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"视频不存在或已删除");
         }
@@ -629,7 +633,8 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
         videoCommentQueryWrapper.isNull("parent_id");
         List<VideoComment> videoCommentList = videoCommentService.list(videoCommentQueryWrapper);
         List<VideoCommentVO> videoCommentVOS = videoCommentList.stream().map(item -> {
-            //处理一级
+            /*
+             //处理一级
             VideoCommentVO videoCommentVO = setVideoComment(item,userId);
             videoCommentVO.setIsChild(false);
             videoCommentVO.setVideoCommentTo(null);
@@ -658,14 +663,20 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
                     VideoComment answerComment = videoCommentService.getById(answerId);
                     if(answerComment==null){//说明要回复的那条评论已经删掉了
                         videoCommentToVO.setVideoCommentToUserName("评论已删除");
+                        videoCommentToVO.setVideoCommentToUserAvatar(USER_ANONYMITY_AVATAR);
                     }else{
                         //评论没有被删
                         User user = userService.getById(answerComment.getUserId());
                         if (user == null) {//用户注销
                             videoCommentToVO.setVideoCommentToUserName("用户已注销");
+                            videoCommentToVO.setVideoCommentToUserAvatar(USER_ANONYMITY_AVATAR);
                         } else {
                             videoCommentToVO.setVideoCommentToUserName(user.getUserName());
                             videoCommentToVO.setVideoCommentToUserId(user.getId() + "");
+                            QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
+                            userInfoQueryWrapper.eq("user_id",user.getId());
+                            UserInfo userInfo = userInfoService.getOne(userInfoQueryWrapper);
+                            videoCommentToVO.setVideoCommentToUserAvatar(userInfo.getUserAvatar());
                         }
                     }
                     thirdComment.setVideoCommentTo(videoCommentToVO);
@@ -673,13 +684,15 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
                 }
             }).collect(Collectors.toList());
             videoCommentVO.setVideoCommentChildren(otherComment);
+             */
+            VideoCommentVO videoCommentVO = getVideoCommentVO(item, userId);
             return videoCommentVO;
         }).collect(Collectors.toList());
         return videoCommentVOS;
     }
 
     @Override
-    public boolean thumbVideoComment(Long videoCommentId,Long userId) {
+    public VideoCommentVO thumbVideoComment(Long videoCommentId,Long userId) {
         String videoCommentKey=VIDEO_COMMENT_THUMB_KEY+videoCommentId;
         Double score = stringRedisTemplate.opsForZSet().score(videoCommentKey, userId.toString());
         boolean isSuccess;
@@ -698,7 +711,16 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
                 stringRedisTemplate.opsForZSet().add(videoCommentKey,userId.toString(),System.currentTimeMillis());
             }
         }
-        return isSuccess;
+        VideoComment videoComment = videoCommentService.getOne(new QueryWrapper<VideoComment>().eq("id", videoCommentId));
+        Long parentId = videoComment.getParentId();
+        VideoCommentVO videoCommentVO;
+        if(parentId ==null){ //点赞的是一级评论直接传
+             videoCommentVO = getVideoCommentVO(videoComment, userId + "");
+        }else{ //点赞的是二级或三级评论，先找一级评论
+            VideoComment firstComment = videoCommentService.getOne(new QueryWrapper<VideoComment>().eq("id", parentId));
+            videoCommentVO=getVideoCommentVO(firstComment,userId+"");
+        }
+        return videoCommentVO;
     }
 
     @Override
@@ -716,6 +738,122 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
     }
+
+    @Override
+    public List<VideoDetailVO> getRandomVideo(String videoTypeId,String userId) {
+        //看看是用于主页还是特定type
+        if(StrUtil.isBlank(videoTypeId)){ //首页
+            ArrayList<Long> videoIds = new ArrayList<>();
+            // 创建一个查询条件对象
+            QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
+            // 使用 MyBatis Plus 提供的方法获取最小和最大 ID
+            Video minEntity = getOne(queryWrapper.orderByAsc("id").last("LIMIT 1"));
+            Video maxEntity = getOne(queryWrapper.orderByDesc("id").last("LIMIT 1"));
+            long count = this.count();
+            if (minEntity != null && maxEntity != null) { //获得随机id
+                Long minId = minEntity.getId();
+                Long maxId = maxEntity.getId();
+                if(count<10){//没超过10个就每一个都要
+                    for (Long i = minId; i <= maxId; i++) {
+                        videoIds.add(i);
+                    }
+                }else{//超过10个数据就random
+                    for(int i=0;i<10;i++){
+                        videoIds.add(RandomUtil.randomLong(minId,maxId+1l));
+                    }
+                }
+            }
+            List<VideoDetailVO> videoDetailVOS = new ArrayList<>();
+            //配对视频
+            for(Long videoId:videoIds){
+                //如果没找到就跳过
+                Video video = this.getOne(new QueryWrapper<Video>().eq("id", videoId));
+                if(video==null){
+                    continue;
+                }
+                VideoDetailVO videoDetail = this.getVideoDetail(videoId, userId);
+                videoDetailVOS.add(videoDetail);
+            }
+                return videoDetailVOS;
+        }else{ //具体Type
+            QueryWrapper<VideoType> videoTypeQueryWrapper = new QueryWrapper<>();
+            long realVideoTypeId = Long.parseLong(videoTypeId);
+            videoTypeQueryWrapper.eq("id",realVideoTypeId).or()
+                    .eq("parent_id",realVideoTypeId);
+            List<VideoType> videoTypes = videoTypeService.list(videoTypeQueryWrapper);
+            if (videoTypes.isEmpty()) {
+                // 处理 typeIds 为空的情况，例如抛出异常或返回默认值
+                throw new BusinessException(ErrorCode.PARAMS_ERROR,"typeId不能为空");
+            }
+            List<Long> typeIds = videoTypes.stream().map(item -> item.getId()).collect(Collectors.toList());
+            QueryWrapper<Video> videoQueryWrapper = new QueryWrapper<>();
+            videoQueryWrapper.in("video_type",typeIds);
+            videoQueryWrapper.orderByDesc("RAND()");
+            videoQueryWrapper.last("limit 10");
+            List<Video> videos = this.list(videoQueryWrapper);
+            List<VideoDetailVO> videoDetailVOS = videos.stream().map(item -> {
+                VideoDetailVO videoDetail = this.getVideoDetail(item.getId(), userId);
+                return videoDetail;
+            }).collect(Collectors.toList());
+            return videoDetailVOS;
+        }
+    }
+
+
+    private VideoCommentVO getVideoCommentVO(VideoComment FirstComment,String userId){
+        //处理一级
+        VideoCommentVO videoCommentVO = setVideoComment(FirstComment,userId);
+        videoCommentVO.setIsChild(false);
+        videoCommentVO.setVideoCommentTo(null);
+        //处理完一级处理二三级，先按照点赞数降序，再按照时间降序
+        QueryWrapper<VideoComment> videoCommentQueryWrapperForSecond = new QueryWrapper<>();
+        videoCommentQueryWrapperForSecond.eq("video_id", FirstComment.getVideoId());
+        videoCommentQueryWrapperForSecond.eq("parent_id", FirstComment.getId());
+        videoCommentQueryWrapperForSecond.eq("video_comment_status",0);
+        videoCommentQueryWrapperForSecond.orderByDesc("video_comment_thumb");
+        videoCommentQueryWrapperForSecond.orderByDesc("create_time");
+        List<VideoComment> videoComments = videoCommentService.list(videoCommentQueryWrapperForSecond);
+        //处理二/三级评论
+        List<VideoCommentVO> otherComment = videoComments.stream().map(secondOrThirdComment -> {
+            Long answerId = secondOrThirdComment.getAnswerId();
+            Long parentId = secondOrThirdComment.getParentId();
+            if (answerId == parentId) {//如果回复的评论是一级评论，否则肯定是三级评论
+                VideoCommentVO secondComment = setVideoComment(secondOrThirdComment,userId);
+                secondComment.setIsChild(true);
+                videoCommentVO.setVideoCommentTo(null);
+                return secondComment;
+            } else {//三级评论
+                VideoCommentVO thirdComment = setVideoComment(secondOrThirdComment,userId);
+                thirdComment.setIsChild(true);
+                VideoCommentToVO videoCommentToVO = new VideoCommentToVO();
+                //处理一下回复的用户信息
+                VideoComment answerComment = videoCommentService.getById(answerId);
+                if(answerComment==null){//说明要回复的那条评论已经删掉了
+                    videoCommentToVO.setVideoCommentToUserName("评论已删除");
+                    videoCommentToVO.setVideoCommentToUserAvatar(USER_ANONYMITY_AVATAR);
+                }else{
+                    //评论没有被删
+                    User user = userService.getById(answerComment.getUserId());
+                    if (user == null) {//用户注销
+                        videoCommentToVO.setVideoCommentToUserName("用户已注销");
+                        videoCommentToVO.setVideoCommentToUserAvatar(USER_ANONYMITY_AVATAR);
+                    } else {
+                        videoCommentToVO.setVideoCommentToUserName(user.getUserName());
+                        videoCommentToVO.setVideoCommentToUserId(user.getId() + "");
+                        QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
+                        userInfoQueryWrapper.eq("user_id",user.getId());
+                        UserInfo userInfo = userInfoService.getOne(userInfoQueryWrapper);
+                        videoCommentToVO.setVideoCommentToUserAvatar(userInfo.getUserAvatar());
+                    }
+                }
+                thirdComment.setVideoCommentTo(videoCommentToVO);
+                return thirdComment;
+            }
+        }).collect(Collectors.toList());
+        videoCommentVO.setVideoCommentChildren(otherComment);
+        return videoCommentVO;
+    }
+
 
     /**
      * VideoCommentVO转换

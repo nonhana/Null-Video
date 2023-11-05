@@ -214,22 +214,38 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     public boolean userUpdateData(UserUpdateRequest userUpdateRequest) {
         String userIdStr = userUpdateRequest.getUserId();
         long userId = Long.parseLong(userIdStr);
+        if(getById(userId)==null){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"用户不存在或已注销");
+        }
         QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
         userInfoQueryWrapper.eq("user_id",userId);
         UserInfo userInfo = userInfoService.getOne(userInfoQueryWrapper);
         //改详情
         BeanUtil.copyProperties(userUpdateRequest,userInfo,"gender");
-        Integer genderNum=("男").equals(userUpdateRequest.getGender())?1:userUpdateRequest.getGender()==null?null:0;
-        userInfo.setGender(genderNum);
+//        Integer genderNum=("男").equals(userUpdateRequest.getGender())?1:userUpdateRequest.getGender()==null?null:0;
+        if(StrUtil.isNotBlank(userUpdateRequest.getGender())){
+//            Integer genderNum=("男").equals(userUpdateRequest.getGender())?1:0;
+            String gender = userUpdateRequest.getGender();
+            Integer genderNum=null;
+            if(("男".equals(gender))){
+                genderNum=1;
+            }else if(("女").equals(gender)){
+                genderNum=0;
+            }
+            userInfo.setGender(genderNum);
+        }
         boolean userInfoSuccess = userInfoService.updateById(userInfo);
         if(!userInfoSuccess){
             throw new BusinessException(ErrorCode.OPERATION_ERROR,"修改失败");
         }
         //改user
-        User user = this.getById(userId);
-        user.setUserName(userUpdateRequest.getUserName());
-        boolean userSuccess = this.updateById(user);
-        return userSuccess;
+        if(StrUtil.isNotBlank(userUpdateRequest.getUserName())){
+            User user = this.getById(userId);
+            user.setUserName(userUpdateRequest.getUserName());
+            boolean userSuccess = this.updateById(user);
+            return userSuccess;
+        }
+        return userInfoSuccess;
     }
 
     @Override
@@ -404,6 +420,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
                 UserFollowVO userFollowVO = new UserFollowVO();
                 userFollowVO.setFollowId(user.getId() + "");
                 userFollowVO.setFollowName(user.getUserName());
+                //查看是否互关
+                QueryWrapper<Follows> followStatusQueryWraper = new QueryWrapper<>();
+                followStatusQueryWraper.eq("follower_id",follow.getFollowingId());
+                followStatusQueryWraper.eq("following_id",userId);
+                long isFollow = followsService.count(followsQueryWrapper);
+                userFollowVO.setFollowStatus(isFollow==0?1:0);
+
                 QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
                 userInfoQueryWrapper.eq("user_id", user.getId());
                 UserInfo userInfo = userInfoService.getOne(userInfoQueryWrapper);
@@ -423,6 +446,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
                 QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
                 userInfoQueryWrapper.eq("user_id", user.getId());
                 UserInfo userInfo = userInfoService.getOne(userInfoQueryWrapper);
+                //查看是否互关
+                QueryWrapper<Follows> followStatusQueryWraper = new QueryWrapper<>();
+                followStatusQueryWraper.eq("follower_id",userId);
+                followStatusQueryWraper.eq("following_id",follow.getFollowingId());
+                long isFollow = followsService.count(followsQueryWrapper);
+                userFollowVO.setFollowStatus(isFollow==0?1:0);
                 userFollowVO.setFollowAvatar(userInfo.getUserAvatar());
                 userFollowVO.setFollowProfile(userInfo.getUserProfile());
                 return userFollowVO;
