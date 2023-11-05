@@ -9,7 +9,8 @@ import {
   addTagAPIParams,
   getTagsAPIParams,
   postVideoAPIParams,
-  updateVideoAPIParams
+  updateVideoAPIParams,
+  getRandomVideoAPIParams
 } from './types'
 
 export const getMyVideoListAPI = (params: getVideoListAPIParams) => {
@@ -65,5 +66,13 @@ export const updateVideoAPI = (data: updateVideoAPIParams) => {
     url: '/api/video/update/info',
     method: 'POST',
     data
+  })
+}
+
+export const getRandomVideoAPI = (params: getRandomVideoAPIParams) => {
+  return myAxios({
+    url: '/api/video/get/random',
+    method: 'GET',
+    params
   })
 }

@@ -41,3 +41,8 @@ export interface updateVideoAPIParams {
     videoTagId: number
   }[]
 }
+
+export interface getRandomVideoAPIParams {
+  videoTypeId?: string // 不传代表获取全部类型的视频
+  userId?: string // 不传代表还没登录
+}

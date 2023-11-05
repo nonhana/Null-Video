@@ -33,14 +33,20 @@ export interface UploadVideoInfo {
 
 // 主页视频信息
 export interface HomeVideoInfo {
+  videoId: string
+  authorAvatar: string
+  authorId: string
+  authorName: string
   createTime: string
+  isFavour: number
+  isThumb: number
   videoCommentNum: number
   videoCoverUrl: string
   videoDescription: string
-  videoId: string
+  videoFavourNum: number
   videoPlayNum: string
-  videoRole: string
-  videoStatus: string
+  videoShareNum: number
+  videoTags: string[]
   videoThumbNum: number
   videoUrl: string
 }
