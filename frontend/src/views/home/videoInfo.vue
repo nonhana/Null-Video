@@ -24,25 +24,47 @@
     </div>
 
     <div class="video-operation">
-      <div>
+      <div
+        :class="{
+          active: operationsActive[0],
+          animation: operationsAnimation[0]
+        }"
+        @click="likeVideo"
+      >
         <likeSVG />
         <div>
           {{ videoData.like_num }}
         </div>
       </div>
-      <div>
+      <div
+        :class="{
+          active: operationsActive[1],
+          animation: operationsAnimation[1]
+        }"
+        @click="collectVideo"
+      >
         <collectionSVG />
         <div>
           {{ videoData.collection_num }}
         </div>
       </div>
-      <div>
+      <div
+        :class="{
+          animation: operationsAnimation[3]
+        }"
+        @click=""
+      >
         <shareSVG />
         <div>
           {{ videoData.share_num }}
         </div>
       </div>
-      <div>
+      <div
+        :class="{
+          animation: operationsAnimation[4]
+        }"
+        @click=""
+      >
         <commentSVG />
         <div>
           {{ videoData.comment_num }}
@@ -55,14 +77,22 @@
 <script setup lang="ts">
 import { ref, reactive, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { getUserInfoAPI, getVideoInfoAPI } from '@/api/user/user'
+import {
+  getUserInfoAPI,
+  getVideoInfoAPI,
+  likeVideoAPI,
+  collectVideoAPI
+} from '@/api/user/user'
 import Button from '@nullVideo/button/button.vue'
 import likeSVG from '@nullSvg/like.svg'
 import collectionSVG from '@nullSvg/collection.svg'
 import shareSVG from '@nullSvg/share.svg'
 import commentSVG from '@nullSvg/comment.svg'
+import { useUserStore } from '@/stores/user'
+import { elementDark } from 'naive-ui'
 
 const route = useRoute()
+const userStore = useUserStore()
 
 const userInfo = ref({
   user_id: '',
@@ -91,6 +121,47 @@ const tags: { name: string; id: string; color: string }[] = reactive([
   }
 ])
 
+const operationsActive = ref([false, false])
+const operationsAnimation = ref([false, false, false, false])
+
+const likeVideo = async () => {
+  operationsAnimation.value[0] = false
+  const res = await likeVideoAPI({
+    userId: userStore.userInfo.user_id as string,
+    videoId: route.params.video_id as string
+  })
+
+  if (res.code === 0) {
+    if (operationsActive.value[0]) {
+      videoData.value.like_num--
+      operationsActive.value[0] = false
+    } else {
+      videoData.value.like_num++
+      operationsActive.value[0] = true
+      operationsAnimation.value[0] = true
+    }
+  }
+}
+
+const collectVideo = async () => {
+  operationsAnimation.value[1] = false
+  const res = await collectVideoAPI({
+    userId: userStore.userInfo.user_id as string,
+    videoId: route.params.video_id as string
+  })
+
+  if (res.code === 0) {
+    if (operationsActive.value[1]) {
+      videoData.value.collection_num--
+      operationsActive.value[1] = false
+    } else {
+      videoData.value.collection_num++
+      operationsActive.value[1] = true
+      operationsAnimation.value[1] = true
+    }
+  }
+}
+
 watch(
   () => route,
   async (newV, _) => {
@@ -101,6 +172,11 @@ watch(
       })
       if (res.code === 0) {
         currentItem = res.data
+        // 获取操作状态
+        operationsActive.value = [
+          res.data.isThumb === 0,
+          res.data.isFavour === 0
+        ]
       }
     } else {
       currentItem = JSON.parse(localStorage.getItem('videoList')!).find(
@@ -210,6 +286,42 @@ watch(
         text-align: center;
         font-size: 1rem;
         color: @text-secondary;
+      }
+    }
+
+    > div:hover {
+      :deep(svg path) {
+        fill: @bg-color-primary;
+      }
+      > div {
+        color: @bg-color-primary;
+      }
+    }
+
+    .active {
+      :deep(svg path) {
+        fill: @bg-color-primary;
+      }
+      > div {
+        color: @bg-color-primary;
+      }
+    }
+
+    .animation {
+      svg {
+        animation: bounced 0.5s forwards;
+      }
+    }
+
+    @keyframes bounced {
+      0% {
+        transform: scale(1);
+      }
+      30% {
+        transform: scale(1.2);
+      }
+      100% {
+        transform: scale(1);
       }
     }
   }

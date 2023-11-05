@@ -325,7 +325,7 @@ watch(
 
     .likeAnimation {
       svg {
-        animation: like 0.5s forwards; /* 动画持续1秒，并保持在最后的状态 */
+        animation: like 0.5s forwards; 
       }
     }
 
