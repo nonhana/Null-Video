@@ -14,7 +14,7 @@ export const useUserStore = defineStore('user', {
     logout() {
       this.token = ''
       this.userInfo = <UserInfo>{}
-      this.isLoginWindowShow = true
+      localStorage.clear()
     },
     showLoginWindow() {
       this.isLoginWindowShow = true

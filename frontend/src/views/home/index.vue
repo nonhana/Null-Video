@@ -22,6 +22,13 @@
               </div>
             </div>
           </Card>
+          <Card style="margin-top: 2rem">
+            <videoQueueCom
+              :video-queue="videoItemQueue"
+              :current="videoQueue.current"
+              @video-change="emitVideo"
+            />
+          </Card>
         </div>
         <div class="video-change">
           <div class="video-up" @click="videoChange(-1)">
@@ -39,7 +46,7 @@
       </n-gi>
       <n-gi :span="13">
         <Card>
-          <Comment :video-id="'3'" />
+          <Comment :video-id="'4'" />
         </Card>
       </n-gi>
     </n-grid>
@@ -47,13 +54,22 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onBeforeMount, onBeforeUnmount, ref, reactive } from 'vue'
+import {
+  onMounted,
+  onBeforeMount,
+  onBeforeUnmount,
+  ref,
+  reactive,
+  watch
+} from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import type { VideoItemInfo } from '@/utils/types'
 import { getVideoInfoAPI } from '@/api/user/user'
 import { getVideoTypeAPI, getRandomVideoAPI } from '@/api/video/video'
 import { NGrid, useMessage } from 'naive-ui'
 import videoInfo from './videoInfo.vue'
+import videoQueueCom from './videoQueue.vue'
 import Card from '@nullVideo/card/card.vue'
 import Comment from '@nullVideo/comment/comment.vue'
 // video.js相关依赖
@@ -142,6 +158,9 @@ const videoQueue: { current: number; queue: any[] } = reactive({
   queue: []
 })
 
+// 视频Item队列
+const videoItemQueue = ref<VideoItemInfo[]>([])
+
 // 获取 video 实例
 const videoPlayer = ref()
 // 定义播放器对象
@@ -153,14 +172,24 @@ const videoChange = (ways: number) => {
   if (videoQueue.current >= videoQueue.queue.length) {
     videoQueue.current = 0
   }
-  router.push({
-    name: 'home',
-    params: {
-      video_id: videoQueue.queue[videoQueue.current].videoId
-    }
-  })
-  player.src(videoQueue.queue[videoQueue.current].videoUrl)
 }
+// 视频切换
+const emitVideo = (current: number) => {
+  videoQueue.current = current
+}
+
+watch(
+  () => videoQueue.current,
+  (newV, _) => {
+    router.push({
+      name: 'home',
+      params: {
+        video_id: videoQueue.queue[newV].videoId
+      }
+    })
+    player.src(videoQueue.queue[newV].videoUrl)
+  }
+)
 
 onBeforeMount(async () => {
   // 如果本地已经有存储视频类型，则从本地获取
@@ -199,6 +228,15 @@ onMounted(async () => {
       console.log(res.data)
       videoQueue.queue = []
       videoQueue.queue.push(res.data)
+      videoItemQueue.value.push(
+        ...res.data.map((item: any) => {
+          return {
+            video_id: item.videoId,
+            video_cover: item.videoCoverUrl,
+            video_viewnum: item.videoPlayNum
+          }
+        })
+      )
     }
   } else {
     // 从store中获取视频列表
@@ -206,6 +244,15 @@ onMounted(async () => {
       ...JSON.parse(localStorage.getItem('videoList') as string).map(
         (item: any) => item
       )
+    )
+    videoItemQueue.value.push(
+      ...videoQueue.queue.map((item: any) => {
+        return {
+          video_id: item.videoId,
+          video_cover: item.videoCoverUrl,
+          video_viewnum: item.videoPlayNum
+        }
+      })
     )
   }
 

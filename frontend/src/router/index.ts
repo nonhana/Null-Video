@@ -45,6 +45,11 @@ const routes: RouteRecordRaw[] = [
         name: 'myFollowsAndFans',
         component: () =>
           import('@/views/personalCenter/myFollowsAndFans/index.vue')
+      },
+      {
+        path: '/personalCenter/:user_id/myPlayer/:video_id',
+        name: 'myPlayer',
+        component: () => import('@/views/personalCenter/myPlayer/index.vue')
       }
     ]
   }
@@ -62,8 +67,10 @@ router.beforeEach(async (to, _, next) => {
       // 筛选出selected为true的videoType
       const videoTypes = JSON.parse(localStorage.getItem('videoTypes')!).filter(
         (item: any) => item.selected
-      )
-      if (videoTypes[0].id !== 'all') {
+      ) as any[]
+      console.log('videoTypes', videoTypes)
+      const flag = videoTypes.some((item) => item.id === 'all')
+      if (!flag) {
         // 获取每个videoType的视频数据
         const res = await Promise.all(
           videoTypes.map((item: any) =>
@@ -85,9 +92,7 @@ router.beforeEach(async (to, _, next) => {
         })
       }
     }
-    const res = await getRandomVideoAPI({
-      userId: JSON.parse(localStorage.getItem('user')!).userInfo.user_id
-    })
+    const res = await getRandomVideoAPI({})
     if (res.code === 0) {
       localStorage.setItem('videoList', JSON.stringify(res.data))
       next({

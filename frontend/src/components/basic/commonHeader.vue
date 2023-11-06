@@ -28,7 +28,9 @@
           >
             <img :src="userStore.userInfo.user_avatar" alt="userAvatar" />
           </n-dropdown>
-          <div v-else @click="userStore.showLoginWindow()">登录</div>
+          <div v-else @click="userStore.showLoginWindow()">
+            <span>登录</span>
+          </div>
         </div>
       </n-gi>
     </n-grid>
@@ -66,7 +68,6 @@ const handleSelect = (key: string) => {
 
 // 根据传入的name跳转到对应的页面
 const jumpTo = (name: string) => {
-  console.log('userStore', userStore)
   switch (name) {
     case 'home':
       router.push('/')
@@ -86,8 +87,10 @@ const jumpTo = (name: string) => {
       // 登出操作
       userStore.logout()
       localStorage.clear()
-      message.success('退出登录成功，即将跳转至首页')
-      router.push('/')
+      message.success('退出登录成功，跳转至首页')
+      setTimeout(() => {
+        router.push('/')
+      }, 2000)
       break
   }
 }
@@ -143,6 +146,7 @@ const jumpTo = (name: string) => {
     justify-content: center;
     background-color: @bg-color-primary;
     color: white;
+    font-size: 1rem;
   }
 }
 </style>

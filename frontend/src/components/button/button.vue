@@ -5,7 +5,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue'
 import { NButton } from 'naive-ui'
 
 defineProps({
@@ -21,7 +20,6 @@ defineProps({
 <style scoped lang="less">
 .my-button {
   position: relative;
-  /* Add more styles as needed */
   border-radius: @border-radius;
   box-shadow: @shadow-outer;
   padding: 1rem;

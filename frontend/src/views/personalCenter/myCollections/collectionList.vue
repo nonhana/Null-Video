@@ -28,7 +28,7 @@ import { ref, onMounted } from 'vue'
 import type { VideoItemInfo } from '@/utils/types'
 import { useRoute } from 'vue-router'
 import { getLikeCollectVideoListAPI } from '@/api/user/user'
-import videoItem from '@/views/personalCenter/videoItem.vue'
+import videoItem from '@nullVideo/basic/videoItem.vue'
 
 const route = useRoute()
 

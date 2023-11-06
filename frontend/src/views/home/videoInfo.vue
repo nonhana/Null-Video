@@ -17,12 +17,6 @@
       {{ userInfo.user_signature }}
     </div>
 
-    <div class="video-tags">
-      <div v-for="tag in tags" :key="tag.id" :style="{ background: tag.color }">
-        {{ tag.name }}
-      </div>
-    </div>
-
     <div class="video-operation">
       <div
         :class="{
@@ -75,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import {
   getUserInfoAPI,
@@ -89,7 +83,6 @@ import collectionSVG from '@nullSvg/collection.svg'
 import shareSVG from '@nullSvg/share.svg'
 import commentSVG from '@nullSvg/comment.svg'
 import { useUserStore } from '@/stores/user'
-import { elementDark } from 'naive-ui'
 
 const route = useRoute()
 const userStore = useUserStore()
@@ -107,19 +100,6 @@ const videoData = ref({
   share_num: 0,
   comment_num: 0
 })
-
-const tags: { name: string; id: string; color: string }[] = reactive([
-  {
-    name: '吐槽',
-    id: '123123',
-    color: '#ff8200'
-  },
-  {
-    name: '无语死了',
-    id: '123123123',
-    color: '#4a91ee'
-  }
-])
 
 const operationsActive = ref([false, false])
 const operationsAnimation = ref([false, false, false, false])
@@ -163,7 +143,7 @@ const collectVideo = async () => {
 }
 
 watch(
-  () => route,
+  route,
   async (newV, _) => {
     let currentItem: any
     if (newV.query.type === 'personal') {
@@ -235,26 +215,6 @@ watch(
       .author-fence {
         color: @text-secondary;
       }
-    }
-  }
-
-  .video-tags {
-    display: flex;
-    justify-content: start;
-    margin-bottom: 1rem;
-
-    div {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 2rem;
-      padding: 1rem;
-      border-radius: @border-radius;
-      // box-shadow: @shadow-outer;
-      color: #fff;
-      font-size: 0.875rem;
-      font-weight: bold;
-      margin-right: 1rem;
     }
   }
 

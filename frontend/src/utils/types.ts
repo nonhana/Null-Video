@@ -15,7 +15,7 @@ export interface UserInfo {
 
 // 视频Item信息
 export interface VideoItemInfo {
-  video_id: number
+  video_id: string
   video_cover: string
   video_viewnum: number
 }

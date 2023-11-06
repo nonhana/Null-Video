@@ -5,7 +5,11 @@
     </div>
     <div v-else>
       <div v-if="videoList.length !== 0" class="list">
-        <div v-for="video in videoList" :key="video.video_id">
+        <div
+          v-for="video in videoList"
+          :key="video.video_id"
+          @click="jumpToVideoPage(video.video_id)"
+        >
           <video-item :video-item="video" />
         </div>
         <!-- 占位div -->
@@ -26,17 +30,28 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import type { VideoItemInfo } from '@/utils/types'
 import { getMyVideoListAPI } from '@/api/video/video'
-import videoItem from '@/views/personalCenter/videoItem.vue'
+import videoItem from '@nullVideo/basic/videoItem.vue'
 
 const route = useRoute()
+const router = useRouter()
 
 // 视频列表
 const videoList = ref<VideoItemInfo[]>([])
 // 正在加载
 const loading = ref<boolean>(false)
+
+// 打开新视频页
+const jumpToVideoPage = (video_id: string) => {
+  router.push({
+    name: 'myPlayer',
+    params: {
+      video_id
+    }
+  })
+}
 
 onMounted(async () => {
   loading.value = true

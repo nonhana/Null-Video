@@ -283,8 +283,11 @@ const login = async () => {
       user_follownum: sourceUserInfo.followingNum,
       user_likenum: sourceUserInfo.videoTotalThumbNum
     })
-    message.success('登录成功')
+    message.success('登录成功，2s后刷新页面')
     userStore.hideLoginWindow()
+    setTimeout(() => {
+      window.location.reload()
+    }, 2000)
   }
 }
 // 注册
