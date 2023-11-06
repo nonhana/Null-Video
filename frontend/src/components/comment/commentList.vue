@@ -36,7 +36,10 @@
               </div>
               <div
                 class="comment-delete"
-                v-if="comment.videoCommentId"
+                v-if="
+                  comment.videoCommentUserId === userStore.userInfo.user_id ||
+                  author_id === userStore.userInfo.user_id
+                "
                 @click="deleteComment(comment.videoCommentId)"
               >
                 删除
@@ -78,6 +81,7 @@
         :comment-data-child="comment.videoCommentChildren || []"
         :video-id="videoId"
         :comment-callback="commentCallback"
+        :author_id="author_id"
       />
     </div>
 
@@ -114,11 +118,12 @@ import { delCommentAPI, likeCommentAPI } from '@/api/comment/comment'
 import { getCommentAPIResponse } from '@/api/comment/types'
 import { useUserStore } from '@/stores/user'
 
-const { commentData, commentDataChild, videoId, commentCallback } =
+const { commentData, commentDataChild, videoId, author_id, commentCallback } =
   defineProps<{
     commentData?: getCommentAPIResponse[]
     commentDataChild?: getCommentAPIResponse[]
     videoId: string
+    author_id: string
     commentCallback: (comment: getCommentAPIResponse) => void
   }>()
 
@@ -325,7 +330,7 @@ watch(
 
     .likeAnimation {
       svg {
-        animation: like 0.5s forwards; 
+        animation: like 0.5s forwards;
       }
     }
 

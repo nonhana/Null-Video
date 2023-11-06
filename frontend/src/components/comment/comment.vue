@@ -4,6 +4,7 @@
       :comment-data="commentList"
       :video-id="videoId"
       :comment-callback="commentCallback"
+      :author_id="author_id"
     />
     <div class="comment-input">
       <Search
@@ -19,6 +20,7 @@
 </template>
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import CommentList from './commentList.vue'
 import Search from '@nullVideo/form/search/search.vue'
 import commentSVG from '@nullSvg/comment.svg'
@@ -26,12 +28,14 @@ import { getCommentAPI, addCommentAPI } from '@/api/comment/comment'
 import { getCommentAPIResponse } from '@/api/comment/types'
 import { useUserStore } from '@/stores/user'
 
-const { videoId } = defineProps<{
-  videoId: string
+const { author_id } = defineProps<{
+  author_id: string
 }>()
 
+const route = useRoute()
 const userStore = useUserStore()
 
+const videoId = ref<string>(route.params.video_id as string)
 const commentList = ref<getCommentAPIResponse[]>([])
 const commentValue = ref<string>('')
 
@@ -53,7 +57,7 @@ const commentCallback = (comment: getCommentAPIResponse) => {
 
 const getComment = async () => {
   const res = await getCommentAPI({
-    videoId,
+    videoId: videoId.value,
     userId: userStore.userInfo.user_id as string
   })
   if (res.code === 0) {
@@ -64,7 +68,7 @@ const getComment = async () => {
 
 const addComment = async () => {
   const res = await addCommentAPI({
-    videoId,
+    videoId: videoId.value,
     userId: userStore.userInfo.user_id as string,
     videoCommentContent: commentValue.value
   })
@@ -72,8 +76,10 @@ const addComment = async () => {
 }
 
 watch(
-  () => videoId,
-  () => {
+  () => route.params.video_id,
+  (newV) => {
+    console.log('comment', newV)
+    videoId.value = newV as string
     getComment()
   },
   { immediate: true }

@@ -46,7 +46,7 @@
       </n-gi>
       <n-gi :span="13">
         <Card>
-          <Comment :video-id="'4'" />
+          <Comment :author_id="author_id" />
         </Card>
       </n-gi>
     </n-grid>
@@ -65,7 +65,6 @@ import {
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import type { VideoItemInfo } from '@/utils/types'
-import { getVideoInfoAPI } from '@/api/user/user'
 import { getVideoTypeAPI, getRandomVideoAPI } from '@/api/video/video'
 import { NGrid, useMessage } from 'naive-ui'
 import videoInfo from './videoInfo.vue'
@@ -90,6 +89,8 @@ const message = useMessage()
 const videoTypes = ref<{ name: string; selected: boolean; id: string }[]>([])
 // 加载中
 const loading = ref<boolean>(false)
+const video_id = ref<string>(route.params.video_id as string)
+const author_id = ref<string>('')
 
 // 切换 type 状态，同时存入本地数据
 const typeSelect = async (type_id: string) => {
@@ -187,6 +188,8 @@ watch(
         video_id: videoQueue.queue[newV].videoId
       }
     })
+    video_id.value = videoQueue.queue[newV].videoId
+    author_id.value = videoQueue.queue[newV].authorId
     player.src(videoQueue.queue[newV].videoUrl)
   }
 )
@@ -219,42 +222,21 @@ onBeforeMount(async () => {
 })
 
 onMounted(async () => {
-  if (route.query.type === 'personal') {
-    const res = await getVideoInfoAPI({
-      userId: userStore.userInfo.user_id,
-      videoId: route.params.video_id as string
+  // 从store中获取视频列表
+  videoQueue.queue.push(
+    ...JSON.parse(localStorage.getItem('videoList') as string).map(
+      (item: any) => item
+    )
+  )
+  videoItemQueue.value.push(
+    ...videoQueue.queue.map((item: any) => {
+      return {
+        video_id: item.videoId,
+        video_cover: item.videoCoverUrl,
+        video_viewnum: item.videoPlayNum
+      }
     })
-    if (res.code === 0) {
-      console.log(res.data)
-      videoQueue.queue = []
-      videoQueue.queue.push(res.data)
-      videoItemQueue.value.push(
-        ...res.data.map((item: any) => {
-          return {
-            video_id: item.videoId,
-            video_cover: item.videoCoverUrl,
-            video_viewnum: item.videoPlayNum
-          }
-        })
-      )
-    }
-  } else {
-    // 从store中获取视频列表
-    videoQueue.queue.push(
-      ...JSON.parse(localStorage.getItem('videoList') as string).map(
-        (item: any) => item
-      )
-    )
-    videoItemQueue.value.push(
-      ...videoQueue.queue.map((item: any) => {
-        return {
-          video_id: item.videoId,
-          video_cover: item.videoCoverUrl,
-          video_viewnum: item.videoPlayNum
-        }
-      })
-    )
-  }
+  )
 
   // 在组件挂载后初始化video.js播放器
   player = videojs(

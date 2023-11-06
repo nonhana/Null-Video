@@ -52,7 +52,7 @@
                 height="2.5rem"
                 type="text"
                 placeholder="请输入用户名或邮箱"
-                :value="loginForm.username"
+                v-model:value="loginForm.username"
                 @input="loginForm.username = $event"
               />
             </n-form-item>
@@ -65,7 +65,7 @@
                 height="2.5rem"
                 type="password"
                 placeholder="请输入密码"
-                :value="loginForm.password"
+                v-model:value="loginForm.password"
                 @input="loginForm.password = $event"
               />
             </n-form-item>
@@ -104,7 +104,7 @@
                 height="2.5rem"
                 type="text"
                 placeholder="请输入用户名或邮箱"
-                :value="registerForm.username"
+                v-model:value="registerForm.username"
                 @input="registerForm.username = $event"
               />
             </n-form-item>
@@ -117,7 +117,7 @@
                 height="2.5rem"
                 type="password"
                 placeholder="请输入密码"
-                :value="registerForm.password"
+                v-model:value="registerForm.password"
                 @input="loginForm.password = $event"
               />
             </n-form-item>
@@ -130,7 +130,7 @@
                 height="2.5rem"
                 type="password"
                 placeholder="请再次输入密码"
-                :value="registerForm.confirmPassword"
+                v-model:value="registerForm.confirmPassword"
                 @input="registerForm.confirmPassword = $event"
               />
             </n-form-item>
@@ -147,7 +147,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { onBeforeMount, ref, watch } from 'vue'
 import { registerAPI, loginAPI, getUserInfoAPI } from '@/api/user/user'
 import { useUserStore } from '@/stores/user'
 import closeSVG from '@nullSvg/close.svg'
@@ -155,6 +155,7 @@ import myInput from '@nullVideo/form/input/input.vue'
 import Button from '@nullVideo/button/button.vue'
 import { FormItemRule, FormRules, useMessage } from 'naive-ui'
 import Card from '@nullVideo/card/card.vue'
+import VueCookies from 'vue-cookies'
 
 const userStore = useUserStore()
 
@@ -251,15 +252,13 @@ function validatePasswordStartWith(_: FormItemRule, value: string): boolean {
 function validatePasswordSame(_: FormItemRule, value: string): boolean {
   return value === registerForm.value.password
 }
-// 选择单选框
+// 选择框
 const radioChoose = (e: Event) => {
   const target = e.target as HTMLInputElement
   if (target.value === 'account') {
-    rememberUsername.value = true
-    rememberPassword.value = false
+    rememberUsername.value = !rememberUsername.value
   } else {
-    rememberUsername.value = false
-    rememberPassword.value = true
+    rememberPassword.value = !rememberPassword.value
   }
 }
 // 登录
@@ -288,6 +287,19 @@ const login = async () => {
     setTimeout(() => {
       window.location.reload()
     }, 2000)
+  }
+
+  console.log(rememberUsername.value, rememberPassword.value)
+  // 记住账号,密码
+  if (rememberUsername.value) {
+    VueCookies.set('username', loginForm.value.username, '7d') // 设置 Cookie，并在1天后过期
+  } else {
+    VueCookies.remove('username')
+  }
+  if (rememberPassword.value) {
+    VueCookies.set('password', loginForm.value.password, '7d') // 设置 Cookie，并在1天后过期
+  } else {
+    VueCookies.remove('password')
   }
 }
 // 注册
@@ -334,6 +346,18 @@ watch(isLogining, (newVal, _) => {
       password: '',
       confirmPassword: ''
     }
+  }
+})
+
+onBeforeMount(() => {
+  if (VueCookies.get('username')) {
+    loginForm.value.username = VueCookies.get('username')
+    rememberUsername.value = true
+  }
+
+  if (VueCookies.get('password')) {
+    loginForm.value.password = VueCookies.get('password')
+    rememberPassword.value = true
   }
 })
 </script>

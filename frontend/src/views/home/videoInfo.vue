@@ -46,7 +46,7 @@
         :class="{
           animation: operationsAnimation[3]
         }"
-        @click=""
+        @click="copyToClipboard"
       >
         <shareSVG />
         <div>
@@ -83,9 +83,12 @@ import collectionSVG from '@nullSvg/collection.svg'
 import shareSVG from '@nullSvg/share.svg'
 import commentSVG from '@nullSvg/comment.svg'
 import { useUserStore } from '@/stores/user'
+import { useMessage } from 'naive-ui'
+
 
 const route = useRoute()
 const userStore = useUserStore()
+const message = useMessage()
 
 const userInfo = ref({
   user_id: '',
@@ -140,6 +143,12 @@ const collectVideo = async () => {
       operationsAnimation.value[1] = true
     }
   }
+}
+
+const copyToClipboard = () => {
+  navigator.clipboard.writeText(window.location.href)
+  // 复制成功
+  message.success('链接复制成功,快去分享吧!')
 }
 
 watch(
