@@ -75,7 +75,8 @@ import {
   getUserInfoAPI,
   getVideoInfoAPI,
   likeVideoAPI,
-  collectVideoAPI
+  collectVideoAPI,
+  shareVideoAPI
 } from '@/api/user/user'
 import Button from '@nullVideo/button/button.vue'
 import likeSVG from '@nullSvg/like.svg'
@@ -84,7 +85,6 @@ import shareSVG from '@nullSvg/share.svg'
 import commentSVG from '@nullSvg/comment.svg'
 import { useUserStore } from '@/stores/user'
 import { useMessage } from 'naive-ui'
-
 
 const route = useRoute()
 const userStore = useUserStore()
@@ -145,10 +145,17 @@ const collectVideo = async () => {
   }
 }
 
-const copyToClipboard = () => {
-  navigator.clipboard.writeText(window.location.href)
-  // 复制成功
-  message.success('链接复制成功,快去分享吧!')
+const copyToClipboard = async () => {
+  const res = await shareVideoAPI({
+    userId: userStore.userInfo.user_id as string,
+    videoId: route.params.video_id as string
+  })
+  if (res.code === 0) {
+    videoData.value.share_num++
+    navigator.clipboard.writeText(window.location.href)
+    // 复制成功
+    message.success('链接复制成功,快去分享吧!')
+  }
 }
 
 watch(

@@ -1,11 +1,19 @@
 <template>
   <div class="comment">
-    <CommentList
-      :comment-data="commentList"
-      :video-id="videoId"
-      :comment-callback="commentCallback"
-      :author_id="author_id"
-    />
+    <div class="comment-list-container">
+      <CommentList
+        :comment-data="commentList"
+        :video-id="videoId"
+        :comment-callback="commentCallback"
+        :author_id="author_id"
+      />
+      <!-- 当评论列表为空时，显示空状态提示 -->
+      <div class="empty-state" v-if="!commentList.length">
+        <!-- 这里使用你的 native-ui 的 empty 组件 -->
+        <n-empty />
+      </div>
+    </div>
+
     <div class="comment-input">
       <Search
         :value="commentValue"
@@ -18,6 +26,7 @@
     </div>
   </div>
 </template>
+
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
@@ -88,14 +97,27 @@ watch(
 
 <style scoped lang="less">
 .comment {
-  position: relative;
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; // 确保评论列表和评论框分开
   height: 100%;
 
+  .comment-list-container {
+    flex: 1; // 让评论列表占据剩余的空间
+    overflow-y: auto;
+    height: 100%;
+  }
+
   .comment-input {
+    // 现在不需要定位了
     width: 100%;
-    position: absolute;
-    bottom: 0;
+  }
+
+  .empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%; // 使得空状态提示居中
   }
 }
 </style>

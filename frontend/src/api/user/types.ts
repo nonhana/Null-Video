@@ -50,6 +50,10 @@ export interface collectVideoAPIParams {
   userId: string
   videoId: string
 }
+export interface shareVideoAPIParams {
+  userId?: string
+  videoId: string
+}
 
 export interface getLikeCollectVideoListAPIParams {
   userId: string

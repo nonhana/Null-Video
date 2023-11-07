@@ -10,7 +10,7 @@
         :key="video.video_id"
         @click="jumpToVideoPage(video.video_id)"
       >
-        <video-item :video-item="video" />
+        <video-item :video-item="video" style="background-color: #000" />
       </div>
     </div>
   </div>

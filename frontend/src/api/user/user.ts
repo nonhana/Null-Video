@@ -13,6 +13,7 @@ import {
   delVideoAPIParams,
   likeVideoAPIParams,
   collectVideoAPIParams,
+  shareVideoAPIParams,
   getLikeCollectVideoListAPIParams
 } from './types'
 
@@ -106,6 +107,15 @@ export const collectVideoAPI = (data: collectVideoAPIParams) => {
   })
 }
 
+// 分享视频
+export const shareVideoAPI = (params: shareVideoAPIParams) => {
+  return myAxios({
+    url: '/api/video/share',
+    method: 'GET',
+    params
+  })
+}
+
 // 获取点赞或者收藏的视频列表
 export const getLikeCollectVideoListAPI = (
   params: getLikeCollectVideoListAPIParams
@@ -116,3 +126,7 @@ export const getLikeCollectVideoListAPI = (
     params
   })
 }
+
+
+
+

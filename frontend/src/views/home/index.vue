@@ -44,7 +44,7 @@
           <video ref="videoPlayer" class="video-js" />
         </Card>
       </n-gi>
-      <n-gi :span="13">
+      <n-gi :span="13" style="height: 100%">
         <Card>
           <Comment :author_id="author_id" />
         </Card>
