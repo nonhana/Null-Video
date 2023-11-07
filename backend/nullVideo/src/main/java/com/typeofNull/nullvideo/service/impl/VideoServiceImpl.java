@@ -828,6 +828,28 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
         }
     }
 
+    @Override
+    public boolean shareVideo(String videoId,String userId) {
+        if(StrUtil.isBlank(videoId)){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"videoId不能为空");
+        }
+        long videoIdReal = Long.parseLong(videoId);
+        Video video = this.getById(videoId);
+        if(video==null){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"视频已失效");
+        }
+        if(StrUtil.isBlank(userId)){ //是游客
+            return true;
+        }
+        String key=VIDEO_SHARE_KEY+videoId;
+        Double score = stringRedisTemplate.opsForZSet().score(key,userId);
+        if(score==null){ //之前没分享过
+            stringRedisTemplate.opsForZSet().add(key,userId,System.currentTimeMillis());
+            this.update().setSql("video_share_num=video_share_num+1").eq("id", videoIdReal).update();
+        }
+        return true;
+    }
+
 
     /**
      * 根据父评论设置子评论

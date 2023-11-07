@@ -30,6 +30,10 @@ public class RefreshTokenInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+        if("OPTIONS".equals(request.getMethod().toUpperCase())) {
+            return true;
+        }
         //token是否为空
         String token = request.getHeader(TOKEN);
         if(token==null|| StrUtil.isBlank(token)){

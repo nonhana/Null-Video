@@ -10,7 +10,9 @@ import com.qiniu.storage.UploadManager;
 import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.util.Auth;
 import com.typeofNull.nullvideo.common.BaseResponse;
+import com.typeofNull.nullvideo.common.ErrorCode;
 import com.typeofNull.nullvideo.common.ResultUtils;
+import com.typeofNull.nullvideo.exception.BusinessException;
 import com.typeofNull.nullvideo.util.VideoUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -117,9 +119,16 @@ public class FileController {
 
     private String createNewFileName(String fileType) {
         String suffix = fileType.substring(fileType.lastIndexOf("/")+1);
-        // 生成目录
-        String name = UUID.randomUUID().toString();
-        return StrUtil.format("{}.{}",  name, suffix);
+        if(suffix.equals("mp4")||suffix.equals("png")||suffix.equals("jpg")||suffix.equals("jpeg")
+            ||suffix.equals("gif")||suffix.equals("bmp"))
+        {
+            // 生成目录
+            String name = UUID.randomUUID().toString();
+            return StrUtil.format("{}.{}",  name, suffix);
+        }else{
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"不支持此类型的文件");
+        }
+
     }
 
 

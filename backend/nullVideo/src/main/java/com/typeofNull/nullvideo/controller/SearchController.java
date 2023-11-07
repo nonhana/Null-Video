@@ -6,6 +6,7 @@ import com.typeofNull.nullvideo.common.ErrorCode;
 import com.typeofNull.nullvideo.common.ResultUtils;
 import com.typeofNull.nullvideo.model.vo.search.SearchVideoVO;
 import com.typeofNull.nullvideo.service.SearchService;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
