@@ -8,9 +8,28 @@
         <div class="author-name">{{ userInfo.user_name }}</div>
         <div class="author-fence">{{ userInfo.user_fans }} 位粉丝</div>
       </div>
-      <Button height="2.25rem" width="4.5rem" style="font-weight: bold"
-        >关注</Button
-      >
+      <div v-if="isLogin && !isMe && !loading">
+        <n-button
+          v-if="followStatus"
+          height="2.25rem"
+          width="4.5rem"
+          style="font-weight: bold"
+          @click="follow"
+          >取关</n-button
+        >
+        <n-button
+          v-else
+          type="info"
+          height="2.25rem"
+          width="4.5rem"
+          style="font-weight: bold"
+          @click="follow"
+          >关注</n-button
+        >
+      </div>
+      <div v-if="loading">
+        <n-spin />
+      </div>
     </div>
 
     <div class="video-intro">
@@ -76,9 +95,10 @@ import {
   getVideoInfoAPI,
   likeVideoAPI,
   collectVideoAPI,
-  shareVideoAPI
+  shareVideoAPI,
+  followActionAPI
 } from '@/api/user/user'
-import Button from '@nullVideo/button/button.vue'
+import { getFollowFanListAPI } from '@/api/search/search'
 import likeSVG from '@nullSvg/like.svg'
 import collectionSVG from '@nullSvg/collection.svg'
 import shareSVG from '@nullSvg/share.svg'
@@ -103,9 +123,12 @@ const videoData = ref({
   share_num: 0,
   comment_num: 0
 })
-
 const operationsActive = ref([false, false])
 const operationsAnimation = ref([false, false, false, false])
+const isLogin = ref<boolean>(userStore.token !== '')
+const isMe = ref<boolean>(false)
+const followStatus = ref<boolean>(false)
+const loading = ref<boolean>(false)
 
 const likeVideo = async () => {
   operationsAnimation.value[0] = false
@@ -158,9 +181,22 @@ const copyToClipboard = async () => {
   }
 }
 
+const follow = async () => {
+  followStatus.value = !followStatus.value
+  const res = await followActionAPI({
+    userId: userStore.userInfo.user_id!,
+    followingId: userInfo.value.user_id
+  })
+  if (res.code === 0) {
+    message.success('操作成功')
+  }
+}
+
 watch(
   route,
   async (newV, _) => {
+    loading.value = true
+    isLogin.value = userStore.token !== ''
     let currentItem: any
     if (newV.query.type === 'personal') {
       const res = await getVideoInfoAPI({
@@ -193,7 +229,22 @@ watch(
       userInfo.value.user_avatar = res.data.userAvatar
       userInfo.value.user_signature = res.data.userProfile
       userInfo.value.user_fans = res.data.followerNum
+      isMe.value = userStore.userInfo.user_id === user_id
+      if (isLogin.value) {
+        const res = await getFollowFanListAPI({
+          userId: userStore.userInfo.user_id as string,
+          option: 0
+        })
+        if (res.code === 0) {
+          res.data.forEach((item: any) => {
+            if (item.followId === user_id) {
+              followStatus.value = item.followStatus === 0 ? true : false
+            }
+          })
+        }
+      }
     }
+    loading.value = false
   },
   {
     immediate: true

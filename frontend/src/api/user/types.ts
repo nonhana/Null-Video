@@ -22,8 +22,8 @@ export interface updateInfoAPIParams {
 }
 
 export interface followActionAPIParams {
-  followingId: number
-  userId: number
+  followingId: string
+  userId: string
 }
 
 export interface delFanAPIParams {

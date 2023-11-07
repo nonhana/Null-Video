@@ -118,7 +118,7 @@
                 type="password"
                 placeholder="请输入密码"
                 v-model:value="registerForm.password"
-                @input="loginForm.password = $event"
+                @input="registerForm.password = $event"
               />
             </n-form-item>
           </div>
@@ -153,7 +153,7 @@ import { useUserStore } from '@/stores/user'
 import closeSVG from '@nullSvg/close.svg'
 import myInput from '@nullVideo/form/input/input.vue'
 import Button from '@nullVideo/button/button.vue'
-import { FormItemRule, FormRules, useMessage } from 'naive-ui'
+import { FormRules, useMessage } from 'naive-ui'
 import Card from '@nullVideo/card/card.vue'
 import VueCookies from 'vue-cookies'
 
@@ -169,8 +169,8 @@ const loginRules: FormRules = {
   account: [
     {
       required: true,
-      validator(_, value: string) {
-        if (!value) {
+      validator() {
+        if (!loginForm.value.username) {
           return new Error('请输入账号')
         }
         return true
@@ -181,7 +181,13 @@ const loginRules: FormRules = {
   password: [
     {
       required: true,
-      message: '请输入密码'
+      validator() {
+        if (!loginForm.value.password) {
+          return new Error('请输入密码')
+        }
+        return true
+      },
+      trigger: ['input', 'blur']
     }
   ]
 }
@@ -190,8 +196,8 @@ const registerRules: FormRules = {
   account: [
     {
       required: true,
-      validator(_, value: string) {
-        if (!value) {
+      validator() {
+        if (!registerForm.value.username) {
           return new Error('请输入账号')
         }
         return true
@@ -202,24 +208,27 @@ const registerRules: FormRules = {
   password: [
     {
       required: true,
-      message: '请输入密码'
+      validator() {
+        if (!registerForm.value.password) {
+          return new Error('请输入密码')
+        }
+        return true
+      },
+      trigger: ['input', 'blur']
     }
   ],
   confirmPassword: [
     {
       required: true,
-      message: '请再次输入密码',
+      validator() {
+        if (
+          registerForm.value.password !== registerForm.value.confirmPassword
+        ) {
+          return new Error('两次密码不一致')
+        }
+        return true
+      },
       trigger: ['input', 'blur']
-    },
-    {
-      validator: validatePasswordStartWith,
-      message: '两次密码输入不一致',
-      trigger: 'input'
-    },
-    {
-      validator: validatePasswordSame,
-      message: '两次密码输入不一致',
-      trigger: ['blur', 'password-input']
     }
   ]
 }
@@ -241,17 +250,6 @@ const registerForm = ref({
   password: '',
   confirmPassword: ''
 })
-
-function validatePasswordStartWith(_: FormItemRule, value: string): boolean {
-  return (
-    !!registerForm.value.password &&
-    registerForm.value.password.startsWith(value) &&
-    registerForm.value.password.length >= value.length
-  )
-}
-function validatePasswordSame(_: FormItemRule, value: string): boolean {
-  return value === registerForm.value.password
-}
 // 选择框
 const radioChoose = (e: Event) => {
   const target = e.target as HTMLInputElement
@@ -304,6 +302,7 @@ const login = async () => {
 }
 // 注册
 const register = async () => {
+  console.log('register', registerForm.value)
   const registerRes = await registerAPI({
     userAccount: registerForm.value.username,
     userPassword: registerForm.value.password,

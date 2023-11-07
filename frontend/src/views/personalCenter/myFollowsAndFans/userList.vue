@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, watch } from 'vue'
 import type { UserInfo } from '@/utils/types'
 import { useRoute } from 'vue-router'
 import { getFollowFanListAPI } from '@/api/search/search'
@@ -74,47 +74,55 @@ const fanList = ref<
 // 加载中
 const loading = ref<boolean>(false)
 
-onMounted(async () => {
-  loading.value = true
-  if (props.type === 'follow') {
-    const res = await getFollowFanListAPI({
-      userId: route.params.user_id as string,
-      option: 0
-    })
-    if (res.code === 0) {
-      res.data.forEach((item: any) => {
-        followList.value.push({
-          user_info: {
-            user_id: item.followId,
-            user_name: item.followName,
-            user_avatar: item.followAvatar,
-            user_signature: item.followProfile
-          },
-          follow_status: item.followStatus
-        })
+watch(
+  () => props.type,
+  async (newV, _) => {
+    loading.value = true
+    if (newV === 'follow') {
+      followList.value = []
+      const res = await getFollowFanListAPI({
+        userId: route.params.user_id as string,
+        option: 0
       })
-    }
-  } else {
-    const res = await getFollowFanListAPI({
-      userId: route.params.user_id as string,
-      option: 1
-    })
-    if (res.code === 0) {
-      res.data.forEach((item: any) => {
-        fanList.value.push({
-          user_info: {
-            user_id: item.followId,
-            user_name: item.followName,
-            user_avatar: item.followAvatar,
-            user_signature: item.followProfile
-          },
-          follow_status: item.fanStatus
+      if (res.code === 0) {
+        res.data.forEach((item: any) => {
+          followList.value.push({
+            user_info: {
+              user_id: item.followId,
+              user_name: item.followName,
+              user_avatar: item.followAvatar,
+              user_signature: item.followProfile
+            },
+            follow_status: item.followStatus
+          })
         })
+      }
+    } else {
+      fanList.value = []
+      const res = await getFollowFanListAPI({
+        userId: route.params.user_id as string,
+        option: 1
       })
+      if (res.code === 0) {
+        res.data.forEach((item: any) => {
+          fanList.value.push({
+            user_info: {
+              user_id: item.followId,
+              user_name: item.followName,
+              user_avatar: item.followAvatar,
+              user_signature: item.followProfile
+            },
+            follow_status: item.fanStatus
+          })
+        })
+      }
     }
+    loading.value = false
+  },
+  {
+    immediate: true
   }
-  loading.value = false
-})
+)
 </script>
 
 <style scoped lang="less">
