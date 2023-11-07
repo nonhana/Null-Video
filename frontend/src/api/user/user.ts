@@ -12,7 +12,9 @@ import {
   getVideoInfoAPIParams,
   delVideoAPIParams,
   likeVideoAPIParams,
-  collectVideoAPIParams
+  collectVideoAPIParams,
+  shareVideoAPIParams,
+  getLikeCollectVideoListAPIParams
 } from './types'
 
 // 用户注册
@@ -72,7 +74,7 @@ export const delFanAPI = (data: delFanAPIParams) => {
 // 查看作品详情
 export const getVideoInfoAPI = (params: getVideoInfoAPIParams) => {
   return myAxios({
-    url: '/api/get/video',
+    url: '/api/video/get',
     method: 'GET',
     params
   })
@@ -102,5 +104,25 @@ export const collectVideoAPI = (data: collectVideoAPIParams) => {
     url: '/api/video/favour',
     method: 'POST',
     data
+  })
+}
+
+// 分享视频
+export const shareVideoAPI = (params: shareVideoAPIParams) => {
+  return myAxios({
+    url: '/api/video/share',
+    method: 'GET',
+    params
+  })
+}
+
+// 获取点赞或者收藏的视频列表
+export const getLikeCollectVideoListAPI = (
+  params: getLikeCollectVideoListAPIParams
+) => {
+  return myAxios({
+    url: '/api/video/get/my/thumbOrFavour',
+    method: 'GET',
+    params
   })
 }

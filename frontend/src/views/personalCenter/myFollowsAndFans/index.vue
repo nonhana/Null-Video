@@ -1,17 +1,30 @@
 <template>
   <div class="index">
     <div class="title">
-      <div class="title-bottom" :class="presentStatus[0] ? '' : 'register'"></div>
-      <div class="title-item" :class="presentStatus[0] ? 'selected' : ''"
-        @click="type = 'follow'; presentStatus = [true, false]">
+      <div
+        class="title-bottom"
+        :class="presentStatus[0] ? '' : 'register'"
+      ></div>
+      <div
+        class="title-item"
+        :class="presentStatus[0] ? 'selected' : ''"
+        @click="
+          () => {
+            type = 'follow'
+            presentStatus = [true, false]
+          }
+        "
+      >
         <span>关注列表</span>
       </div>
       <div
         class="title-item"
         :class="presentStatus[1] ? 'selected' : ''"
         @click="
-          type = 'fan'
-          presentStatus = [false, true]
+          () => {
+            type = 'fan'
+            presentStatus = [false, true]
+          }
         "
       >
         <span>粉丝列表</span>

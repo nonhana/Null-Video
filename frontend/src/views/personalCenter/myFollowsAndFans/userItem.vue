@@ -20,19 +20,32 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useUserStore } from '@/stores/user'
+import { followActionAPI } from '@/api/user/user'
 import type { UserInfo } from '@/utils/types'
 import Button from '@nullVideo/button/button.vue'
+import { useMessage } from 'naive-ui'
+
+const userStore = useUserStore()
+const message = useMessage()
 
 const props = defineProps<{
   userInfo: UserInfo
-  followStatus: boolean
+  followStatus: 0 | 1
 }>()
 
-const status = ref<boolean>(props.followStatus)
+const status = ref<boolean>(props.followStatus === 0 ? true : false)
 
 // 关注操作
-const follow = () => {
+const follow = async () => {
   status.value = !status.value
+  const res = await followActionAPI({
+    userId: userStore.userInfo.user_id!,
+    followingId: props.userInfo.user_id!
+  })
+  if (res.code === 0) {
+    message.success('操作成功')
+  }
 }
 </script>
 

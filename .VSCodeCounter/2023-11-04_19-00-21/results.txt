@@ -1,0 +1,128 @@
+Date : 2023-11-04 19:00:21
+Directory : c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src
+Total : 67 files,  3841 codes, 64 comments, 381 blanks, all 4286 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| vue        |         26 |      3,065 |         12 |        279 |      3,356 |
+| TypeScript |         22 |        674 |         46 |         97 |        817 |
+| XML        |         17 |         84 |          0 |          0 |         84 |
+| Less       |          1 |         14 |          6 |          4 |         24 |
+| CSS        |          1 |          4 |          0 |          1 |          5 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                  | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                     |         67 |      3,841 |         64 |        381 |      4,286 |
+| . (Files)                                                                                                             |          5 |         89 |         12 |         17 |        118 |
+| api                                                                                                                   |         12 |        407 |         27 |         68 |        502 |
+| api (Files)                                                                                                           |          1 |         90 |          3 |          9 |        102 |
+| api\admin                                                                                                             |          1 |          0 |          0 |          1 |          1 |
+| api\comment                                                                                                           |          2 |         53 |          4 |         11 |         68 |
+| api\file-action                                                                                                       |          2 |         15 |          2 |          4 |         21 |
+| api\search                                                                                                            |          2 |         13 |          3 |          3 |         19 |
+| api\user                                                                                                              |          2 |        140 |         13 |         24 |        177 |
+| api\video                                                                                                             |          2 |         96 |          2 |         16 |        114 |
+| assets                                                                                                                |         17 |         84 |          0 |          0 |         84 |
+| assets\svgs                                                                                                           |         17 |         84 |          0 |          0 |         84 |
+| components                                                                                                            |          9 |        622 |          1 |         79 |        702 |
+| components\basic                                                                                                      |          1 |         92 |          0 |         11 |        103 |
+| components\button                                                                                                     |          1 |         26 |          0 |          4 |         30 |
+| components\card                                                                                                       |          1 |         30 |          0 |          4 |         34 |
+| components\comment                                                                                                    |          3 |        281 |          0 |         37 |        318 |
+| components\form                                                                                                       |          2 |         74 |          0 |         10 |         84 |
+| components\form\input                                                                                                 |          1 |         41 |          0 |          6 |         47 |
+| components\form\search                                                                                                |          1 |         33 |          0 |          4 |         37 |
+| components\utils                                                                                                      |          1 |        119 |          1 |         13 |        133 |
+| hooks                                                                                                                 |          1 |         29 |          1 |          6 |         36 |
+| router                                                                                                                |          1 |         54 |          0 |          4 |         58 |
+| stores                                                                                                                |          2 |         50 |          0 |          4 |         54 |
+| types                                                                                                                 |          1 |          5 |          1 |          1 |          7 |
+| utils                                                                                                                 |          3 |        108 |         11 |          8 |        127 |
+| views                                                                                                                 |         16 |      2,393 |         11 |        194 |      2,598 |
+| views\home                                                                                                            |          3 |        791 |          0 |         73 |        864 |
+| views\personalCenter                                                                                                  |         10 |      1,057 |         10 |         85 |      1,152 |
+| views\personalCenter (Files)                                                                                          |          3 |        564 |          9 |         33 |        606 |
+| views\personalCenter\myCollections                                                                                    |          2 |        101 |          0 |         11 |        112 |
+| views\personalCenter\myFollowsAndFans                                                                                 |          3 |        291 |          0 |         30 |        321 |
+| views\personalCenter\myVideos                                                                                         |          2 |        101 |          1 |         11 |        113 |
+| views\post                                                                                                            |          3 |        545 |          1 |         36 |        582 |
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                                              | language   | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\App.vue                                               | vue        |         50 |          0 |          6 |         56 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\api\admin\admin.ts                                    | TypeScript |          0 |          0 |          1 |          1 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\api\axios.ts                                          | TypeScript |         90 |          3 |          9 |        102 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\api\comment\comment.ts                                | TypeScript |         35 |          4 |          6 |         45 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\api\comment\types.ts                                  | TypeScript |         18 |          0 |          5 |         23 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\api\file-action\file-action.ts                        | TypeScript |         12 |          2 |          3 |         17 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\api\file-action\types.ts                              | TypeScript |          3 |          0 |          1 |          4 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\api\search\search.ts                                  | TypeScript |          9 |          3 |          2 |         14 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\api\search\types.ts                                   | TypeScript |          4 |          0 |          1 |          5 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\api\user\types.ts                                     | TypeScript |         47 |          0 |         11 |         58 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\api\user\user.ts                                      | TypeScript |         93 |         13 |         13 |        119 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\api\video\types.ts                                    | TypeScript |         37 |          0 |          7 |         44 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\api\video\video.ts                                    | TypeScript |         59 |          2 |          9 |         70 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\assets\svgs\arrow-comment-to.svg                      | XML        |          1 |          0 |          0 |          1 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\assets\svgs\arrow-down.svg                            | XML        |          1 |          0 |          0 |          1 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\assets\svgs\arrow-right.svg                           | XML        |         15 |          0 |          0 |         15 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\assets\svgs\arrow-up.svg                              | XML        |          1 |          0 |          0 |          1 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\assets\svgs\close.svg                                 | XML        |          6 |          0 |          0 |          6 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\assets\svgs\collection.svg                            | XML        |          6 |          0 |          0 |          6 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\assets\svgs\comment.svg                               | XML        |          6 |          0 |          0 |          6 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\assets\svgs\exit.svg                                  | XML        |          9 |          0 |          0 |          9 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\assets\svgs\like.svg                                  | XML        |          6 |          0 |          0 |          6 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\assets\svgs\my-collections.svg                        | XML        |          6 |          0 |          0 |          6 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\assets\svgs\my-follows-and-fans.svg                   | XML        |          6 |          0 |          0 |          6 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\assets\svgs\my-info.svg                               | XML        |          1 |          0 |          0 |          1 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\assets\svgs\my-videos.svg                             | XML        |          6 |          0 |          0 |          6 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\assets\svgs\search.svg                                | XML        |          1 |          0 |          0 |          1 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\assets\svgs\share.svg                                 | XML        |          6 |          0 |          0 |          6 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\assets\svgs\video-change.svg                          | XML        |          1 |          0 |          0 |          1 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\assets\svgs\views.svg                                 | XML        |          6 |          0 |          0 |          6 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\components\basic\commonHeader.vue                     | vue        |         92 |          0 |         11 |        103 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\components\button\button.vue                          | vue        |         26 |          0 |          4 |         30 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\components\card\card.vue                              | vue        |         30 |          0 |          4 |         34 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\components\comment\comment.vue                        | vue        |         73 |          0 |          9 |         82 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\components\comment\commentBox.vue                     | vue        |         32 |          0 |          4 |         36 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\components\comment\commentList.vue                    | vue        |        176 |          0 |         24 |        200 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\components\form\input\input.vue                       | vue        |         41 |          0 |          6 |         47 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\components\form\search\search.vue                     | vue        |         33 |          0 |          4 |         37 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\components\utils\imgCropper.vue                       | vue        |        119 |          1 |         13 |        133 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\hooks\useNavigation.ts                                | TypeScript |         29 |          1 |          6 |         36 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\main.ts                                               | TypeScript |         21 |          5 |          5 |         31 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\router\index.ts                                       | TypeScript |         54 |          0 |          4 |         58 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\stores\uploadVideo.ts                                 | TypeScript |         32 |          0 |          2 |         34 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\stores\user.ts                                        | TypeScript |         18 |          0 |          2 |         20 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\types\env.d.ts                                        | TypeScript |          5 |          1 |          1 |          7 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\utils\constants.ts                                    | TypeScript |         84 |          4 |          3 |         91 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\utils\index.ts                                        | TypeScript |          0 |          2 |          1 |          3 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\utils\types.ts                                        | TypeScript |         24 |          5 |          4 |         33 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\variables.css                                         | CSS        |          4 |          0 |          1 |          5 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\variables.less                                        | Less       |         14 |          6 |          4 |         24 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\views\home\index.vue                                  | vue        |        277 |          0 |         25 |        302 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\views\home\loginWindow.vue                            | vue        |        376 |          0 |         30 |        406 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\views\home\videoInfo.vue                              | vue        |        138 |          0 |         18 |        156 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\views\personalCenter\index.vue                        | vue        |         28 |          0 |          4 |         32 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\views\personalCenter\myCollections\collectionList.vue | vue        |         71 |          0 |          6 |         77 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\views\personalCenter\myCollections\index.vue          | vue        |         30 |          0 |          5 |         35 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\views\personalCenter\myFollowsAndFans\index.vue       | vue        |         96 |          0 |         11 |        107 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\views\personalCenter\myFollowsAndFans\userItem.vue    | vue        |         76 |          0 |         12 |         88 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\views\personalCenter\myFollowsAndFans\userList.vue    | vue        |        119 |          0 |          7 |        126 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\views\personalCenter\myVideos\index.vue               | vue        |         31 |          0 |          5 |         36 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\views\personalCenter\myVideos\videoList.vue           | vue        |         70 |          1 |          6 |         77 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\views\personalCenter\personalSideBar.vue              | vue        |        456 |          9 |         23 |        488 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\views\personalCenter\videoItem.vue                    | vue        |         80 |          0 |          6 |         86 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\views\post\index.vue                                  | vue        |         46 |          0 |          8 |         54 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\views\post\videoForm.vue                              | vue        |        351 |          1 |         15 |        367 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\views\post\videoUpload.vue                            | vue        |        148 |          0 |         13 |        161 |
+| c:\Users\31314\Desktop\Programs\Project\Null-Video\frontend\src\vite-env.d.ts                                         | TypeScript |          0 |          1 |          1 |          2 |
+| Total                                                                                                                 |            |      3,841 |         64 |        381 |      4,286 |
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

@@ -1,8 +1,8 @@
 <template>
   <div
     class="comment-list"
-    v-for="comment in commentData"
-    :key="comment.comment_id"
+    v-for="comment in receivedCommentData"
+    :key="comment.videoCommentId"
     :style="{
       border: comment.isChild ? '' : '1px solid #D4D4D4',
       padding: comment.isChild ? '' : '1rem',
@@ -12,108 +12,194 @@
   >
     <div class="flex">
       <div class="comment-content">
-        <img class="comment-header" :src="comment.user.header" alt="" />
-        <div>
-          <div class="comment-name">
-            {{ comment.user.name }}
-            <div class="comment-to" v-if="comment.comment_to">
-              <img src="@/assets/svgs/arrow-comment-to.svg" alt="" />
-              <div>{{ comment.comment_to.name }}</div>
+        <div class="comment-main">
+          <img
+            class="comment-header"
+            :src="comment.videoCommentUserAvatar || ''"
+            alt=""
+          />
+          <div>
+            <div class="comment-name">
+              {{ comment.videoCommentUserName }}
+              <div class="comment-to" v-if="comment.videoCommentTo">
+                <arrowCommentToSVG />
+                <div>{{ comment.videoCommentTo.videoCommentToUserName }}</div>
+              </div>
+            </div>
+            <div class="comment-text">
+              {{ comment.videoCommentContent }}
+            </div>
+
+            <div class="comment-operate">
+              <div class="comment-response" @click="showReply(comment)">
+                回复
+              </div>
+              <div
+                class="comment-delete"
+                v-if="
+                  comment.videoCommentUserId === userStore.userInfo.user_id ||
+                  author_id === userStore.userInfo.user_id
+                "
+                @click="deleteComment(comment.videoCommentId)"
+              >
+                删除
+              </div>
             </div>
           </div>
-          <div class="comment-text">
-            {{ comment.comment }}
-          </div>
-          <div class="comment-operate">
-            <div class="comment-response" @click="showReply(comment)">回复</div>
-            <div
-              class="comment-delete"
-              v-if="comment.user.id"
-              @click="deleteComment(comment.comment_id)"
-            >
-              删除
-            </div>
-          </div>
+        </div>
+
+        <div
+          class="comment-like"
+          :class="{
+            isThumb: comment.isThumb === 0,
+            likeAnimation: comment.videoCommentId === animationId
+          }"
+          @click="like(comment)"
+        >
+          <likeSVG />
+          <div>{{ comment.videoCommentThumbNum }}</div>
         </div>
       </div>
     </div>
 
-    <div v-if="showReplyBox === comment.comment_id">
-      <commentBox />
+    <div v-if="showReplyBox === comment.videoCommentId" class="comment-box">
+      <commentBox
+        :video-id="videoId"
+        :comment-id="comment.videoCommentId"
+        :comment-callback="commentCallbackFromBox"
+      />
     </div>
 
-    <ul
+    <div
+      class="comment-children"
       v-if="
-        comment.children.length && showCommentChildren.get(comment.comment_id)
+        comment.videoCommentChildren.length &&
+        showCommentChildren.get(comment.videoCommentId)
       "
     >
-      <comment-list :commentData="comment.children" />
-    </ul>
+      <comment-list
+        :comment-data-child="comment.videoCommentChildren || []"
+        :video-id="videoId"
+        :comment-callback="commentCallback"
+        :author_id="author_id"
+      />
+    </div>
 
     <div
       class="show-comment-children"
-      v-if="!comment.isChild && comment.children.length"
+      v-if="!comment.isChild && comment.videoCommentChildren.length"
       @click="
         showCommentChildren.set(
-          comment.comment_id,
-          !showCommentChildren.get(comment.comment_id)
+          comment.videoCommentId,
+          !showCommentChildren.get(comment.videoCommentId)
         )
       "
     >
-      <div v-if="!showCommentChildren.get(comment.comment_id)">
-        <img
-          src="@/assets/svgs/arrow-down.svg"
-          alt=""
-          style="transform: scale(0.8)"
-        />
-        <span>展开 {{ comment.children.length }} 条回复</span>
+      <div v-if="!showCommentChildren.get(comment.videoCommentId)">
+        <arrowDownSVG />
+        <span>展开 {{ comment.videoCommentChildren.length }} 条回复</span>
       </div>
-      <div v-if="showCommentChildren.get(comment.comment_id)">
-        <img
-          src="@/assets/svgs/arrow-up.svg"
-          alt=""
-          style="transform: scale(0.8)"
-        />
+      <div v-if="showCommentChildren.get(comment.videoCommentId)">
+        <arrowUpSVG />
         <span>收起</span>
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, defineProps, reactive } from 'vue'
+import { ref, watch } from 'vue'
 import commentList from './commentList.vue'
 import commentBox from './commentBox.vue'
+import arrowDownSVG from '@nullSvg/arrow-down.svg'
+import arrowUpSVG from '@nullSvg/arrow-up.svg'
+import arrowCommentToSVG from '@nullSvg/arrow-comment-to.svg'
+import likeSVG from '@nullSvg/like.svg'
+import { delCommentAPI, likeCommentAPI } from '@/api/comment/comment'
+import { getCommentAPIResponse } from '@/api/comment/types'
+import { useUserStore } from '@/stores/user'
 
-const props = defineProps<{
-  commentData: any[]
-}>()
+const { commentData, commentDataChild, videoId, author_id, commentCallback } =
+  defineProps<{
+    commentData?: getCommentAPIResponse[]
+    commentDataChild?: getCommentAPIResponse[]
+    videoId: string
+    author_id: string
+    commentCallback: (comment: getCommentAPIResponse) => void
+  }>()
 
-const receivedCommentData = ref<any[]>(props.commentData)
-const showCommentChildren = reactive<Map<string, boolean>>(new Map())
+const userStore = useUserStore()
+
+let receivedCommentData = ref<getCommentAPIResponse[]>([])
+const showCommentChildren = ref<Map<string, boolean>>(new Map())
 const replyTo = ref('')
 const showReplyBox = ref('')
+const animationId = ref('')
+
+// 点赞评论
+const like = async (comment: getCommentAPIResponse) => {
+  const res = await likeCommentAPI({
+    userId: userStore.userInfo.user_id as string,
+    videoCommentId: comment.videoCommentId
+  })
+
+  if (res.code === 0) {
+    receivedCommentData.value.forEach((item) => {
+      if (item.videoCommentId === comment.videoCommentId) {
+        // 点过赞,则取消点赞
+        if (comment.isThumb === 0) {
+          // 释放动画指向
+          animationId.value = ''
+          item.isThumb = 1
+          item.videoCommentThumbNum--
+        } else {
+          animationId.value = comment.videoCommentId
+          item.isThumb = 0
+          item.videoCommentThumbNum++
+        }
+      }
+    })
+  }
+}
 
 // 显示回复框
-const showReply = (comment: any) => {
-  if (showReplyBox.value == comment.comment_id) {
+const showReply = (comment: getCommentAPIResponse) => {
+  if (showReplyBox.value === comment.videoCommentId) {
     showReplyBox.value = ''
     return
   }
-  replyTo.value = comment.user.name
-  showReplyBox.value = comment.comment_id
+  replyTo.value = comment.videoCommentUserName
+  showReplyBox.value = comment.videoCommentId
 }
 
-// 删除评论
+// 评论回调函数
+const commentCallbackFromBox = (comment: getCommentAPIResponse) => {
+  showReply(comment)
+  commentCallback(comment)
+}
+
+// // 删除评论
 const deleteComment = (id: string) => {
+  delCommentAPI({
+    userId: userStore.userInfo.user_id as string,
+    videoCommentId: id
+  })
+
   for (let i = 0; i < receivedCommentData.value.length; i++) {
-    if (receivedCommentData.value[i].comment_id === id) {
+    if (receivedCommentData.value[i].videoCommentId === id) {
       receivedCommentData.value.splice(i, 1)
       return
     }
-    if (receivedCommentData.value[i].children) {
-      for (let j = 0; j < receivedCommentData.value[i].children.length; j++) {
-        if (receivedCommentData.value[i].children[j].comment_id === id) {
-          receivedCommentData.value[i].children.splice(j, 1)
+    if (receivedCommentData.value[i].videoCommentChildren) {
+      for (
+        let j = 0;
+        j < receivedCommentData.value[i].videoCommentChildren.length;
+        j++
+      ) {
+        if (
+          receivedCommentData.value[i].videoCommentChildren[j]
+            .videoCommentId === id
+        ) {
+          receivedCommentData.value[i].videoCommentChildren.splice(j, 1)
           return
         }
       }
@@ -121,14 +207,36 @@ const deleteComment = (id: string) => {
   }
 }
 
-onMounted(async () => {
-  receivedCommentData.value.forEach((comment: any) => {
-    showCommentChildren.set(comment.comment_id, false)
-  })
-  console.log(receivedCommentData.value, 1)
-  // const res = await listReviewsAPI(params)
-  // commentData.value = res.data
-})
+watch(
+  () => commentData,
+  (newVal) => {
+    console.log(commentData)
+    receivedCommentData.value = newVal as getCommentAPIResponse[]
+    receivedCommentData.value &&
+      receivedCommentData.value.forEach((comment: getCommentAPIResponse) => {
+        // 防止打开状态被重置
+        if (!showCommentChildren.value.get(comment.videoCommentId)) {
+          showCommentChildren.value.set(comment.videoCommentId, false)
+        }
+      })
+  },
+  { immediate: true, deep: true }
+)
+
+watch(
+  () => commentDataChild,
+  (newVal) => {
+    receivedCommentData.value = newVal as getCommentAPIResponse[]
+    receivedCommentData.value &&
+      receivedCommentData.value.forEach((comment: getCommentAPIResponse) => {
+        // 防止打开状态被重置
+        if (!showCommentChildren.value.get(comment.videoCommentId)) {
+          showCommentChildren.value.set(comment.videoCommentId, false)
+        }
+      })
+  },
+  { immediate: true, deep: true }
+)
 </script>
 <style scoped lang="less">
 .comment-list {
@@ -139,56 +247,107 @@ onMounted(async () => {
 
   .comment-content {
     display: flex;
+    justify-content: space-between;
 
-    .comment-header {
-      width: 2.5rem;
-      height: 2.5rem;
-      border-radius: 100%;
-    }
+    .comment-main {
+      display: flex;
 
-    > div {
-      margin-left: 1rem;
+      .comment-header {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 100%;
+      }
 
-      .comment-name {
-        display: flex;
-        align-items: center;
-        font-size: 0.875rem;
-        color: @text-secondary;
+      > div {
+        margin-left: 1rem;
 
-        .comment-to {
+        .comment-name {
           display: flex;
           align-items: center;
-        }
-      }
-
-      .comment-text {
-        font-size: 16px;
-        color: @text;
-      }
-
-      .comment-operate {
-        display: flex;
-
-        .comment-response,
-        .comment-delete {
           font-size: 0.875rem;
           color: @text-secondary;
-          cursor: pointer;
-          text-decoration: none;
-          transition: all 0.3s;
-          margin-right: 1rem;
+
+          .comment-to {
+            display: flex;
+            align-items: center;
+          }
         }
 
-        .comment-response:hover,
-        .comment-delete:hover {
-          text-decoration: underline;
-          color: @bg-color-primary;
+        .comment-text {
+          font-size: 16px;
+          color: @text;
         }
+
+        .comment-operate {
+          display: flex;
+
+          .comment-response,
+          .comment-delete {
+            font-size: 0.875rem;
+            color: @text-secondary;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            margin-right: 1rem;
+          }
+
+          .comment-response:hover,
+          .comment-delete:hover {
+            text-decoration: underline;
+            color: @bg-color-primary;
+          }
+        }
+      }
+    }
+
+    .comment-like {
+      text-align: center;
+      font-size: 1rem;
+      line-height: 1rem;
+      color: @text;
+      cursor: pointer;
+
+      svg {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+    }
+
+    .comment-like:hover {
+      color: @bg-color-primary;
+
+      :deep(svg path) {
+        fill: @bg-color-primary;
+      }
+    }
+
+    .isThumb {
+      color: @bg-color-primary;
+      :deep(svg path) {
+        fill: @bg-color-primary;
+      }
+    }
+
+    .likeAnimation {
+      svg {
+        animation: like 0.5s forwards;
+      }
+    }
+
+    @keyframes like {
+      0% {
+        transform: scale(1);
+      }
+      30% {
+        transform: scale(1.2);
+      }
+      100% {
+        transform: scale(1);
       }
     }
   }
 
-  ul {
+  .comment-children {
     margin: 0 0 0 3.5rem;
     padding: 0;
     list-style-type: none;

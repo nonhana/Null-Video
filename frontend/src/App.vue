@@ -1,24 +1,31 @@
 <template>
-  <n-message-provider>
-    <n-dialog-provider>
-      <n-configProvider :theme-overrides="themeOverrides" style="height: 100%">
-        <div class="app">
-          <common-header />
-          <div class="router">
-            <router-view />
+  <n-notification-provider>
+    <n-message-provider>
+      <n-dialog-provider>
+        <n-configProvider
+          :theme-overrides="themeOverrides"
+          style="height: 100%"
+        >
+          <div class="app">
+            <common-header />
+            <div class="router">
+              <router-view />
+            </div>
+            <loginWindow v-if="userStore.isLoginWindowShow" />
           </div>
-          <!-- <loginWindow /> -->
-        </div>
-      </n-configProvider>
-    </n-dialog-provider>
-  </n-message-provider>
+        </n-configProvider>
+      </n-dialog-provider>
+    </n-message-provider>
+  </n-notification-provider>
 </template>
 
 <script setup lang="ts">
 import { NConfigProvider, GlobalThemeOverrides } from 'naive-ui'
 import commonHeader from '@nullVideo/basic/commonHeader.vue'
 import loginWindow from './views/home/loginWindow.vue'
+import { useUserStore } from './stores/user'
 
+const userStore = useUserStore()
 // native-ui 全局主题变量
 const themeOverrides: GlobalThemeOverrides = {
   common: {

@@ -8,24 +8,34 @@
           </Card>
           <Card style="margin-top: 2rem">
             <div class="video-choice">视频类型选择</div>
-            <div class="video-types">
+            <div v-if="loading">
+              <n-spin />
+            </div>
+            <div v-else class="video-types">
               <div
-                v-for="(videoType, index) in videoTypes"
+                v-for="videoType in videoTypes"
                 :key="videoType.id"
                 :class="{ selected: videoType.selected }"
-                @click="typeSelect(index)"
+                @click="typeSelect(videoType.id)"
               >
                 {{ videoType.name }}
               </div>
             </div>
           </Card>
+          <Card style="margin-top: 2rem">
+            <videoQueueCom
+              :video-queue="videoItemQueue"
+              :current="videoQueue.current"
+              @video-change="emitVideo"
+            />
+          </Card>
         </div>
         <div class="video-change">
           <div class="video-up" @click="videoChange(-1)">
-            <img src="@/assets/svgs/video-change.svg" alt="" />
+            <videoChangeSVG />
           </div>
           <div class="video-down" @click="videoChange(1)">
-            <img src="@/assets/svgs/video-change.svg" alt="" />
+            <videoChangeSVG />
           </div>
         </div>
       </n-gi>
@@ -34,9 +44,9 @@
           <video ref="videoPlayer" class="video-js" />
         </Card>
       </n-gi>
-      <n-gi :span="13">
+      <n-gi :span="13" style="height: 100%">
         <Card>
-          <Comment />
+          <Comment :author_id="author_id" />
         </Card>
       </n-gi>
     </n-grid>
@@ -44,9 +54,21 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onBeforeMount, onBeforeUnmount, ref, reactive } from 'vue'
+import {
+  onMounted,
+  onBeforeMount,
+  onBeforeUnmount,
+  ref,
+  reactive,
+  watch
+} from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useUserStore } from '@/stores/user'
+import type { VideoItemInfo } from '@/utils/types'
+import { getVideoTypeAPI, getRandomVideoAPI } from '@/api/video/video'
+import { NGrid, useMessage } from 'naive-ui'
 import videoInfo from './videoInfo.vue'
-import { NGrid } from 'naive-ui'
+import videoQueueCom from './videoQueue.vue'
 import Card from '@nullVideo/card/card.vue'
 import Comment from '@nullVideo/comment/comment.vue'
 // video.js相关依赖
@@ -56,74 +78,90 @@ import 'video.js/dist/video-js.css' // 引入视频样式文件
 // import 'videojs-resolution-switcher/lib/videojs-resolution-switcher.css'
 // import 'videojs-resolution-switcher'
 import Player from 'video.js/dist/types/player'
-const defaultVideoTypes = [
-  {
-    name: '全部',
-    id: '123123',
-    selected: true
-  },
-  {
-    name: '政治',
-    id: '12313423123',
-    selected: true
-  },
-  {
-    name: '娱乐',
-    id: '35',
-    selected: true
-  },
-  {
-    name: '体育',
-    id: '74568',
-    selected: true
-  },
-  {
-    name: '学习',
-    id: '435',
-    selected: true
-  },
-  {
-    name: '艺术',
-    id: '123213213213',
-    selected: true
-  },
-  {
-    name: '美食',
-    id: '4545745',
-    selected: true
-  }
-]
+import videoChangeSVG from '@nullSvg/video-change.svg'
 
-let videoTypes: { name: string; selected: boolean; id: string }[] = reactive(
-  JSON.parse(
-    localStorage.getItem('videoTypes') || JSON.stringify(defaultVideoTypes)
-  )
-)
+const route = useRoute()
+const router = useRouter()
+const userStore = useUserStore()
+const message = useMessage()
+
+// 视频类型
+const videoTypes = ref<{ name: string; selected: boolean; id: string }[]>([])
+// 加载中
+const loading = ref<boolean>(false)
+const video_id = ref<string>(route.params.video_id as string)
+const author_id = ref<string>('')
 
 // 切换 type 状态，同时存入本地数据
-const typeSelect = (index: number) => {
-  const flag = videoTypes[index].selected
-  if (index === 0) {
+const typeSelect = async (type_id: string) => {
+  loading.value = true
+  const flag = videoTypes.value.find((item) => item.id === type_id)!.selected
+  if (type_id === 'all') {
     if (!flag) {
-      videoTypes.forEach((item) => {
+      videoTypes.value.forEach((item) => {
         item.selected = true
       })
     } else {
-      videoTypes[0].selected = false
+      videoTypes.value.forEach((item) => {
+        item.selected = false
+      })
+    }
+    const res = await getRandomVideoAPI({
+      userId: userStore.userInfo.user_id
+    })
+    if (res.code === 0) {
+      videoQueue.queue = []
+      res.data.forEach((item: any) => {
+        videoQueue.queue.push(item)
+      })
+      // 去重
+      videoQueue.queue = Array.from(new Set(videoQueue.queue))
+      videoQueue.current = 0
+      message.success('类型选择成功，相应视频已经加入播放队列~')
     }
   } else {
     if (flag) {
-      videoTypes[0].selected = false
+      videoTypes.value[0].selected = false
     }
-    videoTypes[index].selected = !videoTypes[index].selected
+    videoTypes.value.find((item) => item.id === type_id)!.selected =
+      !videoTypes.value.find((item) => item.id === type_id)!.selected
+    // 获取当前选中的视频类型
+    const selectedTypes = videoTypes.value
+      .filter((item) => item.selected)
+      .map((item) => item.id)
+    // 获取当前选中的视频类型的视频
+    const res = await Promise.all(
+      selectedTypes.map((item: any) =>
+        getRandomVideoAPI({
+          videoTypeId: item.id
+        })
+      )
+    )
+    videoQueue.queue = []
+    res.forEach((item: any) => {
+      item.data.forEach((item: any) => {
+        videoQueue.queue.push(item)
+      })
+    })
+    // 去重
+    videoQueue.queue = Array.from(new Set(videoQueue.queue))
+    videoQueue.current = 0
+    message.success('类型选择成功，相应视频已经加入播放队列~')
   }
-  localStorage.setItem('videoTypes', JSON.stringify(videoTypes))
+  localStorage.setItem('videoTypes', JSON.stringify(videoTypes.value))
+  localStorage.setItem('videoList', JSON.stringify(videoQueue.queue))
+  loading.value = false
 }
 
-const videoQueue: { current: number; queue: string[] } = reactive({
-  current: -1,
+// 视频队列
+const videoQueue: { current: number; queue: any[] } = reactive({
+  current: 0,
   queue: []
 })
+
+// 视频Item队列
+const videoItemQueue = ref<VideoItemInfo[]>([])
+
 // 获取 video 实例
 const videoPlayer = ref()
 // 定义播放器对象
@@ -132,31 +170,72 @@ let player: Player
 // ways:1 播放下一个视频 ways:-1 播放上一个视频
 const videoChange = (ways: number) => {
   videoQueue.current += ways
-  if (videoQueue.current < 0 || videoQueue.current >= videoQueue.queue.length) {
+  if (videoQueue.current >= videoQueue.queue.length) {
     videoQueue.current = 0
   }
-  player.src(videoQueue.queue[videoQueue.current])
+}
+// 视频切换
+const emitVideo = (current: number) => {
+  videoQueue.current = current
 }
 
-onBeforeMount(() => {
-  // 挂载前判断类型结构是否正确
-  if (
-    JSON.parse(localStorage.getItem('videoTypes') || '[]').length !==
-    defaultVideoTypes
-  ) {
-    localStorage.setItem('videoTypes', JSON.stringify(defaultVideoTypes))
+watch(
+  () => videoQueue.current,
+  (newV, _) => {
+    router.push({
+      name: 'home',
+      params: {
+        video_id: videoQueue.queue[newV].videoId
+      }
+    })
+    video_id.value = videoQueue.queue[newV].videoId
+    author_id.value = videoQueue.queue[newV].authorId
+    player.src(videoQueue.queue[newV].videoUrl)
+  }
+)
+
+onBeforeMount(async () => {
+  // 如果本地已经有存储视频类型，则从本地获取
+  if (localStorage.getItem('videoTypes')) {
+    videoTypes.value = JSON.parse(localStorage.getItem('videoTypes') as string)
+  } else {
+    // 如果本地没有存储视频类型，则从后端获取
+    const res = await getVideoTypeAPI({})
+    if (res.code === 0) {
+      const result: { name: string; selected: boolean; id: string }[] =
+        res.data.map((item: any) => {
+          return {
+            id: item.videoTypeId,
+            name: item.videoTypeName,
+            selected: false
+          } as { name: string; selected: boolean; id: string }
+        })
+      result.unshift({
+        id: 'all',
+        name: '全部',
+        selected: true
+      })
+      videoTypes.value = result
+      localStorage.setItem('videoTypes', JSON.stringify(result))
+    }
   }
 })
 
-onMounted(() => {
-  console.log(
-    JSON.parse(
-      localStorage.getItem('videoTypes') || JSON.stringify(defaultVideoTypes)
+onMounted(async () => {
+  // 从store中获取视频列表
+  videoQueue.queue.push(
+    ...JSON.parse(localStorage.getItem('videoList') as string).map(
+      (item: any) => item
     )
   )
-  // 加载视频列表
-  videoQueue.queue.push(
-    ...['./video-test001.mp4', './video-test002.mp4', './video-test003.mp4']
+  videoItemQueue.value.push(
+    ...videoQueue.queue.map((item: any) => {
+      return {
+        video_id: item.videoId,
+        video_cover: item.videoCoverUrl,
+        video_viewnum: item.videoPlayNum
+      }
+    })
   )
 
   // 在组件挂载后初始化video.js播放器
@@ -262,7 +341,7 @@ onBeforeUnmount(() => {
     .video-down {
       margin-top: 1rem;
 
-      img {
+      * {
         transform: rotate(180deg);
       }
     }

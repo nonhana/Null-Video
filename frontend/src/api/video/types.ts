@@ -1,6 +1,6 @@
 export interface getVideoListAPIParams {
   userId: string
-  begin: number
+  begin?: number
 }
 
 export interface getOthersVideoListAPIParams {
@@ -10,7 +10,7 @@ export interface getOthersVideoListAPIParams {
 }
 
 export interface getVideoTypeAPIParams {
-  typeId: number
+  typeId?: number
 }
 
 export interface addTagAPIParams {
@@ -18,7 +18,7 @@ export interface addTagAPIParams {
 }
 
 export interface getTagsAPIParams {
-  searchTag: string
+  searchTag?: string
 }
 
 export interface postVideoAPIParams {
@@ -40,4 +40,9 @@ export interface updateVideoAPIParams {
     operation: number
     videoTagId: number
   }[]
+}
+
+export interface getRandomVideoAPIParams {
+  videoTypeId?: string // 不传代表获取全部类型的视频
+  userId?: string // 不传代表还没登录
 }

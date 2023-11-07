@@ -30,7 +30,7 @@
             <my-input
               type="text"
               placeholder="你的名称"
-              :value="userInfo!.user_name"
+              :value="userInfo!.user_name!"
               @input="updateName"
               @blur="showNameInput"
             />
@@ -61,7 +61,7 @@
         <my-input
           type="textarea"
           placeholder="请输入签名"
-          :value="userInfo!.user_signature"
+          :value="userInfo!.user_signature!"
           :min-rows="1"
           :max-rows="5"
           :disabled="signatureInputVisable"
@@ -72,91 +72,49 @@
     </div>
     <n-divider />
     <div class="menu">
-      <div
-        class="menu-item"
-        :class="hovering[0] ? 'menu-hover' : ''"
-        @click="chooseItem(0)"
-        @mouseenter="hoverItem(0, 0)"
-        @mouseleave="hoverItem(1)"
-      >
-        <img
-          :style="{
-            left: hovering[0] ? '0.5rem' : '0'
-          }"
-          :src="arrowRight"
-          alt="arrowRight"
-        />
+      <!-- <div class="menu-item" :class="hovering[0] ? 'menu-hover' : ''" @click="chooseItem(0)" @mouseenter="hoverItem(0, 0)"
+        @mouseleave="hoverItem(1)">
+        <img :style="{
+          left: hovering[0] ? '0.5rem' : '0'
+        }" :src="arrowRight" alt="arrowRight" />
         <img :src="myVideos" alt="myVideos" />
         <span>发布视频</span>
-      </div>
+      </div> -->
       <div
+        v-for="(menu, index) in menuStatus"
+        :key="menu.menuName"
         class="menu-item"
-        :class="hovering[1] ? 'menu-hover' : ''"
-        @click="chooseItem(1)"
-        @mouseenter="hoverItem(0, 1)"
+        :class="{ 'menu-hover': hovering[index] }"
+        @click="chooseItem(index)"
+        @mouseenter="hoverItem(0, index)"
         @mouseleave="hoverItem(1)"
       >
-        <img
+        <arrowRightSVG
+          class="menu-item-arrow"
           :style="{
-            left: hovering[1] ? '0.5rem' : '0'
+            left: hovering[index] ? '0.5rem' : '0'
           }"
-          :src="arrowRight"
-          alt="arrowRight"
         />
-        <img :src="myCollections" alt="myCollections" />
-        <span>收藏列表</span>
-      </div>
-      <div
-        class="menu-item"
-        :class="hovering[2] ? 'menu-hover' : ''"
-        @click="chooseItem(2)"
-        @mouseenter="hoverItem(0, 2)"
-        @mouseleave="hoverItem(1)"
-      >
-        <img
-          :style="{
-            left: hovering[2] ? '0.5rem' : '0'
-          }"
-          :src="arrowRight"
-          alt="arrowRight"
-        />
-        <img :src="myFollowsAndFans" alt="myFollowsAndFans" />
-        <span>关注/粉丝</span>
-      </div>
-      <div
-        class="menu-item"
-        :class="hovering[3] ? 'menu-hover' : ''"
-        @click="chooseItem(3)"
-        @mouseenter="hoverItem(0, 3)"
-        @mouseleave="hoverItem(1)"
-      >
-        <img
-          :style="{
-            left: hovering[3] ? '0.5rem' : '0'
-          }"
-          :src="arrowRight"
-          alt="arrowRight"
-        />
-        <img :src="exit" alt="exit" />
-        <span>退出登录</span>
+        <component class="menu-item-img" :is="menu.menuSvg" />
+        <span>{{ menu.menuName }}</span>
       </div>
     </div>
   </Card>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, reactive, HTMLAttributes } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import type { UserInfo } from '@/utils/types'
-import { updateInfoAPI } from '@/api/user/user'
+import { getUserInfoAPI, updateInfoAPI } from '@/api/user/user'
 import myInput from '@/components/form/input/input.vue'
 import imgCropper from '@/components/utils/imgCropper.vue'
-import arrowRight from '@/assets/svgs/arrow-right.svg'
-import myVideos from '@/assets/svgs/my-videos.svg'
-import myCollections from '@/assets/svgs/my-collections.svg'
-import myFollowsAndFans from '@/assets/svgs/my-follows-and-fans.svg'
-import exit from '@/assets/svgs/exit.svg'
+import arrowRightSVG from '@nullSvg/arrow-right.svg'
+import myVideosSVG from '@nullSvg/my-videos.svg'
+import myCollectionsSVG from '@nullSvg/my-collections.svg'
+import myFollowsAndFansSVG from '@nullSvg/my-follows-and-fans.svg'
+import exitSVG from '@nullSvg/exit.svg'
 import { useMessage, useDialog } from 'naive-ui'
 import Card from '@nullVideo/card/card.vue'
 
@@ -171,14 +129,19 @@ const openAvatarSelector = () => {
 // 选择文件后输出文件信息
 const fileSelected = () => {
   const file = avatarSelector.value!.files![0]
-  console.log(file)
   avatarSourceFile = file
   avatarCroppedFileType = avatarSourceFile?.type ?? ''
-  console.log('avatarCroppedFileType', avatarCroppedFileType)
   avatarDialogVisible.value = true
 }
-const uploadImage = (value: { imgURL: string }) => {
+const uploadImage = async (value: { imgURL: string }) => {
   userInfo.value!.user_avatar = value.imgURL
+  const res = await updateInfoAPI({
+    userId: userInfo.value!.user_id!,
+    userAvatar: userInfo.value!.user_avatar
+  })
+  if (res.code === 0) {
+    message.success('头像更新成功')
+  }
 }
 const closeDialog = () => {
   avatarDialogVisible.value = false
@@ -193,10 +156,10 @@ const confirmExit = () => {
     positiveText: '确定',
     negativeText: '取消',
     onPositiveClick: () => {
-      message.success('退出登录成功，2s后跳转首页')
-      setTimeout(() => {
-        router.push('/')
-      }, 2000)
+      userStore.logout()
+      localStorage.clear()
+      message.success('退出登录成功，即将跳转至首页')
+      router.push('/')
     }
   })
 }
@@ -205,6 +168,7 @@ const avatarSelector = ref<HTMLInputElement>()
 /* Routes */
 const route = useRoute()
 const router = useRouter()
+const routeNameWhenMounted = router.currentRoute.value.name
 /* Stores */
 const userStore = useUserStore()
 /* Refs */
@@ -215,6 +179,32 @@ const nameInputVisable = ref<boolean>(false)
 const signatureInputVisable = ref<boolean>(true)
 /* Consts */
 const routeNameList = ['myVideos', 'myCollections', 'myFollowsAndFans', 'exit']
+const menuStatus: {
+  menuName: string
+  menuSelected: boolean
+  menuSvg: HTMLAttributes
+}[] = reactive([
+  {
+    menuName: '发布视频',
+    menuSelected: routeNameWhenMounted === 'myVideos',
+    menuSvg: myVideosSVG
+  },
+  {
+    menuName: '收藏列表',
+    menuSelected: routeNameWhenMounted === 'myCollections',
+    menuSvg: myCollectionsSVG
+  },
+  {
+    menuName: '关注/粉丝',
+    menuSelected: routeNameWhenMounted === 'myFollowsAndFans',
+    menuSvg: myFollowsAndFansSVG
+  },
+  {
+    menuName: '退出登录',
+    menuSelected: routeNameWhenMounted === 'exit',
+    menuSvg: exitSVG
+  }
+])
 /* Functions */
 // 鼠标移动到菜单项时，箭头向右移动，其他菜单项箭头复位
 const hoverItem = (type: number, index?: number) => {
@@ -264,12 +254,12 @@ const showNameInput = () => {
       negativeText: '取消',
       onPositiveClick: async () => {
         const res = await updateInfoAPI({
-          userId: userInfo.value!.user_id,
+          userId: userInfo.value!.user_id!,
           userName: userInfo.value!.user_name
         })
         if (res.code === 0) {
           nameInputVisable.value = !nameInputVisable.value
-          message.success('更改成功')
+          message.success('更新用户名成功')
         }
       }
     })
@@ -287,12 +277,12 @@ const showSignatureInput = () => {
       negativeText: '取消',
       onPositiveClick: async () => {
         const res = await updateInfoAPI({
-          userId: userInfo.value!.user_id,
+          userId: userInfo.value!.user_id!,
           userProfile: userInfo.value!.user_signature
         })
         if (res.code === 0) {
           signatureInputVisable.value = !signatureInputVisable.value
-          message.success('更改成功')
+          message.success('更新签名成功')
         }
       }
     })
@@ -311,26 +301,24 @@ const updateSignature = (value: string) => {
 /* Watches */
 watch(
   () => route.params.user_id,
-  (user_id) => {
-    console.log(
-      user_id,
-      userStore.userInfo.user_id,
-      user_id === userStore.userInfo.user_id
-    )
+  async (user_id) => {
     if (user_id === userStore.userInfo.user_id) {
       isMyCenter.value = true
       userInfo.value = userStore.userInfo
     } else {
       isMyCenter.value = false
-      userInfo.value = {
-        user_id: '2',
-        user_name: 'JaneDoe',
-        user_signature: 'Another signature.',
-        user_avatar: 'https://dummyimage.com/400X400',
-        user_likenum: 111,
-        user_collectnum: 222,
-        user_follownum: 333,
-        user_fansnum: 444
+      const res = await getUserInfoAPI({ userId: user_id as string })
+      if (res.code === 0) {
+        userInfo.value = {
+          user_id: res.data.userId,
+          user_avatar: res.data.userAvatar,
+          user_signature: res.data.userProfile ?? '',
+          user_name: res.data.userName,
+          user_collectnum: res.data.userCollectNum ?? 0,
+          user_fansnum: res.data.followerNum,
+          user_follownum: res.data.followingNum,
+          user_likenum: res.data.videoTotalThumbsNum
+        }
       }
     }
   },
@@ -472,19 +460,15 @@ watch(
     transition: all 0.3s;
     cursor: pointer;
 
-    img {
-      &:nth-child(1) {
-        position: relative;
-        width: 1rem;
-        height: 1rem;
-        transition: all 0.3s;
-      }
+    &-arrow {
+      position: relative;
+      transition: all 0.3s;
+    }
 
-      &:nth-child(2) {
-        margin: 0 2rem 0 2rem;
-        width: 2rem;
-        height: 2rem;
-      }
+    :deep(&-img) {
+      margin: 0 1rem 0 2rem;
+      width: 2rem;
+      height: 2rem;
     }
 
     &:hover {

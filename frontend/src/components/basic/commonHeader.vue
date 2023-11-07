@@ -6,7 +6,9 @@
       </n-gi>
       <n-gi :span="16" :offset="5">
         <div class="search">
-          <Search height="2.5rem" />
+          <Search>
+            <searchSVG />
+          </Search>
         </div>
       </n-gi>
       <n-gi :span="5" :offset="8">
@@ -17,41 +19,52 @@
         </div>
       </n-gi>
       <n-gi :span="1" :offset="3">
-        <div class="avatar" @click="jumpTo('personalCenter')">
-          <img
+        <div class="avatar">
+          <n-dropdown
             v-if="userStore.userInfo.user_avatar"
-            :src="userStore.userInfo.user_avatar"
-            alt="userAvatar"
-          />
+            trigger="hover"
+            :options="options"
+            @select="handleSelect"
+          >
+            <img :src="userStore.userInfo.user_avatar" alt="userAvatar" />
+          </n-dropdown>
+          <div v-else @click="userStore.showLoginWindow()">
+            <span>登录</span>
+          </div>
         </div>
       </n-gi>
     </n-grid>
-    <transition name="dialog">
-      <div class="window" v-if="windowVisable">
-        <loginWindow @close="windowVisable = false" />
-      </div>
-    </transition>
-    <transition name="template">
-      <div v-if="windowVisable" class="template" />
-    </transition>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { NGrid } from 'naive-ui'
 import Button from '@nullVideo/button/button.vue'
 import Search from '@nullVideo/form/search/search.vue'
-import loginWindow from '@/views/home/loginWindow.vue'
+import searchSVG from '@nullSvg/search.svg'
+import { useMessage } from 'naive-ui'
 
 const router = useRouter()
+const message = useMessage()
 
 const userStore = useUserStore()
 
-// 登录框是否显示
-const windowVisable = ref<boolean>(false)
+const options = [
+  {
+    label: '个人中心',
+    key: 'personalCenter'
+  },
+  {
+    label: '退出登录',
+    key: 'emit'
+  }
+]
+
+const handleSelect = (key: string) => {
+  jumpTo(key)
+}
 
 // 根据传入的name跳转到对应的页面
 const jumpTo = (name: string) => {
@@ -63,17 +76,21 @@ const jumpTo = (name: string) => {
       router.push('/postVideo')
       break
     case 'personalCenter':
-      console.log(userStore.token)
-      if (userStore.token !== '') {
-        router.push({
-          name: 'personalCenter',
-          params: {
-            user_id: userStore.userInfo.user_id
-          }
-        })
-      } else {
-        windowVisable.value = true
-      }
+      router.push({
+        name: 'personalCenter',
+        params: {
+          user_id: userStore.userInfo.user_id
+        }
+      })
+      break
+    case 'emit':
+      // 登出操作
+      userStore.logout()
+      localStorage.clear()
+      message.success('退出登录成功，跳转至首页')
+      setTimeout(() => {
+        router.push('/')
+      }, 2000)
       break
   }
 }
@@ -114,51 +131,22 @@ const jumpTo = (name: string) => {
   height: 2.5rem;
   border-radius: 100%;
   overflow: hidden;
-  background: @bg-color-primary;
   cursor: pointer;
-  img {
+
+  img,
+  div {
     width: 100%;
     height: 100%;
     border-radius: 100%;
   }
-}
 
-.window {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1000;
-}
-
-.template {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 999;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-}
-
-/* 蒙版渐入渐出 */
-.template-enter-active,
-.template-leave-active {
-  transition: opacity 0.3s;
-}
-.template-enter-from,
-.template-leave-to {
-  opacity: 0;
-}
-
-/* dialog从上到下，渐入渐出 */
-.dialog-enter-active,
-.dialog-leave-active {
-  transition: all 0.3s;
-}
-.dialog-enter-from,
-.dialog-leave-to {
-  transform: translateY(-100%);
-  opacity: 0;
+  div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: @bg-color-primary;
+    color: white;
+    font-size: 1rem;
+  }
 }
 </style>
