@@ -13,7 +13,7 @@ interface Data {
 function myAxios(axiosConfig: AxiosRequestConfig): Promise<Data> {
   const service = axios.create({
     baseURL: 'http://124.222.255.122:8080',
-    timeout: 30000
+    timeout: 300000
   })
 
   // 请求拦截器：可以在发请求之前可以处理一些业务

@@ -147,7 +147,7 @@ const fileSelected = () => {
   coverDialogVisible.value = true
 }
 const uploadImage = (value: { imgURL: string }) => {
-  videoForm.value.video_cover = 'http://' + value.imgURL
+  videoForm.value.video_cover = value.imgURL
 }
 const closeDialog = () => {
   coverDialogVisible.value = false

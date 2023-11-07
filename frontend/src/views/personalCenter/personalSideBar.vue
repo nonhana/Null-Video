@@ -134,7 +134,7 @@ const fileSelected = () => {
   avatarDialogVisible.value = true
 }
 const uploadImage = async (value: { imgURL: string }) => {
-  userInfo.value!.user_avatar = 'http://' + value.imgURL
+  userInfo.value!.user_avatar = value.imgURL
   const res = await updateInfoAPI({
     userId: userInfo.value!.user_id!,
     userAvatar: userInfo.value!.user_avatar
