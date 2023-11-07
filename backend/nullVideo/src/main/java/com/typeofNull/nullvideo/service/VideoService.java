@@ -49,13 +49,13 @@ public interface VideoService extends IService<Video> {
 
     List<VideoShowVO> getThumbOrFavourVideo(Long userId,Integer option);
 
-    boolean addVideoComment(VideoAddCommentRequest videoAddCommentRequest);
+    VideoCommentVO addVideoComment(VideoAddCommentRequest videoAddCommentRequest);
 
     List<VideoCommentVO> getVideoComment(Long videoId,String userId);
 
-    VideoCommentVO thumbVideoComment(Long videoCommentId,Long userId);
+    boolean thumbVideoComment(Long videoCommentId,Long userId);
 
     boolean removeVideoComment(Long userId,Long videoCommentId);
 
-    List<VideoDetailVO> getRandomVideo(String videoTypeId,String userId);
+    List<VideoDetailForRandomVO> getRandomVideo(String videoTypeId,String userId);
 }

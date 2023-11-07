@@ -5,6 +5,7 @@ import com.typeofNull.nullvideo.common.BaseResponse;
 import com.typeofNull.nullvideo.common.ErrorCode;
 import com.typeofNull.nullvideo.common.ResultUtils;
 import com.typeofNull.nullvideo.model.dto.video.*;
+import com.typeofNull.nullvideo.model.entity.VideoComment;
 import com.typeofNull.nullvideo.model.vo.video.*;
 import com.typeofNull.nullvideo.service.VideoService;
 import org.springframework.web.bind.annotation.*;
@@ -238,12 +239,12 @@ public class VideoController {
      * @return
      */
     @PostMapping("/add/comment")
-    public BaseResponse<Boolean> commentVideo(@RequestBody VideoAddCommentRequest videoAddCommentRequest){
+    public BaseResponse<VideoCommentVO> commentVideo(@RequestBody VideoAddCommentRequest videoAddCommentRequest){
         if(videoAddCommentRequest==null){
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
-        boolean isSuccess = videoService.addVideoComment(videoAddCommentRequest);
-        return ResultUtils.success(isSuccess);
+        VideoCommentVO videoComment = videoService.addVideoComment(videoAddCommentRequest);
+        return ResultUtils.success(videoComment);
     }
 
     /**
@@ -266,7 +267,7 @@ public class VideoController {
      * @return
      */
     @PostMapping("/thumb/comment")
-    public BaseResponse<VideoCommentVO> thumbComment(@RequestBody VideoThumbCommentRequest videoThumbCommentRequest){
+    public BaseResponse<Boolean> thumbComment(@RequestBody VideoThumbCommentRequest videoThumbCommentRequest){
         if(videoThumbCommentRequest==null){
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
@@ -275,8 +276,8 @@ public class VideoController {
         if (StrUtil.hasBlank(videoCommentIdStr,userIdStr)) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
-        VideoCommentVO videoCommentVO = videoService.thumbVideoComment(Long.parseLong(videoCommentIdStr), Long.parseLong(userIdStr));
-        return ResultUtils.success(videoCommentVO);
+        boolean isSuccess = videoService.thumbVideoComment(Long.parseLong(videoCommentIdStr), Long.parseLong(userIdStr));
+        return ResultUtils.success(isSuccess);
     }
 
     /**
@@ -299,8 +300,8 @@ public class VideoController {
      * @return
      */
     @GetMapping("/get/random")
-    public BaseResponse<List<VideoDetailVO>> getRandomVideo(@RequestParam(required = false) String videoTypeId,@RequestParam(required = false)String userId){
-        List<VideoDetailVO> randomVideo = videoService.getRandomVideo(videoTypeId, userId);
+    public BaseResponse<List<VideoDetailForRandomVO>> getRandomVideo(@RequestParam(required = false) String videoTypeId,@RequestParam(required = false)String userId){
+        List<VideoDetailForRandomVO> randomVideo = videoService.getRandomVideo(videoTypeId, userId);
         return ResultUtils.success(randomVideo);
     }
 }

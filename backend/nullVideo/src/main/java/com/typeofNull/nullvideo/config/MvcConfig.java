@@ -1,5 +1,6 @@
 package com.typeofNull.nullvideo.config;
 
+import com.typeofNull.nullvideo.aop.LoginInterceptor;
 import com.typeofNull.nullvideo.aop.RefreshTokenInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -20,6 +21,9 @@ public class MvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new RefreshTokenInterceptor(stringRedisTemplate))
-                .excludePathPatterns("/**").order(0);
+                .excludePathPatterns(
+                        "/**").order(1);
+
+//        registry.addInterceptor(new LoginInterceptor()).excludePathPatterns("/**").order(0);
     }
 }
