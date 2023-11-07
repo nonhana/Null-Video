@@ -21,6 +21,7 @@ import com.typeofNull.nullvideo.model.vo.search.SearchVideoVO;
 import com.typeofNull.nullvideo.model.vo.video.*;
 import com.typeofNull.nullvideo.service.*;
 import com.typeofNull.nullvideo.util.UserUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -230,11 +231,14 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
             Long videoTagId = item.getVideoTagId();
             return videoTagId;
         }).collect(Collectors.toList());
-        List<VideoTag> videoTags = videoTagService.listByIds(tagIds);
-        //拿着id找name
-        List<String> tags = videoTags.stream().map((item) -> {
-            return item.getVideoTagName();
-        }).collect(Collectors.toList());
+        List<String> tags=new ArrayList<>();
+        if(tagIds.size()>0&&tagIds!=null){
+            List<VideoTag> videoTags = videoTagService.listByIds(tagIds);
+            //拿着id找name
+            tags = videoTags.stream().map((item) -> {
+                return item.getVideoTagName();
+            }).collect(Collectors.toList());
+        }
         videoDetailVO.setVideoTags(tags);
         //最后处理User
         User user = userService.getById(video.getUserId());
@@ -582,7 +586,11 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
 
     @Override
 
-    public boolean addVideoComment(VideoAddCommentRequest videoAddCommentRequest) {
+    public VideoCommentVO addVideoComment(VideoAddCommentRequest videoAddCommentRequest) {
+        //评论内容不可为空
+        if(("").equals(StringUtils.deleteWhitespace(videoAddCommentRequest.getVideoCommentContent()))){
+            throw new BusinessException(ErrorCode.OPERATION_ERROR,"评论内容不可为空");
+        }
         String videoCommentIdStr = videoAddCommentRequest.getVideoCommentId();
         String videoIdStr = videoAddCommentRequest.getVideoId();
         if(StrUtil.isBlank(videoIdStr)){ //校验
@@ -602,9 +610,12 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
         //判断是一级评论还是二级评论还是三级评论
         if(StrUtil.isBlank(videoCommentIdStr)){//回复的为空，表示是一级评论
             videoComment.setVideoCommentContent(videoAddCommentRequest.getVideoCommentContent());
-        }else{ //说明是二级评论或三级评论
+        }else{ //说明在对二级评论或三级评论 进行评论
             long videoCommentId = Long.parseLong(videoCommentIdStr);
             VideoComment videoTempComment = videoCommentService.getById(videoCommentId);
+            if(videoTempComment==null){
+                throw new BusinessException(ErrorCode.OPERATION_ERROR,"评论已删除不可评论");
+            }
             //判断到底是二级还是三级,如果是二级就设置parentId
             if(videoTempComment.getParentId()==null){
                 videoComment.setParentId(videoTempComment.getId());
@@ -615,7 +626,20 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
             videoComment.setVideoCommentContent(videoAddCommentRequest.getVideoCommentContent());
         }
         boolean isSuccess = videoCommentService.save(videoComment);
-        return isSuccess;
+        //处理返回视图
+        if(!isSuccess){
+            throw new BusinessException(ErrorCode.OPERATION_ERROR,"评论失败");
+        }
+        VideoComment videoCommentNow = videoCommentService.getOne(new QueryWrapper<VideoComment>().eq("id", videoComment.getId()));
+        Long parentId = videoComment.getParentId();
+        VideoCommentVO videoCommentVO;
+        if(parentId ==null){ //一级评论直接传
+            videoCommentVO = getVideoCommentVO(videoCommentNow, userId + "");
+        }else{ //点赞的是二级或三级评论，先找一级评论
+            VideoComment firstComment = videoCommentService.getOne(new QueryWrapper<VideoComment>().eq("id", parentId));
+            videoCommentVO=getVideoCommentVO(firstComment,userId+"");
+        }
+        return videoCommentVO;
     }
 
     @Override
@@ -686,13 +710,16 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
             videoCommentVO.setVideoCommentChildren(otherComment);
              */
             VideoCommentVO videoCommentVO = getVideoCommentVO(item, userId);
+            if(videoCommentVO.getVideoCommentChildren()==null){
+                videoCommentVO.setVideoCommentChildren(new ArrayList<VideoCommentVO>());
+            }
             return videoCommentVO;
         }).collect(Collectors.toList());
         return videoCommentVOS;
     }
 
     @Override
-    public VideoCommentVO thumbVideoComment(Long videoCommentId,Long userId) {
+    public boolean thumbVideoComment(Long videoCommentId,Long userId) {
         String videoCommentKey=VIDEO_COMMENT_THUMB_KEY+videoCommentId;
         Double score = stringRedisTemplate.opsForZSet().score(videoCommentKey, userId.toString());
         boolean isSuccess;
@@ -711,16 +738,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
                 stringRedisTemplate.opsForZSet().add(videoCommentKey,userId.toString(),System.currentTimeMillis());
             }
         }
-        VideoComment videoComment = videoCommentService.getOne(new QueryWrapper<VideoComment>().eq("id", videoCommentId));
-        Long parentId = videoComment.getParentId();
-        VideoCommentVO videoCommentVO;
-        if(parentId ==null){ //点赞的是一级评论直接传
-             videoCommentVO = getVideoCommentVO(videoComment, userId + "");
-        }else{ //点赞的是二级或三级评论，先找一级评论
-            VideoComment firstComment = videoCommentService.getOne(new QueryWrapper<VideoComment>().eq("id", parentId));
-            videoCommentVO=getVideoCommentVO(firstComment,userId+"");
-        }
-        return videoCommentVO;
+        return isSuccess;
     }
 
     @Override
@@ -740,15 +758,16 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
     }
 
     @Override
-    public List<VideoDetailVO> getRandomVideo(String videoTypeId,String userId) {
+    public List<VideoDetailForRandomVO> getRandomVideo(String videoTypeId,String userId) {
         //看看是用于主页还是特定type
         if(StrUtil.isBlank(videoTypeId)){ //首页
             ArrayList<Long> videoIds = new ArrayList<>();
             // 创建一个查询条件对象
-            QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
+            QueryWrapper<Video> queryWrapperForMin = new QueryWrapper<>();
+            QueryWrapper<Video> queryWrapperForMax = new QueryWrapper<>();
             // 使用 MyBatis Plus 提供的方法获取最小和最大 ID
-            Video minEntity = getOne(queryWrapper.orderByAsc("id").last("LIMIT 1"));
-            Video maxEntity = getOne(queryWrapper.orderByDesc("id").last("LIMIT 1"));
+            Video minEntity = getOne(queryWrapperForMin.orderByAsc("id").last("LIMIT 1"));
+            Video maxEntity = getOne(queryWrapperForMax.orderByDesc("id").last("LIMIT 1"));
             long count = this.count();
             if (minEntity != null && maxEntity != null) { //获得随机id
                 Long minId = minEntity.getId();
@@ -763,7 +782,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
                     }
                 }
             }
-            List<VideoDetailVO> videoDetailVOS = new ArrayList<>();
+            List<VideoDetailForRandomVO> videoDetailVOS = new ArrayList<>();
             //配对视频
             for(Long videoId:videoIds){
                 //如果没找到就跳过
@@ -772,12 +791,16 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
                     continue;
                 }
                 VideoDetailVO videoDetail = this.getVideoDetail(videoId, userId);
-                videoDetailVOS.add(videoDetail);
+                VideoDetailForRandomVO videoDetailForRandomVO = new VideoDetailForRandomVO();
+                BeanUtil.copyProperties(videoDetail,videoDetailForRandomVO);
+                videoDetailForRandomVO.setVideoId(videoId+"");
+                videoDetailVOS.add(videoDetailForRandomVO);
             }
                 return videoDetailVOS;
         }else{ //具体Type
             QueryWrapper<VideoType> videoTypeQueryWrapper = new QueryWrapper<>();
             long realVideoTypeId = Long.parseLong(videoTypeId);
+            //找type分类下的
             videoTypeQueryWrapper.eq("id",realVideoTypeId).or()
                     .eq("parent_id",realVideoTypeId);
             List<VideoType> videoTypes = videoTypeService.list(videoTypeQueryWrapper);
@@ -785,21 +808,33 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
                 // 处理 typeIds 为空的情况，例如抛出异常或返回默认值
                 throw new BusinessException(ErrorCode.PARAMS_ERROR,"typeId不能为空");
             }
+            //获得typeId
             List<Long> typeIds = videoTypes.stream().map(item -> item.getId()).collect(Collectors.toList());
             QueryWrapper<Video> videoQueryWrapper = new QueryWrapper<>();
             videoQueryWrapper.in("video_type",typeIds);
             videoQueryWrapper.orderByDesc("RAND()");
             videoQueryWrapper.last("limit 10");
+            //随机获取video
             List<Video> videos = this.list(videoQueryWrapper);
-            List<VideoDetailVO> videoDetailVOS = videos.stream().map(item -> {
+            //对video进行封装
+            List<VideoDetailForRandomVO> videoDetailVOS = videos.stream().map(item -> {
                 VideoDetailVO videoDetail = this.getVideoDetail(item.getId(), userId);
-                return videoDetail;
+                VideoDetailForRandomVO videoDetailForRandomVO = new VideoDetailForRandomVO();
+                BeanUtil.copyProperties(videoDetail,videoDetailForRandomVO);
+                videoDetailForRandomVO.setVideoId(item.getId()+"");
+                return videoDetailForRandomVO;
             }).collect(Collectors.toList());
             return videoDetailVOS;
         }
     }
 
 
+    /**
+     * 根据父评论设置子评论
+     * @param FirstComment
+     * @param userId
+     * @return
+     */
     private VideoCommentVO getVideoCommentVO(VideoComment FirstComment,String userId){
         //处理一级
         VideoCommentVO videoCommentVO = setVideoComment(FirstComment,userId);
@@ -810,8 +845,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
         videoCommentQueryWrapperForSecond.eq("video_id", FirstComment.getVideoId());
         videoCommentQueryWrapperForSecond.eq("parent_id", FirstComment.getId());
         videoCommentQueryWrapperForSecond.eq("video_comment_status",0);
-        videoCommentQueryWrapperForSecond.orderByDesc("video_comment_thumb");
-        videoCommentQueryWrapperForSecond.orderByDesc("create_time");
+        videoCommentQueryWrapperForSecond.orderByAsc("create_time");
         List<VideoComment> videoComments = videoCommentService.list(videoCommentQueryWrapperForSecond);
         //处理二/三级评论
         List<VideoCommentVO> otherComment = videoComments.stream().map(secondOrThirdComment -> {
@@ -820,11 +854,13 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
             if (answerId == parentId) {//如果回复的评论是一级评论，否则肯定是三级评论
                 VideoCommentVO secondComment = setVideoComment(secondOrThirdComment,userId);
                 secondComment.setIsChild(true);
-                videoCommentVO.setVideoCommentTo(null);
+                secondComment.setVideoCommentTo(null);
+                secondComment.setVideoCommentChildren(new ArrayList<VideoCommentVO>());
                 return secondComment;
             } else {//三级评论
                 VideoCommentVO thirdComment = setVideoComment(secondOrThirdComment,userId);
                 thirdComment.setIsChild(true);
+                thirdComment.setVideoCommentChildren(new ArrayList<VideoCommentVO>());
                 VideoCommentToVO videoCommentToVO = new VideoCommentToVO();
                 //处理一下回复的用户信息
                 VideoComment answerComment = videoCommentService.getById(answerId);

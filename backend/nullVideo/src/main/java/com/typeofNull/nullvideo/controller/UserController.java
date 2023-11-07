@@ -79,9 +79,9 @@ public class UserController {
     @GetMapping ("/getUserInfo")
     public BaseResponse<UserLoginVO> getUserInfoByToken(@RequestParam(required = false) String userId,HttpServletRequest request){
         String token = request.getHeader(TOKEN);
-        if(StrUtil.isBlank(token)){ //如果token和userId都为空，报错
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
-        }
+//        if(StrUtil.isBlank(token)){ //如果token和userId都为空，报错
+//            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
+//        }
         UserLoginVO userLoginVo = userService.getUserLoginVo(token,userId);
         return ResultUtils.success(userLoginVo);
     }
