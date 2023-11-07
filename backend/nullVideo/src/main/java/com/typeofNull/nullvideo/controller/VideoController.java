@@ -304,4 +304,15 @@ public class VideoController {
         List<VideoDetailForRandomVO> randomVideo = videoService.getRandomVideo(videoTypeId, userId);
         return ResultUtils.success(randomVideo);
     }
+
+    /**
+     * 视频分享
+     * @param userId
+     * @return
+     */
+    @GetMapping("/share")
+    public BaseResponse<Boolean> shareVideo(String videoId,@RequestParam(required = false) String userId){
+        boolean isSuccess = videoService.shareVideo(videoId, userId);
+        return ResultUtils.success(isSuccess);
+    }
 }
