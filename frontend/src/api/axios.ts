@@ -1,7 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios'
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
+import router from '@/router/index'
 
 // 定义res.data的类型
 interface Data {
@@ -12,7 +10,7 @@ interface Data {
 
 function myAxios(axiosConfig: AxiosRequestConfig): Promise<Data> {
   const service = axios.create({
-    baseURL: 'http://124.222.255.122:8080',
+    baseURL: 'https://nonhana-server.cn:8080',
     timeout: 300000
   })
 
@@ -38,6 +36,13 @@ function myAxios(axiosConfig: AxiosRequestConfig): Promise<Data> {
             break
           case 40100:
             // 处理未登录
+            router.push({
+              name: 'home',
+              params: {
+                // video_id: routes.params.video_id,
+                login: 'login'
+              }
+            })
             console.log('未登录')
             break
           case 40101:

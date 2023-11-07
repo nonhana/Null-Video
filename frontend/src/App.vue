@@ -20,12 +20,16 @@
 </template>
 
 <script setup lang="ts">
+import { watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { NConfigProvider, GlobalThemeOverrides } from 'naive-ui'
 import commonHeader from '@nullVideo/basic/commonHeader.vue'
 import loginWindow from './views/home/loginWindow.vue'
 import { useUserStore } from './stores/user'
 
 const userStore = useUserStore()
+const route = useRoute()
+
 // native-ui 全局主题变量
 const themeOverrides: GlobalThemeOverrides = {
   common: {
@@ -37,6 +41,20 @@ const themeOverrides: GlobalThemeOverrides = {
     color: '#D4D4D4'
   }
 }
+
+watch(
+  route,
+  async (newV, _) => {
+    // 监听登录
+    if (newV.params.login === 'login') {
+      console.log('login')
+      userStore.showLoginWindow()
+    }
+  },
+  {
+    immediate: true
+  }
+)
 </script>
 
 <style scoped lang="less">

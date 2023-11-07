@@ -7,7 +7,7 @@ const routes: RouteRecordRaw[] = [
     redirect: '/home'
   },
   {
-    path: '/home/:video_id',
+    path: '/home/:video_id/:login?',
     name: 'home',
     component: () => import('@/views/home/index.vue')
   },
@@ -15,6 +15,11 @@ const routes: RouteRecordRaw[] = [
     path: '/postVideo',
     name: 'postVideo',
     component: () => import('@/views/post/index.vue')
+  },
+  {
+    path: '/search/:search',
+    name: 'search',
+    component: () => import('@/views/search/index.vue')
   },
   {
     path: '/personalCenter/:user_id',
