@@ -36,17 +36,18 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public Object searchAll(String searchText, Integer option) {
+
         switch (option){
             case 0 :{ //查询综合
-                SearchUserAndVideoVO searchUserAndVideoVO = videoService.searchAll(searchText);
+                SearchUserAndVideoVO searchUserAndVideoVO = videoService.searchAll(searchText.trim());
                 return searchUserAndVideoVO;
             }
             case 1:{ //查询视频
-                List<SearchVideoVO> searchVideoVOS = videoService.searchVideo(searchText);
+                List<SearchVideoVO> searchVideoVOS = videoService.searchVideo(searchText.trim());
                 return searchVideoVOS;
             }
             case 2:{ //查询用户
-                List<SearchUserVO> searchUserVOS = userService.searchUser(searchText);
+                List<SearchUserVO> searchUserVOS = userService.searchUser(searchText.trim());
                 return searchUserVOS;
             }
         }

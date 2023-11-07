@@ -34,6 +34,7 @@ public class RefreshTokenInterceptor implements HandlerInterceptor {
         if("OPTIONS".equals(request.getMethod().toUpperCase())) {
             return true;
         }
+
         //token是否为空
         String token = request.getHeader(TOKEN);
         if(token==null|| StrUtil.isBlank(token)){
