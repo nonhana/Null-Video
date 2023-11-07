@@ -100,7 +100,7 @@ watch(
   display: flex;
   flex-direction: column;
   justify-content: space-between; // 确保评论列表和评论框分开
-  height: 100%;
+  height: 52rem;
 
   .comment-list-container {
     flex: 1; // 让评论列表占据剩余的空间

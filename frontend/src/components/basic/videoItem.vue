@@ -37,6 +37,7 @@ const hover = ref<boolean>(false)
   width: 14.375rem;
   height: 20.625rem;
   border-radius: 1rem;
+  background-color: #000;
   cursor: pointer;
   .viewnum {
     position: relative;
