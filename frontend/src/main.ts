@@ -4,7 +4,6 @@ import 'amfe-flexible'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import router from './router'
-import VueCookies from 'vue-cookies'
 
 const baseSize = 16
 
@@ -26,7 +25,6 @@ const store = createPinia()
 store.use(piniaPluginPersistedstate) // 引入pinia持久化插件
 
 const app = createApp(App)
-app.use(VueCookies)
 app.use(store)
 app.use(router)
 app.mount('#app')

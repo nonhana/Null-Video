@@ -61,14 +61,14 @@ const props = defineProps<{
 const followList = ref<
   {
     user_info: UserInfo
-    follow_status: boolean
+    follow_status: 0 | 1
   }[]
 >([])
 // 粉丝列表
 const fanList = ref<
   {
     user_info: UserInfo
-    follow_status: boolean
+    follow_status: 0 | 1
   }[]
 >([])
 // 加载中

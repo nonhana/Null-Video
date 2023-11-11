@@ -101,7 +101,6 @@ watch(
       })
       if (res.code === 0) {
         videoInfo.value = res.data
-        console.log(videoInfo.value)
 
         // 在组件挂载后初始化video.js播放器
         player = videojs(

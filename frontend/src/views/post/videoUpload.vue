@@ -72,9 +72,7 @@ const fileSelected = async () => {
     multipartFile: file
   })
   if (res.code === 0) {
-    console.log(res.data)
     videoUrl.value = res.data.url
-    console.log(videoUrl.value)
     message.success('上传成功')
   }
   loading.value = false
@@ -82,14 +80,11 @@ const fileSelected = async () => {
 // 检测到上传文件
 const handleChange = async (options: { fileList: UploadFileInfo[] }) => {
   loading.value = true
-  console.log(options.fileList)
   const res = await uploadFileAPI({
     multipartFile: options.fileList[0].file as File
   })
   if (res.code === 0) {
-    console.log(res.data)
     videoUrl.value = res.data.url
-    console.log(videoUrl.value)
     message.success('上传成功')
   }
   loading.value = false

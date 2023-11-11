@@ -33,7 +33,6 @@ const jumpToVideoPage = (video_id: string) => {
   const current = props.videoQueue.findIndex(
     (video) => video.video_id === video_id
   )
-  console.log(current)
   emits('videoChange', current)
 }
 </script>

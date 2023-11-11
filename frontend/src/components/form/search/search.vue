@@ -45,7 +45,6 @@ const input = (value: string) => {
 <style scoped lang="less">
 .search-input,
 .search-button {
-  // height: 100%;
   border-radius: @border-radius;
   box-shadow: @shadow-inner;
 }

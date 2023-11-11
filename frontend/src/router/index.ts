@@ -73,7 +73,6 @@ router.beforeEach(async (to, _, next) => {
       const videoTypes = JSON.parse(localStorage.getItem('videoTypes')!).filter(
         (item: any) => item.selected
       ) as any[]
-      console.log('videoTypes', videoTypes)
       const flag = videoTypes.some((item) => item.id === 'all')
       if (!flag) {
         // 获取每个videoType的视频数据

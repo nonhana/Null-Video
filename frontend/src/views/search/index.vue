@@ -26,7 +26,7 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-const searchResults = ref([])
+const searchResults = ref<any[]>([])
 const searchValue = ref(route.params.search)
 
 watch(
@@ -34,10 +34,9 @@ watch(
   async (newV, _) => {
     searchValue.value = newV.params.search as string
     const res = await searchVideoAPI({
-      searchText: newV.params.search,
+      searchText: newV.params.search as string,
       option: 1
     })
-    console.log(res, '@')
     if (res.code === 0) {
       searchResults.value = res.data.searchVideo
     }
