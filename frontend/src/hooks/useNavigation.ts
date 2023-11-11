@@ -20,7 +20,6 @@ export function useNavigation(): Navigation {
   }
 
   const getCurrentRouteName = computed(() => {
-    // console.log(route.name, "routeName");
     return route.name as string
   })
 

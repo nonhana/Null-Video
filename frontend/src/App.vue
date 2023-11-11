@@ -47,7 +47,6 @@ watch(
   async (newV, _) => {
     // 监听登录
     if (newV.params.login === 'login') {
-      console.log('login')
       userStore.showLoginWindow()
     }
   },

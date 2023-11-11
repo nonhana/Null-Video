@@ -210,7 +210,6 @@ const deleteComment = (id: string) => {
 watch(
   () => commentData,
   (newVal) => {
-    console.log(commentData)
     receivedCommentData.value = newVal as getCommentAPIResponse[]
     receivedCommentData.value &&
       receivedCommentData.value.forEach((comment: getCommentAPIResponse) => {

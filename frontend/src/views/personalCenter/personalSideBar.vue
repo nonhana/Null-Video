@@ -103,7 +103,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, reactive, HTMLAttributes } from 'vue'
+import { ref, watch, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import type { UserInfo } from '@/utils/types'
@@ -182,7 +182,7 @@ const routeNameList = ['myVideos', 'myCollections', 'myFollowsAndFans', 'exit']
 const menuStatus: {
   menuName: string
   menuSelected: boolean
-  menuSvg: HTMLAttributes
+  menuSvg: string
 }[] = reactive([
   {
     menuName: '发布视频',

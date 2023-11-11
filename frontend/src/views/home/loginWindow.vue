@@ -155,7 +155,6 @@ import myInput from '@nullVideo/form/input/input.vue'
 import Button from '@nullVideo/button/button.vue'
 import { FormRules, useMessage } from 'naive-ui'
 import Card from '@nullVideo/card/card.vue'
-import VueCookies from 'vue-cookies'
 
 const userStore = useUserStore()
 
@@ -269,7 +268,6 @@ const login = async () => {
     userStore.token = res.data
     localStorage.setItem('token', res.data)
     const sourceUserInfo = (await getUserInfoAPI({})).data
-    console.log(sourceUserInfo)
     userStore.setUserInfo({
       user_id: sourceUserInfo.userId,
       user_avatar: sourceUserInfo.userAvatar,
@@ -287,22 +285,20 @@ const login = async () => {
     }, 2000)
   }
 
-  console.log(rememberUsername.value, rememberPassword.value)
   // 记住账号,密码
   if (rememberUsername.value) {
-    VueCookies.set('username', loginForm.value.username, '7d') // 设置 Cookie，并在1天后过期
+    localStorage.setItem('username', loginForm.value.username)
   } else {
-    VueCookies.remove('username')
+    localStorage.removeItem('username')
   }
   if (rememberPassword.value) {
-    VueCookies.set('password', loginForm.value.password, '7d') // 设置 Cookie，并在1天后过期
+    localStorage.setItem('password', loginForm.value.password)
   } else {
-    VueCookies.remove('password')
+    localStorage.removeItem('password')
   }
 }
 // 注册
 const register = async () => {
-  console.log('register', registerForm.value)
   const registerRes = await registerAPI({
     userAccount: registerForm.value.username,
     userPassword: registerForm.value.password,
@@ -349,13 +345,13 @@ watch(isLogining, (newVal, _) => {
 })
 
 onBeforeMount(() => {
-  if (VueCookies.get('username')) {
-    loginForm.value.username = VueCookies.get('username')
+  if (localStorage.getItem('username')) {
+    loginForm.value.username = localStorage.getItem('username') as string
     rememberUsername.value = true
   }
 
-  if (VueCookies.get('password')) {
-    loginForm.value.password = VueCookies.get('password')
+  if (localStorage.getItem('password')) {
+    loginForm.value.password = localStorage.getItem('password') as string
     rememberPassword.value = true
   }
 })

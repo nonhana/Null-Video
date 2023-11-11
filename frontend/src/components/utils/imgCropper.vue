@@ -85,9 +85,7 @@ const confirmCropper = async () => {
   })
 
   if (croppedFile) {
-    console.log(uploadFile)
     const res = await uploadFileAPI({ multipartFile: uploadFile })
-    console.log(res.data.url, res.data)
     if (res.code === 0) {
       message.success('上传成功')
       emits('uploadImage', { imgURL: res.data.url })

@@ -6,7 +6,7 @@
       </n-gi>
       <n-gi :span="16" :offset="5">
         <div class="search">
-          <Search>
+          <Search :click-event="searchVideo" :value="keyword">
             <searchSVG />
           </Search>
         </div>
@@ -38,6 +38,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { NGrid } from 'naive-ui'
@@ -65,7 +66,6 @@ const options = [
 const handleSelect = (key: string) => {
   jumpTo(key)
 }
-
 // 根据传入的name跳转到对应的页面
 const jumpTo = (name: string) => {
   switch (name) {
@@ -92,6 +92,17 @@ const jumpTo = (name: string) => {
         router.push('/')
       }, 2000)
       break
+  }
+}
+
+/* ----------搜索视频---------- */
+const keyword = ref<string>('') // 搜索框关键词
+
+const searchVideo = () => {
+  if (keyword.value) {
+    console.log('搜索关键词为：' + keyword.value)
+  } else {
+    message.warning('请输入关键词')
   }
 }
 </script>

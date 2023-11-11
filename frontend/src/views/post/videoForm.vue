@@ -222,7 +222,6 @@ const rules: FormRules = {
 /* Functions */
 // 点击上传视频按钮上传视频
 const postVideo = async () => {
-  console.log(videoForm.value)
   if (videoForm.value.video_url === '') {
     message.error('请先返回上一步上传视频')
     return

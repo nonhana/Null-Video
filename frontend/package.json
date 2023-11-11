@@ -22,7 +22,6 @@
     "video.js": "^8.6.1",
     "videojs-contrib-hls": "^5.15.0",
     "vue": "^3.3.7",
-    "vue-cookies": "^1.8.3",
     "vue-picture-cropper": "^0.6.2",
     "vue-router": "^4.2.5"
   },

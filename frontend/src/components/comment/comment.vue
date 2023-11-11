@@ -55,7 +55,6 @@ const updateName = (value: string) => {
 
 // 获取评论框的回调数据
 const commentCallback = (comment: getCommentAPIResponse) => {
-  console.log('get', comment)
   commentList.value.forEach((item: getCommentAPIResponse, index: number) => {
     // 匹配评论
     if (item.videoCommentId === comment.videoCommentId) {
@@ -87,7 +86,6 @@ const addComment = async () => {
 watch(
   () => route.params.video_id,
   (newV) => {
-    console.log('comment', newV)
     videoId.value = newV as string
     getComment()
   },
